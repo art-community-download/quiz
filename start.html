@@ -3,47 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Playing - Quiz Zone</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Hind+Siliguri:wght@400;600&display=swap" rel="stylesheet">
+    <title>Quiz Game</title>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600&family=Orbitron:wght@500&display=swap" rel="stylesheet">
     <style>
         body { background: #050511; color: white; font-family: 'Hind Siliguri', sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; overflow: hidden; }
         .game-ui { width: 90%; max-width: 500px; text-align: center; }
-        
-        .timer-bar-bg { width: 100%; height: 10px; background: #333; border-radius: 5px; margin-bottom: 20px; overflow: hidden; }
+        .timer-bar-bg { width: 100%; height: 8px; background: #333; border-radius: 5px; margin-bottom: 20px; overflow: hidden; }
         .timer-bar { height: 100%; width: 100%; background: #00f2ff; transition: width 1s linear; }
-        
         .timer-text { font-family: 'Orbitron', sans-serif; font-size: 3rem; color: #00f2ff; text-shadow: 0 0 15px #00f2ff; margin: 10px 0; }
-        
-        .question-box { background: rgba(255,255,255,0.05); padding: 20px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.1); min-height: 100px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; margin-bottom: 20px; box-shadow: 0 0 20px rgba(0,0,0,0.5); }
-        
-        .options { display: grid; gap: 10px; }
-        .opt-btn { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 15px; border-radius: 10px; cursor: pointer; font-size: 1rem; transition: 0.3s; text-align: left; }
+        .question-box { background: rgba(255,255,255,0.05); padding: 25px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.1); min-height: 120px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; margin-bottom: 20px; box-shadow: 0 0 30px rgba(0,0,0,0.5); line-height: 1.5; font-weight: 600; }
+        .options { display: grid; gap: 12px; }
+        .opt-btn { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 15px; border-radius: 10px; cursor: pointer; font-size: 1.1rem; transition: 0.3s; text-align: left; font-family: 'Hind Siliguri', sans-serif; }
         .opt-btn:disabled { opacity: 0.6; cursor: not-allowed; }
-        
-        .correct { background: #00ff88 !important; color: black; border: none; box-shadow: 0 0 15px #00ff88; }
-        .wrong { background: #ff0055 !important; border: none; box-shadow: 0 0 15px #ff0055; }
-        
-        .phase-text { text-transform: uppercase; letter-spacing: 2px; color: #aaa; font-size: 0.8rem; }
+        .correct { background: #00ff88 !important; color: black; border-color: #00ff88; box-shadow: 0 0 15px #00ff88; font-weight: bold; }
+        .wrong { background: #ff0055 !important; border-color: #ff0055; box-shadow: 0 0 15px #ff0055; }
+        .phase-text { text-transform: uppercase; letter-spacing: 1px; color: #aaa; font-size: 0.9rem; }
     </style>
 </head>
 <body>
     <div class="game-ui">
-        <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+        <div style="display:flex; justify-content:space-between; align-items: center; margin-bottom:10px;">
             <span id="q-num">Loading...</span>
-            <button onclick="location.href='home.html'" style="background:none; border:none; color:red; cursor:pointer;">QUIT</button>
+            <button onclick="location.href='home.html'" style="background:none; border:none; color:red; cursor:pointer; font-weight: bold;">QUIT ✕</button>
         </div>
 
         <div class="timer-bar-bg"><div class="timer-bar" id="t-bar"></div></div>
-        <p class="phase-text" id="phase">Fetching Settings...</p>
+        <p class="phase-text" id="phase">Connecting...</p>
         <div class="timer-text" id="timer">--</div>
 
-        <div class="question-box" id="q-text">
-            প্রশ্ন লোড হচ্ছে...
-        </div>
-
-        <div class="options" id="opt-area">
-            <!-- JS generates buttons -->
-        </div>
+        <div class="question-box" id="q-text">প্রশ্ন লোড হচ্ছে...</div>
+        <div class="options" id="opt-area"></div>
     </div>
 
     <script type="module">
@@ -56,66 +45,62 @@
         const auth = getAuth(app);
         const db = getDatabase(app);
 
-        // Standard Questions
-        const questions = [
-            { q: "বাংলাদেশের স্বাধীনতা দিবস কবে?", a: ["২৬ মার্চ", "১৬ ডিসেম্বর", "২১ ফেব্রুয়ারি", "১৪ এপ্রিল"], c: "২৬ মার্চ" },
-            { q: "বিশ্বের সবচেয়ে বড় সমুদ্র সৈকত কোনটি?", a: ["কক্সবাজার", "মায়ামি", "গোয়া", "বালি"], c: "কক্সবাজার" },
-            { q: "পদ্মা সেতুর দৈর্ঘ্য কত?", a: ["৬.১৫ কিমি", "৫.৫ কিমি", "৪.৮ কিমি", "৭.২ কিমি"], c: "৬.১৫ কিমি" },
-            { q: "জাতীয় কবি কে?", a: ["রবীন্দ্রনাথ", "নজরুল", "জীবনানন্দ", "সুকান্ত"], c: "নজরুল" },
-            { q: "কম্পিউটার কে আবিষ্কার করেন?", a: ["চার্লস ব্যাবেজ", "বিল গেটস", "স্টিভ জবস", "এলন মাস্ক"], c: "চার্লস ব্যাবেজ" },
-            { q: "বাংলাদেশের জাতীয় পশু কোনটি?", a: ["রয়েল বেঙ্গল টাইগার", "সিংহ", "হাতি", "হরিণ"], c: "রয়েল বেঙ্গল টাইগার" },
-            { q: "ফেসবুকের প্রতিষ্ঠাতা কে?", a: ["মার্ক জাকারবার্গ", "এলন মাস্ক", "জেফ বেজোস", "ল্যারি পেজ"], c: "মার্ক জাকারবার্গ" },
-            { q: "পানির রাসায়নিক সংকেত কী?", a: ["H2O", "CO2", "O2", "NaCl"], c: "H2O" },
-            { q: "জাতীয় স্মৃতিসৌধ কোথায়?", a: ["সাভার", "গাজীপুর", "ঢাকা", "কুমিল্লা"], c: "সাভার" },
-            { q: "১ গিগাবাইট = কত মেগাবাইট?", a: ["১০০০", "১০২৪", "৫১২", "১০০"], c: "১০২৪" }
-        ];
-
+        let questions = [];
         let curQ = 0;
         let score = 0;
         let timerInt;
-        
-        // Settings Vars
         let VIEW_TIME = 15;
         let ANS_TIME = 25;
         let MAX_Q = 10;
-        
+
         const qText = document.getElementById('q-text');
         const optArea = document.getElementById('opt-area');
         const timerEl = document.getElementById('timer');
         const phaseEl = document.getElementById('phase');
         const tBar = document.getElementById('t-bar');
 
-        // Init
         async function initGame() {
-            // Fetch Config from DB
-            const snap = await get(ref(db, 'settings/gameConfig'));
-            if(snap.exists()) {
-                const conf = snap.val();
+            try {
+                const configSnap = await get(ref(db, 'settings/gameConfig'));
+                if(!configSnap.exists()) { alert("Config Error"); return; }
+                const conf = configSnap.val();
+                
                 VIEW_TIME = conf.viewTime || 15;
                 ANS_TIME = conf.answerTime || 25;
                 MAX_Q = conf.questionLimit || 10;
 
-                // Check time again
                 const now = new Date().getTime();
                 if(now < new Date(conf.startTime).getTime() || now > new Date(conf.endTime).getTime()) {
-                    alert("Game Time Over!");
-                    location.href = 'home.html';
-                    return;
+                    alert("Time Over!"); location.href = 'home.html'; return;
                 }
-            }
-            startQ();
+
+                const activeCats = conf.activeCats ? conf.activeCats.split(',') : [];
+                if(activeCats.length === 0) { alert("No Categories!"); location.href = 'home.html'; return; }
+
+                const qSnap = await get(ref(db, 'questions'));
+                const allQ = [];
+                qSnap.forEach(c => {
+                    const q = c.val();
+                    if(activeCats.includes(q.category)) allQ.push(q);
+                });
+
+                if(allQ.length === 0) { alert("No Questions!"); location.href = 'home.html'; return; }
+
+                questions = allQ.sort(() => 0.5 - Math.random()).slice(0, MAX_Q);
+                startQ();
+
+            } catch(e) { alert(e.message); location.href = 'home.html'; }
         }
 
         function startQ() {
-            if(curQ >= MAX_Q || curQ >= questions.length) return endGame();
-            
+            if(curQ >= questions.length) return endGame();
             const q = questions[curQ];
-            document.getElementById('q-num').innerText = `${curQ+1} / ${MAX_Q}`;
+            document.getElementById('q-num').innerText = `${curQ+1} / ${questions.length}`;
             qText.innerText = q.q;
             optArea.innerHTML = '';
 
-            // Generate Buttons
-            q.a.forEach(op => {
+            let opts = [...q.a].sort(() => Math.random() - 0.5);
+            opts.forEach(op => {
                 const b = document.createElement('button');
                 b.className = 'opt-btn';
                 b.innerText = op;
@@ -124,20 +109,14 @@
                 optArea.appendChild(b);
             });
 
-            // Phase 1: View
-            phaseEl.innerText = "READ QUESTION";
+            phaseEl.innerText = "প্রশ্ন দেখুন";
             phaseEl.style.color = "#00f2ff";
             runTimer(VIEW_TIME, () => {
-                // Phase 2: Answer
-                phaseEl.innerText = "ANSWER NOW";
+                phaseEl.innerText = "উত্তর দিন";
                 phaseEl.style.color = "#ff0055";
-                const btns = document.querySelectorAll('.opt-btn');
-                btns.forEach(b => b.disabled = false);
-
+                document.querySelectorAll('.opt-btn').forEach(b => b.disabled = false);
                 runTimer(ANS_TIME, () => {
-                    // Time Up -> Next
-                    curQ++;
-                    startQ();
+                    curQ++; startQ();
                 });
             });
         }
@@ -148,58 +127,41 @@
             const total = sec;
             timerEl.innerText = left;
             tBar.style.width = "100%";
-            
             timerInt = setInterval(() => {
                 left--;
                 timerEl.innerText = left;
                 tBar.style.width = (left/total)*100 + "%";
-                
-                if(left <= 0) {
-                    clearInterval(timerInt);
-                    callback();
-                }
+                if(left <= 0) { clearInterval(timerInt); callback(); }
             }, 1000);
         }
 
         function check(sel, cor, btn) {
             clearInterval(timerInt);
-            const all = document.querySelectorAll('.opt-btn');
-            all.forEach(b => b.disabled = true);
-
+            document.querySelectorAll('.opt-btn').forEach(b => b.disabled = true);
             if(sel === cor) {
-                btn.classList.add('correct');
-                score += 10;
+                btn.classList.add('correct'); score += 10;
             } else {
                 btn.classList.add('wrong');
-                all.forEach(b => { if(b.innerText === cor) b.classList.add('correct'); });
+                document.querySelectorAll('.opt-btn').forEach(b => { if(b.innerText === cor) b.classList.add('correct'); });
             }
-
-            setTimeout(() => {
-                curQ++;
-                startQ();
-            }, 2000);
+            setTimeout(() => { curQ++; startQ(); }, 2000);
         }
 
         async function endGame() {
-            qText.innerText = "GAME OVER!";
-            optArea.innerHTML = `<h2 style="color:#00f2ff">SCORE: ${score}</h2>`;
-            phaseEl.innerText = "";
+            qText.innerText = "সেভ হচ্ছে...";
+            optArea.innerHTML = `<h2>স্কোর: ${score}</h2>`;
+            phaseEl.innerText = "শেষ";
             timerEl.innerText = "";
-            document.getElementById('t-bar').style.width = "0%";
-            
             const user = auth.currentUser;
             if(user) {
                 const refU = ref(db, 'users/' + user.uid);
                 const snap = await get(refU);
                 let old = 0;
                 if(snap.exists()) old = snap.val().points || 0;
-                
-                // Add new score to old score
                 await update(refU, { points: old + score });
             }
             setTimeout(() => location.href = 'home.html', 3000);
         }
-
         setTimeout(initGame, 1000);
     </script>
 </body>
