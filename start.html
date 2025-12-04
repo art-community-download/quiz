@@ -29,13 +29,13 @@
 <body>
     <div class="game-ui">
         <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-            <span id="q-num">1/10</span>
+            <span id="q-num">Loading...</span>
             <button onclick="location.href='home.html'" style="background:none; border:none; color:red; cursor:pointer;">QUIT</button>
         </div>
 
         <div class="timer-bar-bg"><div class="timer-bar" id="t-bar"></div></div>
-        <p class="phase-text" id="phase">Loading...</p>
-        <div class="timer-text" id="timer">00</div>
+        <p class="phase-text" id="phase">Fetching Settings...</p>
+        <div class="timer-text" id="timer">--</div>
 
         <div class="question-box" id="q-text">
             প্রশ্ন লোড হচ্ছে...
@@ -56,18 +56,28 @@
         const auth = getAuth(app);
         const db = getDatabase(app);
 
-        // Dummy Questions (In production, fetch from DB)
+        // Standard Questions
         const questions = [
             { q: "বাংলাদেশের স্বাধীনতা দিবস কবে?", a: ["২৬ মার্চ", "১৬ ডিসেম্বর", "২১ ফেব্রুয়ারি", "১৪ এপ্রিল"], c: "২৬ মার্চ" },
             { q: "বিশ্বের সবচেয়ে বড় সমুদ্র সৈকত কোনটি?", a: ["কক্সবাজার", "মায়ামি", "গোয়া", "বালি"], c: "কক্সবাজার" },
             { q: "পদ্মা সেতুর দৈর্ঘ্য কত?", a: ["৬.১৫ কিমি", "৫.৫ কিমি", "৪.৮ কিমি", "৭.২ কিমি"], c: "৬.১৫ কিমি" },
             { q: "জাতীয় কবি কে?", a: ["রবীন্দ্রনাথ", "নজরুল", "জীবনানন্দ", "সুকান্ত"], c: "নজরুল" },
-            { q: "কম্পিউটার কে আবিষ্কার করেন?", a: ["চার্লস ব্যাবেজ", "বিল গেটস", "স্টিভ জবস", "এলন মাস্ক"], c: "চার্লস ব্যাবেজ" }
+            { q: "কম্পিউটার কে আবিষ্কার করেন?", a: ["চার্লস ব্যাবেজ", "বিল গেটস", "স্টিভ জবস", "এলন মাস্ক"], c: "চার্লস ব্যাবেজ" },
+            { q: "বাংলাদেশের জাতীয় পশু কোনটি?", a: ["রয়েল বেঙ্গল টাইগার", "সিংহ", "হাতি", "হরিণ"], c: "রয়েল বেঙ্গল টাইগার" },
+            { q: "ফেসবুকের প্রতিষ্ঠাতা কে?", a: ["মার্ক জাকারবার্গ", "এলন মাস্ক", "জেফ বেজোস", "ল্যারি পেজ"], c: "মার্ক জাকারবার্গ" },
+            { q: "পানির রাসায়নিক সংকেত কী?", a: ["H2O", "CO2", "O2", "NaCl"], c: "H2O" },
+            { q: "জাতীয় স্মৃতিসৌধ কোথায়?", a: ["সাভার", "গাজীপুর", "ঢাকা", "কুমিল্লা"], c: "সাভার" },
+            { q: "১ গিগাবাইট = কত মেগাবাইট?", a: ["১০০০", "১০২৪", "৫১২", "১০০"], c: "১০২৪" }
         ];
 
         let curQ = 0;
         let score = 0;
         let timerInt;
+        
+        // Settings Vars
+        let VIEW_TIME = 15;
+        let ANS_TIME = 25;
+        let MAX_Q = 10;
         
         const qText = document.getElementById('q-text');
         const optArea = document.getElementById('opt-area');
@@ -75,11 +85,32 @@
         const phaseEl = document.getElementById('phase');
         const tBar = document.getElementById('t-bar');
 
+        // Init
+        async function initGame() {
+            // Fetch Config from DB
+            const snap = await get(ref(db, 'settings/gameConfig'));
+            if(snap.exists()) {
+                const conf = snap.val();
+                VIEW_TIME = conf.viewTime || 15;
+                ANS_TIME = conf.answerTime || 25;
+                MAX_Q = conf.questionLimit || 10;
+
+                // Check time again
+                const now = new Date().getTime();
+                if(now < new Date(conf.startTime).getTime() || now > new Date(conf.endTime).getTime()) {
+                    alert("Game Time Over!");
+                    location.href = 'home.html';
+                    return;
+                }
+            }
+            startQ();
+        }
+
         function startQ() {
-            if(curQ >= questions.length) return endGame();
+            if(curQ >= MAX_Q || curQ >= questions.length) return endGame();
             
             const q = questions[curQ];
-            document.getElementById('q-num').innerText = `${curQ+1}/${questions.length}`;
+            document.getElementById('q-num').innerText = `${curQ+1} / ${MAX_Q}`;
             qText.innerText = q.q;
             optArea.innerHTML = '';
 
@@ -88,23 +119,23 @@
                 const b = document.createElement('button');
                 b.className = 'opt-btn';
                 b.innerText = op;
-                b.disabled = true; // Locked in phase 1
+                b.disabled = true; 
                 b.onclick = () => check(op, q.c, b);
                 optArea.appendChild(b);
             });
 
-            // Phase 1: View (15s)
+            // Phase 1: View
             phaseEl.innerText = "READ QUESTION";
             phaseEl.style.color = "#00f2ff";
-            runTimer(15, () => {
-                // Phase 2: Answer (25s)
+            runTimer(VIEW_TIME, () => {
+                // Phase 2: Answer
                 phaseEl.innerText = "ANSWER NOW";
                 phaseEl.style.color = "#ff0055";
                 const btns = document.querySelectorAll('.opt-btn');
                 btns.forEach(b => b.disabled = false);
 
-                runTimer(25, () => {
-                    // Time Up
+                runTimer(ANS_TIME, () => {
+                    // Time Up -> Next
                     curQ++;
                     startQ();
                 });
@@ -116,6 +147,7 @@
             let left = sec;
             const total = sec;
             timerEl.innerText = left;
+            tBar.style.width = "100%";
             
             timerInt = setInterval(() => {
                 left--;
@@ -153,21 +185,22 @@
             optArea.innerHTML = `<h2 style="color:#00f2ff">SCORE: ${score}</h2>`;
             phaseEl.innerText = "";
             timerEl.innerText = "";
+            document.getElementById('t-bar').style.width = "0%";
             
             const user = auth.currentUser;
             if(user) {
-                // Add points logic (You might want to fetch old points first)
                 const refU = ref(db, 'users/' + user.uid);
                 const snap = await get(refU);
                 let old = 0;
                 if(snap.exists()) old = snap.val().points || 0;
                 
+                // Add new score to old score
                 await update(refU, { points: old + score });
             }
             setTimeout(() => location.href = 'home.html', 3000);
         }
 
-        setTimeout(startQ, 1000);
+        setTimeout(initGame, 1000);
     </script>
 </body>
 </html>
