@@ -10,34 +10,33 @@
         .game-ui { width: 90%; max-width: 500px; text-align: center; }
         .timer-bar-bg { width: 100%; height: 8px; background: #333; border-radius: 5px; margin-bottom: 20px; overflow: hidden; }
         .timer-bar { height: 100%; width: 100%; background: #00f2ff; transition: width 1s linear; }
-        .timer-text { font-family: 'Orbitron', sans-serif; font-size: 3rem; color: #00f2ff; text-shadow: 0 0 15px #00f2ff; margin: 10px 0; }
-        .question-box { background: rgba(255,255,255,0.05); padding: 25px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.1); min-height: 120px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; margin-bottom: 20px; box-shadow: 0 0 30px rgba(0,0,0,0.5); line-height: 1.5; font-weight: 600; }
+        .question-box { background: rgba(255,255,255,0.05); padding: 25px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.1); min-height: 120px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; margin-bottom: 20px; box-shadow: 0 0 30px rgba(0,0,0,0.5); line-height: 1.5; font-weight: 600; }
         .options { display: grid; gap: 12px; }
-        .opt-btn { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 15px; border-radius: 10px; cursor: pointer; font-size: 1.1rem; transition: 0.3s; text-align: left; font-family: 'Hind Siliguri', sans-serif; }
+        .opt-btn { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 15px; border-radius: 10px; cursor: pointer; font-size: 1rem; transition: 0.3s; text-align: left; }
         .opt-btn:disabled { opacity: 0.6; cursor: not-allowed; }
-        .correct { background: #00ff88 !important; color: black; border-color: #00ff88; box-shadow: 0 0 15px #00ff88; font-weight: bold; }
-        .wrong { background: #ff0055 !important; border-color: #ff0055; box-shadow: 0 0 15px #ff0055; }
-        .phase-text { text-transform: uppercase; letter-spacing: 1px; color: #aaa; font-size: 0.9rem; }
-        .cat-badge { font-size: 0.8rem; color: yellow; margin-bottom: 10px; display: block; }
+        .correct { background: #00ff88 !important; color: black; }
+        .wrong { background: #ff0055 !important; }
+        /* Error Log Styling */
+        #error-log { color: red; font-size: 0.8rem; margin-top: 10px; white-space: pre-wrap; word-wrap: break-word; background: rgba(0,0,0,0.5); padding: 10px; display: none; }
     </style>
 </head>
 <body>
     <div class="game-ui">
         <div style="display:flex; justify-content:space-between; align-items: center; margin-bottom:10px;">
             <span id="q-num">Connecting...</span>
-            <button onclick="location.href='home.html'" style="background:none; border:none; color:red; cursor:pointer; font-weight: bold;">QUIT ✕</button>
+            <button onclick="location.href='home.html'" style="color:red; background:none; border:none; font-weight:bold;">QUIT ✕</button>
         </div>
 
         <div class="timer-bar-bg"><div class="timer-bar" id="t-bar"></div></div>
-        <span class="cat-badge" id="cat-display"></span>
-        <p class="phase-text" id="phase">API Generating Questions...</p>
-        <div class="timer-text" id="timer">--</div>
+        <span id="cat-display" style="color:yellow; font-size:0.9rem; margin-bottom:10px; display:block;"></span>
+        <p id="phase" style="color:#00f2ff;">API Connecting...</p>
+        <div id="timer" style="font-size:2rem; color:#00f2ff; margin:10px 0;">--</div>
 
-        <div class="question-box" id="q-text">
-            অনুগ্রহ করে অপেক্ষা করুন, প্রশ্ন তৈরি হচ্ছে...
-        </div>
-
+        <div class="question-box" id="q-text">প্রশ্ন লোড হচ্ছে...</div>
         <div class="options" id="opt-area"></div>
+        
+        <!-- Error Display -->
+        <div id="error-log"></div>
     </div>
 
     <script type="module">
@@ -50,12 +49,10 @@
         const auth = getAuth(app);
         const db = getDatabase(app);
 
-        // YOUR RAPID API KEY
+        // --- RAPID API SETTINGS ---
         const RAPID_API_KEY = "a997ec1b6amshdd7c7d6394c0c73p15ec8ejsn2d31187553f2";
-        // Using a common OpenAI wrapper on RapidAPI. 
-        // NOTE: If you subscribed to a specific API (like 'chatgpt-api8' or similar), you must change the HOST below.
-        // Assuming you have access to "cheapest-gpt-4-turbo-gpt-4-vision-chatgpt-openai-ai-api" or similar.
-        // Let's use a generic fetch structure, you might need to adjust the URL based on your specific subscription.
+        
+        // ⚠️ আপনার RapidAPI Dashboard থেকে এই URL টি চেক করুন
         const RAPID_HOST = "openai80.p.rapidapi.com"; 
         const API_URL = "https://openai80.p.rapidapi.com/chat/completions";
 
@@ -65,52 +62,39 @@
         let timerInt;
         let VIEW_TIME, ANS_TIME, MAX_Q;
 
-        const qText = document.getElementById('q-text');
-        const optArea = document.getElementById('opt-area');
-        const timerEl = document.getElementById('timer');
-        const phaseEl = document.getElementById('phase');
-        const tBar = document.getElementById('t-bar');
-
         async function initGame() {
             try {
-                // 1. Get Config
+                // 1. Get Settings
                 const snap = await get(ref(db, 'settings/gameConfig'));
-                if(!snap.exists()) { alert("Config Error"); location.href='home.html'; return; }
-                const conf = snap.val();
+                if(!snap.exists()) throw new Error("Game Config Not Found in Database");
                 
+                const conf = snap.val();
                 VIEW_TIME = conf.viewTime || 15;
                 ANS_TIME = conf.answerTime || 25;
                 MAX_Q = conf.questionLimit || 10;
                 
-                // Time Check
-                const now = new Date().getTime();
-                if(now < new Date(conf.startTime).getTime() || now > new Date(conf.endTime).getTime()) {
-                    alert("Game Time Over!"); location.href='home.html'; return;
-                }
-
+                // Active Categories Check
                 const activeCats = conf.activeCats ? conf.activeCats.split(',') : [];
-                if(activeCats.length === 0) { alert("No Category Set!"); location.href='home.html'; return; }
+                if(activeCats.length === 0) throw new Error("No Active Category selected by Admin");
 
-                // Pick ONE Random Category
+                // Select Category
                 const selectedCat = activeCats[Math.floor(Math.random() * activeCats.length)];
                 document.getElementById('cat-display').innerText = "বিষয়: " + selectedCat;
 
-                // 2. Call RapidAPI
+                // 2. Fetch API
                 await fetchQuestionsFromRapidAPI(selectedCat);
 
             } catch(e) {
-                console.error(e);
-                alert("Error: " + e.message);
-                location.href='home.html';
+                showError(e.message);
             }
         }
 
         async function fetchQuestionsFromRapidAPI(topic) {
-            // Prompt Construction
-            const prompt = `Generate ${MAX_Q} hard multiple choice questions in Bengali about '${topic}'. 
-            Format strictly as a JSON array of objects. 
-            No markdown. No extra text.
-            Structure: [{"q": "Question", "a": ["Op1", "Op2", "Op3", "Op4"], "c": "Correct Option String"}]`;
+            document.getElementById('q-text').innerText = `Generating questions on "${topic}"...`;
+
+            const prompt = `Generate ${MAX_Q} multiple choice questions in Bengali about '${topic}'. 
+            Return ONLY a raw JSON array. No markdown, no explanation.
+            Structure: [{"q": "Question", "a": ["Op1", "Op2", "Op3", "Op4"], "c": "Correct Option"}]`;
 
             const options = {
                 method: 'POST',
@@ -121,42 +105,56 @@
                 },
                 body: JSON.stringify({
                     model: 'gpt-3.5-turbo',
-                    messages: [
-                        { role: 'user', content: prompt }
-                    ]
+                    messages: [{ role: 'user', content: prompt }]
                 })
             };
 
             try {
                 const response = await fetch(API_URL, options);
+                
+                // API Error Handling
+                if (!response.ok) {
+                    const errText = await response.text();
+                    throw new Error(`API Error ${response.status}: ${errText}`);
+                }
+
                 const data = await response.json();
                 
                 if(data.choices && data.choices.length > 0) {
                     let content = data.choices[0].message.content;
                     // Clean JSON
                     content = content.replace(/```json/g, '').replace(/```/g, '').trim();
-                    questions = JSON.parse(content);
                     
-                    if(questions.length > 0) {
-                        startQ();
-                    } else { throw new Error("API returned empty"); }
+                    try {
+                        questions = JSON.parse(content);
+                        if(questions.length > 0) startQ();
+                        else throw new Error("API returned 0 questions");
+                    } catch (jsonErr) {
+                        console.log("Raw Content:", content);
+                        throw new Error("JSON Parse Error. The AI response was not valid JSON.");
+                    }
                 } else {
-                    throw new Error("API Limit or Error");
+                    throw new Error("API Limit Reached or Empty Response");
                 }
             } catch (error) {
-                qText.innerText = "API Error. Check Console.";
-                console.log("RapidAPI Error:", error);
-                // Fallback demo questions if API fails (Optional)
-                alert("API কানেকশন সমস্যা। দয়া করে RapidAPI Host চেক করুন।");
+                showError(error.message);
             }
+        }
+
+        function showError(msg) {
+            document.getElementById('q-text').innerText = "Error Occurred!";
+            const errDiv = document.getElementById('error-log');
+            errDiv.style.display = 'block';
+            errDiv.innerText = "Error Details:\n" + msg;
+            alert("সমস্যা হয়েছে: " + msg);
         }
 
         function startQ() {
             if(curQ >= questions.length) return endGame();
             const q = questions[curQ];
             document.getElementById('q-num').innerText = `${curQ+1} / ${questions.length}`;
-            qText.innerText = q.q;
-            optArea.innerHTML = '';
+            document.getElementById('q-text').innerText = q.q;
+            document.getElementById('opt-area').innerHTML = '';
 
             let opts = [...q.a].sort(() => Math.random() - 0.5);
             opts.forEach(op => {
@@ -165,14 +163,12 @@
                 b.innerText = op;
                 b.disabled = true; 
                 b.onclick = () => check(op, q.c, b);
-                optArea.appendChild(b);
+                document.getElementById('opt-area').appendChild(b);
             });
 
-            phaseEl.innerText = "প্রশ্ন দেখুন";
-            phaseEl.style.color = "#00f2ff";
+            document.getElementById('phase').innerText = "প্রশ্ন দেখুন";
             runTimer(VIEW_TIME, () => {
-                phaseEl.innerText = "উত্তর দিন";
-                phaseEl.style.color = "#ff0055";
+                document.getElementById('phase').innerText = "উত্তর দিন";
                 document.querySelectorAll('.opt-btn').forEach(b => b.disabled = false);
                 runTimer(ANS_TIME, () => {
                     curQ++; startQ();
@@ -184,12 +180,12 @@
             clearInterval(timerInt);
             let left = sec;
             const total = sec;
-            timerEl.innerText = left;
-            tBar.style.width = "100%";
+            document.getElementById('timer').innerText = left;
+            document.getElementById('t-bar').style.width = "100%";
             timerInt = setInterval(() => {
                 left--;
-                timerEl.innerText = left;
-                tBar.style.width = (left/total)*100 + "%";
+                document.getElementById('timer').innerText = left;
+                document.getElementById('t-bar').style.width = (left/total)*100 + "%";
                 if(left <= 0) { clearInterval(timerInt); callback(); }
             }, 1000);
         }
@@ -207,10 +203,7 @@
         }
 
         async function endGame() {
-            qText.innerText = "সেভ হচ্ছে...";
-            optArea.innerHTML = `<h2>স্কোর: ${score}</h2>`;
-            phaseEl.innerText = "শেষ";
-            timerEl.innerText = "";
+            document.getElementById('q-text').innerText = "সেভ হচ্ছে...";
             const user = auth.currentUser;
             if(user) {
                 const refU = ref(db, 'users/' + user.uid);
