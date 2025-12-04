@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Quiz Zone</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Poppins:wght@300;600&display=swap" rel="stylesheet">
+    <style>
+        body { background: #0b0b14; color: white; font-family: 'Poppins', sans-serif; margin: 0; padding: 20px; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .profile-btn { width: 50px; height: 50px; border-radius: 50%; background: #222; border: 2px solid #00f2ff; background-size: cover; cursor: pointer; }
+        
+        .hero { 
+            background: linear-gradient(135deg, #1a0b2e, #000); 
+            border: 1px solid rgba(0, 242, 255, 0.2); 
+            padding: 30px; border-radius: 20px; text-align: center;
+            box-shadow: 0 0 30px rgba(0, 242, 255, 0.1);
+        }
+        h1 { font-family: 'Orbitron', sans-serif; background: linear-gradient(to right, #00f2ff, #ff0055); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 2.5rem; margin: 0; }
+        .play-btn {
+            background: #00f2ff; color: black; font-size: 1.5rem; font-family: 'Orbitron', sans-serif;
+            padding: 15px 50px; border: none; border-radius: 50px; cursor: pointer; margin-top: 20px;
+            box-shadow: 0 0 20px rgba(0, 242, 255, 0.5); transition: 0.3s;
+        }
+        .play-btn:hover { transform: scale(1.1); box-shadow: 0 0 40px rgba(0, 242, 255, 0.8); }
+
+        .stats { display: flex; gap: 15px; margin-top: 30px; }
+        .stat-card { flex: 1; background: rgba(255,255,255,0.05); padding: 20px; border-radius: 15px; text-align: center; border: 1px solid rgba(255,255,255,0.1); }
+        .stat-val { font-size: 1.5rem; font-weight: bold; color: #ff0055; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h3 style="margin:0;">QUIZ ZONE</h3>
+        <div class="profile-btn" id="p-pic" onclick="location.href='profile.html'"></div>
+    </div>
+
+    <div class="hero">
+        <p>READY TO CHALLENGE?</p>
+        <h1>START GAME</h1>
+        <button class="play-btn" onclick="location.href='start.html'">PLAY</button>
+    </div>
+
+    <div class="stats">
+        <div class="stat-card">
+            <div>My Score</div>
+            <div class="stat-val" id="score">0</div>
+        </div>
+        <div class="stat-card">
+            <div>Rank</div>
+            <div class="stat-val" style="color: #00f2ff;">#N/A</div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+        import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+
+        const firebaseConfig = { apiKey: "AIzaSyBVwD0U7_QeX8EyOrZ4fm7OG_ow1b391-M", authDomain: "game-f739d.firebaseapp.com", databaseURL: "https://game-f739d-default-rtdb.firebaseio.com", projectId: "game-f739d", storageBucket: "game-f739d.firebasestorage.app", messagingSenderId: "744868437950", appId: "1:744868437950:web:622410843c8aeb229463ef" };
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getDatabase(app);
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                const snap = await get(ref(db, 'users/' + user.uid));
+                if(snap.exists()) {
+                    const d = snap.val();
+                    document.getElementById('score').innerText = d.points || 0;
+                    if(d.profilePic) document.getElementById('p-pic').style.backgroundImage = `url(${d.profilePic})`;
+                    else document.getElementById('p-pic').style.backgroundImage = `url(https://ui-avatars.com/api/?name=${d.name})`;
+                }
+            } else {
+                window.location.href = 'index.html';
+            }
+        });
+    </script>
+</body>
+</html>
