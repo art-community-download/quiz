@@ -6,10 +6,10 @@
     <title>Access - Quiz Zone</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Poppins:wght@300;600&display=swap" rel="stylesheet">
     <style>
-        body { background: radial-gradient(circle at center, #1a1a2e, #000); font-family: 'Poppins', sans-serif; height: 100vh; display: flex; justify-content: center; align-items: center; color: white; margin: 0; }
+        body { background: radial-gradient(circle at center, #1a0b2e, #000); font-family: 'Poppins', sans-serif; height: 100vh; display: flex; justify-content: center; align-items: center; color: white; margin: 0; }
         .card { width: 350px; background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 20px; padding: 40px; box-shadow: 0 0 30px rgba(0, 242, 255, 0.2); }
         h2 { text-align: center; font-family: 'Orbitron', sans-serif; color: #00f2ff; text-shadow: 0 0 10px #00f2ff; margin-bottom: 30px; }
-        input { width: 100%; padding: 12px; margin: 10px 0; background: rgba(0,0,0,0.5); border: 1px solid #333; color: white; border-radius: 8px; box-sizing: border-box; outline: none; transition: 0.3s; }
+        input { width: 100%; padding: 12px; margin: 10px 0; background: rgba(0,0,0,0.5); border: 1px solid #333; color: white; border-radius: 8px; outline: none; transition: 0.3s; box-sizing: border-box; }
         input:focus { border-color: #00f2ff; box-shadow: 0 0 10px rgba(0, 242, 255, 0.3); }
         .btn { width: 100%; padding: 12px; margin-top: 20px; background: linear-gradient(90deg, #00f2ff, #0099ff); border: none; border-radius: 50px; font-weight: bold; cursor: pointer; color: black; font-family: 'Orbitron', sans-serif; transition: 0.3s; }
         .btn:hover { transform: scale(1.05); box-shadow: 0 0 20px #00f2ff; }
@@ -73,13 +73,12 @@
 
             if(!name || !phone || !email || !pass || !refCode) return alert("Fill all fields!");
 
-            // Check Referral
             const refSnap = await get(ref(db, 'settings/referralCodes'));
             let valid = false;
             if(refSnap.exists()) {
                  if(Object.values(refSnap.val()).includes(refCode)) valid = true;
             }
-            if(refCode === 'ADMIN123') valid = true; // Default
+            if(refCode === 'ADMIN123') valid = true; 
 
             if(!valid) return alert("Invalid Referral Code!");
 
