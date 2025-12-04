@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <title>Profile - Quiz Zone</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap" rel="stylesheet">
+    <style>
+        body { background: #0b0b14; color: white; font-family: 'Poppins', sans-serif; display: flex; justify-content: center; padding: 20px; }
+        .container { width: 100%; max-width: 400px; }
+        .back-btn { background: none; border: none; color: white; font-size: 1.2rem; cursor: pointer; margin-bottom: 20px; }
+        
+        .p-img-box { text-align: center; margin-bottom: 20px; }
+        .p-img { width: 100px; height: 100px; border-radius: 50%; border: 3px solid #00f2ff; display: inline-block; background-size: cover; background-color: #333; }
+        
+        .input-group { margin-bottom: 15px; }
+        label { display: block; color: #aaa; font-size: 0.8rem; margin-bottom: 5px; }
+        input { width: 100%; padding: 12px; background: #1a1a2e; border: 1px solid #333; color: white; border-radius: 8px; box-sizing: border-box; }
+        
+        .btn { width: 100%; padding: 12px; background: #00f2ff; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        .btn-red { background: #ff0055; color: white; margin-top: 30px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <button class="back-btn" onclick="location.href='home.html'">⬅ Back</button>
+        
+        <div class="p-img-box">
+            <div class="p-img" id="display-pic"></div>
+            <p id="display-name" style="font-weight: bold; font-size: 1.2rem;">User</p>
+        </div>
+
+        <div class="input-group">
+            <label>Change Name</label>
+            <input type="text" id="new-name">
+            <button class="btn" onclick="updateName()">Save Name</button>
+        </div>
+
+        <div class="input-group">
+            <label>Profile Pic URL</label>
+            <input type="text" id="new-pic" placeholder="https://example.com/image.jpg">
+            <button class="btn" onclick="updatePic()">Update Pic</button>
+        </div>
+        
+        <div class="input-group">
+            <label>Change Password</label>
+            <input type="password" id="new-pass" placeholder="New Password">
+            <button class="btn" onclick="updatePass()">Update Password</button>
+        </div>
+
+        <button class="btn btn-red" onclick="logout()">LOGOUT</button>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+        import { getAuth, updatePassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+        import { getDatabase, ref, update, onValue } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+
+        const firebaseConfig = { apiKey: "AIzaSyBVwD0U7_QeX8EyOrZ4fm7OG_ow1b391-M", authDomain: "game-f739d.firebaseapp.com", databaseURL: "https://game-f739d-default-rtdb.firebaseio.com", projectId: "game-f739d", storageBucket: "game-f739d.firebasestorage.app", messagingSenderId: "744868437950", appId: "1:744868437950:web:622410843c8aeb229463ef" };
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getDatabase(app);
+
+        onAuthStateChanged(auth, (user) => {
+            if(user) {
+                const userRef = ref(db, 'users/' + user.uid);
+                onValue(userRef, (s) => {
+                    const d = s.val();
+                    document.getElementById('display-name').innerText = d.name;
+                    document.getElementById('new-name').value = d.name;
+                    if(d.profilePic) document.getElementById('display-pic').style.backgroundImage = `url(${d.profilePic})`;
+                });
+            } else location.href = 'index.html';
+        });
+
+        window.updateName = () => {
+            const n = document.getElementById('new-name').value;
+            if(n) update(ref(db, 'users/' + auth.currentUser.uid), { name: n }).then(() => alert('Name Updated!'));
+        };
+
+        window.updatePic = () => {
+            const p = document.getElementById('new-pic').value;
+            if(p) update(ref(db, 'users/' + auth.currentUser.uid), { profilePic: p }).then(() => alert('Pic Updated!'));
+        };
+
+        window.updatePass = () => {
+            const p = document.getElementById('new-pass').value;
+            if(p.length < 6) return alert('Password too short!');
+            updatePassword(auth.currentUser, p).then(() => alert('Password Changed!')).catch(e => alert(e.message));
+        };
+
+        window.logout = () => signOut(auth).then(() => location.href = 'index.html');
+    </script>
+</body>
+</html>
