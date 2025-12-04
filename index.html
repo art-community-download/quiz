@@ -5,33 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quiz Zone - Loading</title>
     <style>
-        body {
-            margin: 0;
-            height: 100vh;
-            background: #050511;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            font-family: 'Courier New', Courier, monospace;
-            overflow: hidden;
-        }
-        .loader {
-            width: 80px;
-            height: 80px;
-            border: 5px solid rgba(0, 242, 255, 0.1);
-            border-top: 5px solid #00f2ff;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            box-shadow: 0 0 20px #00f2ff;
-        }
-        h1 {
-            color: white;
-            margin-top: 20px;
-            letter-spacing: 5px;
-            text-shadow: 0 0 10px #00f2ff;
-            animation: blink 1.5s infinite;
-        }
+        body { margin: 0; height: 100vh; background: #050511; display: flex; justify-content: center; align-items: center; flex-direction: column; font-family: monospace; overflow: hidden; }
+        .loader { width: 80px; height: 80px; border: 5px solid rgba(0, 242, 255, 0.1); border-top: 5px solid #00f2ff; border-radius: 50%; animation: spin 1s linear infinite; box-shadow: 0 0 20px #00f2ff; }
+        h1 { color: white; margin-top: 20px; letter-spacing: 5px; text-shadow: 0 0 10px #00f2ff; animation: blink 1.5s infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
     </style>
@@ -46,14 +22,12 @@
         import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
 
         const firebaseConfig = { apiKey: "AIzaSyBVwD0U7_QeX8EyOrZ4fm7OG_ow1b391-M", authDomain: "game-f739d.firebaseapp.com", databaseURL: "https://game-f739d-default-rtdb.firebaseio.com", projectId: "game-f739d", storageBucket: "game-f739d.firebasestorage.app", messagingSenderId: "744868437950", appId: "1:744868437950:web:622410843c8aeb229463ef" };
-        
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getDatabase(app);
 
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                // Check status
                 const snap = await get(ref(db, 'users/' + user.uid));
                 if (snap.exists()) {
                     const data = snap.val();
@@ -63,14 +37,11 @@
                     } else if (data.status === 'approved') {
                         window.location.href = 'home.html';
                     } else {
-                        // Pending
-                         window.location.href = 'registration.html'; 
+                        window.location.href = 'registration.html'; 
                     }
-                } else {
-                    window.location.href = 'registration.html';
-                }
+                } else { window.location.href = 'registration.html'; }
             } else {
-                setTimeout(() => window.location.href = 'registration.html', 2000);
+                setTimeout(() => window.location.href = 'registration.html', 1500);
             }
         });
     </script>
