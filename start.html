@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quiz Game</title>
+    <title>Playing Quiz</title>
     <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600&family=Orbitron:wght@500&display=swap" rel="stylesheet">
     <style>
         body { background: #050511; color: white; font-family: 'Hind Siliguri', sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; overflow: hidden; }
@@ -18,20 +18,25 @@
         .correct { background: #00ff88 !important; color: black; border-color: #00ff88; box-shadow: 0 0 15px #00ff88; font-weight: bold; }
         .wrong { background: #ff0055 !important; border-color: #ff0055; box-shadow: 0 0 15px #ff0055; }
         .phase-text { text-transform: uppercase; letter-spacing: 1px; color: #aaa; font-size: 0.9rem; }
+        .cat-badge { font-size: 0.8rem; color: yellow; margin-bottom: 10px; display: block; }
     </style>
 </head>
 <body>
     <div class="game-ui">
         <div style="display:flex; justify-content:space-between; align-items: center; margin-bottom:10px;">
-            <span id="q-num">Loading...</span>
+            <span id="q-num">Connecting...</span>
             <button onclick="location.href='home.html'" style="background:none; border:none; color:red; cursor:pointer; font-weight: bold;">QUIT ✕</button>
         </div>
 
         <div class="timer-bar-bg"><div class="timer-bar" id="t-bar"></div></div>
-        <p class="phase-text" id="phase">Connecting...</p>
+        <span class="cat-badge" id="cat-display"></span>
+        <p class="phase-text" id="phase">API Generating Questions...</p>
         <div class="timer-text" id="timer">--</div>
 
-        <div class="question-box" id="q-text">প্রশ্ন লোড হচ্ছে...</div>
+        <div class="question-box" id="q-text">
+            অনুগ্রহ করে অপেক্ষা করুন, প্রশ্ন তৈরি হচ্ছে...
+        </div>
+
         <div class="options" id="opt-area"></div>
     </div>
 
@@ -45,13 +50,20 @@
         const auth = getAuth(app);
         const db = getDatabase(app);
 
+        // YOUR RAPID API KEY
+        const RAPID_API_KEY = "a997ec1b6amshdd7c7d6394c0c73p15ec8ejsn2d31187553f2";
+        // Using a common OpenAI wrapper on RapidAPI. 
+        // NOTE: If you subscribed to a specific API (like 'chatgpt-api8' or similar), you must change the HOST below.
+        // Assuming you have access to "cheapest-gpt-4-turbo-gpt-4-vision-chatgpt-openai-ai-api" or similar.
+        // Let's use a generic fetch structure, you might need to adjust the URL based on your specific subscription.
+        const RAPID_HOST = "openai80.p.rapidapi.com"; 
+        const API_URL = "https://openai80.p.rapidapi.com/chat/completions";
+
         let questions = [];
         let curQ = 0;
         let score = 0;
         let timerInt;
-        let VIEW_TIME = 15;
-        let ANS_TIME = 25;
-        let MAX_Q = 10;
+        let VIEW_TIME, ANS_TIME, MAX_Q;
 
         const qText = document.getElementById('q-text');
         const optArea = document.getElementById('opt-area');
@@ -61,35 +73,82 @@
 
         async function initGame() {
             try {
-                const configSnap = await get(ref(db, 'settings/gameConfig'));
-                if(!configSnap.exists()) { alert("Config Error"); return; }
-                const conf = configSnap.val();
+                // 1. Get Config
+                const snap = await get(ref(db, 'settings/gameConfig'));
+                if(!snap.exists()) { alert("Config Error"); location.href='home.html'; return; }
+                const conf = snap.val();
                 
                 VIEW_TIME = conf.viewTime || 15;
                 ANS_TIME = conf.answerTime || 25;
                 MAX_Q = conf.questionLimit || 10;
-
+                
+                // Time Check
                 const now = new Date().getTime();
                 if(now < new Date(conf.startTime).getTime() || now > new Date(conf.endTime).getTime()) {
-                    alert("Time Over!"); location.href = 'home.html'; return;
+                    alert("Game Time Over!"); location.href='home.html'; return;
                 }
 
                 const activeCats = conf.activeCats ? conf.activeCats.split(',') : [];
-                if(activeCats.length === 0) { alert("No Categories!"); location.href = 'home.html'; return; }
+                if(activeCats.length === 0) { alert("No Category Set!"); location.href='home.html'; return; }
 
-                const qSnap = await get(ref(db, 'questions'));
-                const allQ = [];
-                qSnap.forEach(c => {
-                    const q = c.val();
-                    if(activeCats.includes(q.category)) allQ.push(q);
-                });
+                // Pick ONE Random Category
+                const selectedCat = activeCats[Math.floor(Math.random() * activeCats.length)];
+                document.getElementById('cat-display').innerText = "বিষয়: " + selectedCat;
 
-                if(allQ.length === 0) { alert("No Questions!"); location.href = 'home.html'; return; }
+                // 2. Call RapidAPI
+                await fetchQuestionsFromRapidAPI(selectedCat);
 
-                questions = allQ.sort(() => 0.5 - Math.random()).slice(0, MAX_Q);
-                startQ();
+            } catch(e) {
+                console.error(e);
+                alert("Error: " + e.message);
+                location.href='home.html';
+            }
+        }
 
-            } catch(e) { alert(e.message); location.href = 'home.html'; }
+        async function fetchQuestionsFromRapidAPI(topic) {
+            // Prompt Construction
+            const prompt = `Generate ${MAX_Q} hard multiple choice questions in Bengali about '${topic}'. 
+            Format strictly as a JSON array of objects. 
+            No markdown. No extra text.
+            Structure: [{"q": "Question", "a": ["Op1", "Op2", "Op3", "Op4"], "c": "Correct Option String"}]`;
+
+            const options = {
+                method: 'POST',
+                headers: {
+                    'content-type': 'application/json',
+                    'X-RapidAPI-Key': RAPID_API_KEY,
+                    'X-RapidAPI-Host': RAPID_HOST
+                },
+                body: JSON.stringify({
+                    model: 'gpt-3.5-turbo',
+                    messages: [
+                        { role: 'user', content: prompt }
+                    ]
+                })
+            };
+
+            try {
+                const response = await fetch(API_URL, options);
+                const data = await response.json();
+                
+                if(data.choices && data.choices.length > 0) {
+                    let content = data.choices[0].message.content;
+                    // Clean JSON
+                    content = content.replace(/```json/g, '').replace(/```/g, '').trim();
+                    questions = JSON.parse(content);
+                    
+                    if(questions.length > 0) {
+                        startQ();
+                    } else { throw new Error("API returned empty"); }
+                } else {
+                    throw new Error("API Limit or Error");
+                }
+            } catch (error) {
+                qText.innerText = "API Error. Check Console.";
+                console.log("RapidAPI Error:", error);
+                // Fallback demo questions if API fails (Optional)
+                alert("API কানেকশন সমস্যা। দয়া করে RapidAPI Host চেক করুন।");
+            }
         }
 
         function startQ() {
