@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Playing Quiz</title>
+    <title>Playing Quiz (Gemini AI)</title>
     <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600&family=Orbitron:wght@500&display=swap" rel="stylesheet">
     <style>
         body { background: #050511; color: white; font-family: 'Hind Siliguri', sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; overflow: hidden; }
@@ -49,12 +49,10 @@
         const auth = getAuth(app);
         const db = getDatabase(app);
 
-        // --- RAPID API SETTINGS ---
+        // --- GEMINI RAPID API SETTINGS ---
         const RAPID_API_KEY = "a997ec1b6amshdd7c7d6394c0c73p15ec8ejsn2d31187553f2";
-        
-        // ⚠️ আপনার RapidAPI Dashboard থেকে এই URL টি চেক করুন
-        const RAPID_HOST = "openai80.p.rapidapi.com"; 
-        const API_URL = "https://openai80.p.rapidapi.com/chat/completions";
+        const RAPID_HOST = "gemini-pro-ai.p.rapidapi.com"; 
+        const API_URL = "https://gemini-pro-ai.p.rapidapi.com/";
 
         let questions = [];
         let curQ = 0;
@@ -82,37 +80,43 @@
                 document.getElementById('cat-display').innerText = "বিষয়: " + selectedCat;
 
                 // 2. Fetch API
-                await fetchQuestionsFromRapidAPI(selectedCat);
+                await fetchQuestionsFromGemini(selectedCat);
 
             } catch(e) {
                 showError(e.message);
             }
         }
 
-        async function fetchQuestionsFromRapidAPI(topic) {
-            document.getElementById('q-text').innerText = `Generating questions on "${topic}"...`;
+        async function fetchQuestionsFromGemini(topic) {
+            document.getElementById('q-text').innerText = `AI প্রশ্ন তৈরি করছে "${topic}" এর ওপর...`;
 
+            // Prompt Engineering specifically for Gemini
             const prompt = `Generate ${MAX_Q} multiple choice questions in Bengali about '${topic}'. 
-            Return ONLY a raw JSON array. No markdown, no explanation.
-            Structure: [{"q": "Question", "a": ["Op1", "Op2", "Op3", "Op4"], "c": "Correct Option"}]`;
+            Return ONLY a valid raw JSON array. Do not include markdown formatting like \`\`\`json.
+            Format must be strictly: [{"q": "Question Text", "a": ["Option1", "Option2", "Option3", "Option4"], "c": "Correct Option Text"}]`;
 
             const options = {
                 method: 'POST',
                 headers: {
                     'content-type': 'application/json',
-                    'X-RapidAPI-Key': RAPID_API_KEY,
-                    'X-RapidAPI-Host': RAPID_HOST
+                    'x-rapidapi-key': RAPID_API_KEY,
+                    'x-rapidapi-host': RAPID_HOST
                 },
                 body: JSON.stringify({
-                    model: 'gpt-3.5-turbo',
-                    messages: [{ role: 'user', content: prompt }]
+                    contents: [
+                        {
+                            role: "user",
+                            parts: [
+                                { text: prompt }
+                            ]
+                        }
+                    ]
                 })
             };
 
             try {
                 const response = await fetch(API_URL, options);
                 
-                // API Error Handling
                 if (!response.ok) {
                     const errText = await response.text();
                     throw new Error(`API Error ${response.status}: ${errText}`);
@@ -120,9 +124,12 @@
 
                 const data = await response.json();
                 
-                if(data.choices && data.choices.length > 0) {
-                    let content = data.choices[0].message.content;
-                    // Clean JSON
+                // Gemini Response Parsing
+                // সাধারণত Gemini এর রেসপন্স data.candidates[0].content.parts[0].text এ থাকে
+                if(data.candidates && data.candidates.length > 0) {
+                    let content = data.candidates[0].content.parts[0].text;
+                    
+                    // Clean Cleanup (Markdown রিমুভ করা)
                     content = content.replace(/```json/g, '').replace(/```/g, '').trim();
                     
                     try {
@@ -131,10 +138,11 @@
                         else throw new Error("API returned 0 questions");
                     } catch (jsonErr) {
                         console.log("Raw Content:", content);
-                        throw new Error("JSON Parse Error. The AI response was not valid JSON.");
+                        throw new Error("JSON Parse Error. The AI response was not valid JSON. Try again.");
                     }
                 } else {
-                    throw new Error("API Limit Reached or Empty Response");
+                    console.log(data);
+                    throw new Error("API Response structure invalid or Limit Reached");
                 }
             } catch (error) {
                 showError(error.message);
@@ -146,7 +154,7 @@
             const errDiv = document.getElementById('error-log');
             errDiv.style.display = 'block';
             errDiv.innerText = "Error Details:\n" + msg;
-            alert("সমস্যা হয়েছে: " + msg);
+            // alert("সমস্যা হয়েছে: " + msg);
         }
 
         function startQ() {
@@ -193,17 +201,19 @@
         function check(sel, cor, btn) {
             clearInterval(timerInt);
             document.querySelectorAll('.opt-btn').forEach(b => b.disabled = true);
-            if(sel === cor) {
+            if(sel.trim() === cor.trim()) { // Trim added for safety
                 btn.classList.add('correct'); score += 10;
             } else {
                 btn.classList.add('wrong');
-                document.querySelectorAll('.opt-btn').forEach(b => { if(b.innerText === cor) b.classList.add('correct'); });
+                document.querySelectorAll('.opt-btn').forEach(b => { 
+                    if(b.innerText.trim() === cor.trim()) b.classList.add('correct'); 
+                });
             }
             setTimeout(() => { curQ++; startQ(); }, 2000);
         }
 
         async function endGame() {
-            document.getElementById('q-text').innerText = "সেভ হচ্ছে...";
+            document.getElementById('q-text').innerText = "স্কোর সেভ হচ্ছে...";
             const user = auth.currentUser;
             if(user) {
                 const refU = ref(db, 'users/' + user.uid);
