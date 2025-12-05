@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quiz Game</title>
+    <title>Playing Quiz</title>
     <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600&family=Orbitron:wght@500&display=swap" rel="stylesheet">
     <style>
         body { background: #050511; color: white; font-family: 'Hind Siliguri', sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; overflow: hidden; }
@@ -16,21 +16,20 @@
         .opt-btn:disabled { opacity: 0.6; cursor: not-allowed; }
         .correct { background: #00ff88 !important; color: black; }
         .wrong { background: #ff0055 !important; }
-        #error-log { color: red; font-size: 0.8rem; margin-top: 10px; background: rgba(0,0,0,0.5); padding: 10px; display: none; }
+        #error-log { color: red; font-size: 0.9rem; margin-top: 10px; white-space: pre-wrap; display: none; }
     </style>
 </head>
 <body>
     <div class="game-ui">
         <div style="display:flex; justify-content:space-between; align-items: center; margin-bottom:10px;">
-            <span id="q-num">Loading...</span>
+            <span id="q-num">Connecting...</span>
             <button onclick="location.href='home.html'" style="color:red; background:none; border:none; font-weight:bold;">QUIT ✕</button>
         </div>
 
         <div class="timer-bar-bg"><div class="timer-bar" id="t-bar"></div></div>
-        <span id="cat-display" style="color:yellow; font-size:0.9rem; margin-bottom:10px; display:block;"></span>
         <div id="timer" style="font-size:2rem; color:#00f2ff; margin:10px 0;">--</div>
 
-        <div class="question-box" id="q-text">প্রশ্ন প্রস্তুত করা হচ্ছে...</div>
+        <div class="question-box" id="q-text">প্রশ্ন লোড হচ্ছে...</div>
         <div class="options" id="opt-area"></div>
         <div id="error-log"></div>
     </div>
@@ -38,15 +37,12 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
         import { getAuth } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
-        import { getDatabase, ref, update, get, remove } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+        import { getDatabase, ref, update, get } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
 
         const firebaseConfig = { apiKey: "AIzaSyBVwD0U7_QeX8EyOrZ4fm7OG_ow1b391-M", authDomain: "game-f739d.firebaseapp.com", databaseURL: "https://game-f739d-default-rtdb.firebaseio.com", projectId: "game-f739d", storageBucket: "game-f739d.firebasestorage.app", messagingSenderId: "744868437950", appId: "1:744868437950:web:622410843c8aeb229463ef" };
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getDatabase(app);
-
-        // 🔥 GOOGLE API KEY (For Backup)
-        const GOOGLE_API_KEY = "YOUR_GOOGLE_API_KEY_HERE"; 
 
         let questions = [];
         let curQ = 0;
@@ -56,89 +52,64 @@
 
         async function initGame() {
             try {
-                // 1. Get Config
+                // 1. Get Settings
                 const snap = await get(ref(db, 'settings/gameConfig'));
-                if(!snap.exists()) throw new Error("Config missing");
+                if(!snap.exists()) throw new Error("Game Config Not Found");
                 
                 const conf = snap.val();
                 VIEW_TIME = conf.viewTime || 15;
                 ANS_TIME = conf.answerTime || 25;
                 MAX_Q = conf.questionLimit || 10;
                 
-                const useCustom = conf.useCustomQuestions || false;
-
-                // 2. Decide Source (Manual vs AI)
-                if (useCustom) {
-                    await fetchAndConsumeManualQuestions();
-                } else {
-                    // Fallback to AI Logic
-                    const activeCats = conf.activeCats ? conf.activeCats.split(',') : ['General'];
-                    const topic = activeCats[Math.floor(Math.random() * activeCats.length)];
-                    document.getElementById('cat-display').innerText = "AI বিষয়: " + topic;
-                    await fetchQuestionsFromGoogle(topic);
-                }
+                // 2. Fetch Questions from Stock (No API)
+                await fetchAndConsumeManualQuestions();
 
             } catch(e) {
                 showError(e.message);
             }
         }
 
-        // 🔥 KEY FUNCTION: Fetch & Delete Logic 🔥
         async function fetchAndConsumeManualQuestions() {
             document.getElementById('q-text').innerText = "স্টক থেকে প্রশ্ন সংগ্রহ করা হচ্ছে...";
-            document.getElementById('cat-display').innerText = "মোড: ম্যানুয়াল প্রশ্ন";
 
-            // 1. Fetch ALL available questions
+            // Fetch ALL questions
             const qRef = ref(db, 'manualQuestions');
             const snap = await get(qRef);
 
             if (!snap.exists()) {
-                alert("স্টকে কোনো প্রশ্ন নেই! AI মোডে সুইচ করা হচ্ছে...");
-                return fetchQuestionsFromGoogle("General Knowledge");
+                document.getElementById('q-text').innerText = "স্টকে কোনো প্রশ্ন নেই!";
+                alert("দুঃখিত! স্টকে কোনো প্রশ্ন নেই। অনুগ্রহ করে অ্যাডমিনকে জানান।");
+                setTimeout(() => location.href = 'home.html', 3000);
+                return;
             }
 
-            // 2. Convert to Array with Keys
             const allData = snap.val();
             const keys = Object.keys(allData);
 
-            if (keys.length < MAX_Q) {
-                alert(`স্টকে পর্যাপ্ত প্রশ্ন নেই (আছে ${keys.length}, লাগবে ${MAX_Q})।`);
-                // Optional: Play with fewer questions
-                MAX_Q = keys.length; 
+            if (keys.length < 1) {
+                alert("স্টকে পর্যাপ্ত প্রশ্ন নেই!");
+                location.href = 'home.html';
+                return;
             }
 
-            // 3. Random Shuffle & Select
+            // Adjust Limit if not enough questions
+            if (keys.length < MAX_Q) MAX_Q = keys.length;
+
+            // Randomly select keys
             const selectedKeys = keys.sort(() => 0.5 - Math.random()).slice(0, MAX_Q);
 
-            // 4. Build Question Array
+            // Create Question Array
             questions = selectedKeys.map(k => allData[k]);
 
-            // 5. 🛑 DELETE FROM DATABASE IMMEDIATELY 🛑
-            // This ensures no one else gets these questions
+            // 🛑 DELETE FROM DATABASE IMMEDIATELY 🛑
             const updates = {};
             selectedKeys.forEach(k => {
                 updates[`manualQuestions/${k}`] = null;
             });
             
-            await update(ref(db), updates); // Executing deletion
+            await update(ref(db), updates); 
 
             startQ();
-        }
-
-        async function fetchQuestionsFromGoogle(topic) {
-            document.getElementById('q-text').innerText = `AI প্রশ্ন তৈরি করছে "${topic}"...`;
-            const prompt = `Generate ${MAX_Q} multiple choice questions in Bengali about '${topic}'. Output strictly JSON Array: [{"q":"...","a":["..."],"c":"..."}]`;
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GOOGLE_API_KEY}`;
-
-            try {
-                const res = await fetch(url, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({contents:[{parts:[{text:prompt}]}]}) });
-                const data = await res.json();
-                let text = data.candidates[0].content.parts[0].text.replace(/```json/g,'').replace(/```/g,'').trim();
-                questions = JSON.parse(text);
-                startQ();
-            } catch(e) {
-                showError("AI Error: " + e.message);
-            }
         }
 
         function startQ() {
@@ -158,9 +129,9 @@
                 document.getElementById('opt-area').appendChild(b);
             });
 
-            document.getElementById('phase').innerText = "প্রশ্ন দেখুন";
+            // Phase 1: View Question
             runTimer(VIEW_TIME, () => {
-                document.getElementById('phase').innerText = "উত্তর দিন";
+                // Phase 2: Answer
                 document.querySelectorAll('.opt-btn').forEach(b => b.disabled = false);
                 runTimer(ANS_TIME, () => {
                     curQ++; startQ();
@@ -188,7 +159,9 @@
                 btn.classList.add('correct'); score += 10;
             } else {
                 btn.classList.add('wrong');
-                document.querySelectorAll('.opt-btn').forEach(b => { if(b.innerText.trim()===cor.trim()) b.classList.add('correct'); });
+                document.querySelectorAll('.opt-btn').forEach(b => { 
+                    if(b.innerText.trim() === cor.trim()) b.classList.add('correct'); 
+                });
             }
             setTimeout(() => { curQ++; startQ(); }, 2000);
         }
