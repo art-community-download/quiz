@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Playing Quiz (Gemini AI)</title>
+    <title>Playing Quiz (Official Gemini)</title>
     <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600&family=Orbitron:wght@500&display=swap" rel="stylesheet">
     <style>
         body { background: #050511; color: white; font-family: 'Hind Siliguri', sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; overflow: hidden; }
@@ -16,7 +16,6 @@
         .opt-btn:disabled { opacity: 0.6; cursor: not-allowed; }
         .correct { background: #00ff88 !important; color: black; }
         .wrong { background: #ff0055 !important; }
-        /* Error Log Styling */
         #error-log { color: red; font-size: 0.8rem; margin-top: 10px; white-space: pre-wrap; word-wrap: break-word; background: rgba(0,0,0,0.5); padding: 10px; display: none; }
     </style>
 </head>
@@ -34,8 +33,6 @@
 
         <div class="question-box" id="q-text">প্রশ্ন লোড হচ্ছে...</div>
         <div class="options" id="opt-area"></div>
-        
-        <!-- Error Display -->
         <div id="error-log"></div>
     </div>
 
@@ -49,11 +46,9 @@
         const auth = getAuth(app);
         const db = getDatabase(app);
 
-        // --- GEMINI RAPID API SETTINGS ---
-        const RAPID_API_KEY = "a997ec1b6amshdd7c7d6394c0c73p15ec8ejsn2d31187553f2";
-        const RAPID_HOST = "gemini-pro-ai.p.rapidapi.com"; 
-        const API_URL = "https://gemini-pro-ai.p.rapidapi.com/";
-
+        // 🔥 GOOGLE OFFICIAL API KEY (এখানে আপনার নতুন Key বসান) 🔥
+        const GOOGLE_API_KEY = "YOUR_NEW_GOOGLE_API_KEY_HERE"; 
+        
         let questions = [];
         let curQ = 0;
         let score = 0;
@@ -62,99 +57,93 @@
 
         async function initGame() {
             try {
-                // 1. Get Settings
                 const snap = await get(ref(db, 'settings/gameConfig'));
-                if(!snap.exists()) throw new Error("Game Config Not Found in Database");
+                if(!snap.exists()) throw new Error("Game Config Not Found");
                 
                 const conf = snap.val();
                 VIEW_TIME = conf.viewTime || 15;
                 ANS_TIME = conf.answerTime || 25;
                 MAX_Q = conf.questionLimit || 10;
                 
-                // Active Categories Check
                 const activeCats = conf.activeCats ? conf.activeCats.split(',') : [];
-                if(activeCats.length === 0) throw new Error("No Active Category selected by Admin");
+                if(activeCats.length === 0) throw new Error("No Active Category");
 
-                // Select Category
                 const selectedCat = activeCats[Math.floor(Math.random() * activeCats.length)];
                 document.getElementById('cat-display').innerText = "বিষয়: " + selectedCat;
 
-                // 2. Fetch API
-                await fetchQuestionsFromGemini(selectedCat);
+                await fetchQuestionsFromGoogle(selectedCat);
 
             } catch(e) {
                 showError(e.message);
             }
         }
 
-        async function fetchQuestionsFromGemini(topic) {
+        async function fetchQuestionsFromGoogle(topic) {
             document.getElementById('q-text').innerText = `AI প্রশ্ন তৈরি করছে "${topic}" এর ওপর...`;
 
-            // Prompt Engineering specifically for Gemini
+            // Prompt for Google Gemini
             const prompt = `Generate ${MAX_Q} multiple choice questions in Bengali about '${topic}'. 
-            Return ONLY a valid raw JSON array. Do not include markdown formatting like \`\`\`json.
-            Format must be strictly: [{"q": "Question Text", "a": ["Option1", "Option2", "Option3", "Option4"], "c": "Correct Option Text"}]`;
+            Output strictly as a JSON Array. No Markdown. 
+            Format: [{"q": "Question", "a": ["Op1", "Op2", "Op3", "Op4"], "c": "Correct Op"}]`;
 
-            const options = {
-                method: 'POST',
-                headers: {
-                    'content-type': 'application/json',
-                    'x-rapidapi-key': RAPID_API_KEY,
-                    'x-rapidapi-host': RAPID_HOST
-                },
-                body: JSON.stringify({
-                    contents: [
-                        {
-                            role: "user",
-                            parts: [
-                                { text: prompt }
-                            ]
-                        }
-                    ]
-                })
-            };
+            // Google Official Endpoint
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GOOGLE_API_KEY}`;
 
             try {
-                const response = await fetch(API_URL, options);
-                
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: prompt }] }]
+                    })
+                });
+
                 if (!response.ok) {
-                    const errText = await response.text();
-                    throw new Error(`API Error ${response.status}: ${errText}`);
+                    throw new Error(`Google API Error: ${response.status}`);
                 }
 
                 const data = await response.json();
                 
-                // Gemini Response Parsing
-                // সাধারণত Gemini এর রেসপন্স data.candidates[0].content.parts[0].text এ থাকে
-                if(data.candidates && data.candidates.length > 0) {
-                    let content = data.candidates[0].content.parts[0].text;
-                    
-                    // Clean Cleanup (Markdown রিমুভ করা)
-                    content = content.replace(/```json/g, '').replace(/```/g, '').trim();
+                // Parsing Response
+                if(data.candidates && data.candidates[0].content) {
+                    let text = data.candidates[0].content.parts[0].text;
+                    // Clean markdown if AI adds it
+                    text = text.replace(/```json/g, '').replace(/```/g, '').trim();
                     
                     try {
-                        questions = JSON.parse(content);
+                        questions = JSON.parse(text);
                         if(questions.length > 0) startQ();
-                        else throw new Error("API returned 0 questions");
-                    } catch (jsonErr) {
-                        console.log("Raw Content:", content);
-                        throw new Error("JSON Parse Error. The AI response was not valid JSON. Try again.");
+                        else throw new Error("Empty Question Array");
+                    } catch (e) {
+                        console.error("JSON Error:", text);
+                        // If JSON fails, use backup dummy questions so game doesn't crash
+                        useBackupQuestions(topic);
                     }
                 } else {
-                    console.log(data);
-                    throw new Error("API Response structure invalid or Limit Reached");
+                    throw new Error("Invalid API Response");
                 }
             } catch (error) {
-                showError(error.message);
+                console.error(error);
+                // Fallback if API fails completely
+                useBackupQuestions(topic); 
             }
+        }
+
+        // Fallback function (যাতে গেম ক্র্যাশ না করে)
+        function useBackupQuestions(topic) {
+            alert("API সমস্যা করছে, ব্যাকআপ প্রশ্ন লোড হচ্ছে...");
+            questions = [
+                {q: "বাংলাদেশের রাজধানী কোনটি?", a: ["ঢাকা", "চট্টগ্রাম", "খুলনা", "সিলেট"], c: "ঢাকা"},
+                {q: "পানির রাসায়নিক সংকেত কী?", a: ["H2O", "CO2", "O2", "NaCl"], c: "H2O"},
+                {q: "সূর্য কোন দিকে ওঠে?", a: ["পশ্চিম", "পূর্ব", "উত্তর", "দক্ষিণ"], c: "পূর্ব"}
+            ];
+            startQ();
         }
 
         function showError(msg) {
             document.getElementById('q-text').innerText = "Error Occurred!";
-            const errDiv = document.getElementById('error-log');
-            errDiv.style.display = 'block';
-            errDiv.innerText = "Error Details:\n" + msg;
-            // alert("সমস্যা হয়েছে: " + msg);
+            document.getElementById('error-log').style.display = 'block';
+            document.getElementById('error-log').innerText = msg;
         }
 
         function startQ() {
@@ -187,13 +176,12 @@
         function runTimer(sec, callback) {
             clearInterval(timerInt);
             let left = sec;
-            const total = sec;
             document.getElementById('timer').innerText = left;
             document.getElementById('t-bar').style.width = "100%";
             timerInt = setInterval(() => {
                 left--;
                 document.getElementById('timer').innerText = left;
-                document.getElementById('t-bar').style.width = (left/total)*100 + "%";
+                document.getElementById('t-bar').style.width = (left/sec)*100 + "%";
                 if(left <= 0) { clearInterval(timerInt); callback(); }
             }, 1000);
         }
@@ -201,7 +189,7 @@
         function check(sel, cor, btn) {
             clearInterval(timerInt);
             document.querySelectorAll('.opt-btn').forEach(b => b.disabled = true);
-            if(sel.trim() === cor.trim()) { // Trim added for safety
+            if(sel.trim() === cor.trim()) { 
                 btn.classList.add('correct'); score += 10;
             } else {
                 btn.classList.add('wrong');
