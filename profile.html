@@ -2,52 +2,75 @@
 <html lang="bn">
 <head>
     <meta charset="UTF-8">
-    <title>Profile - Quiz Zone</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>User Profile</title>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600&family=Orbitron:wght@500&display=swap" rel="stylesheet">
     <style>
-        body { background: #0b0b14; color: white; font-family: 'Poppins', sans-serif; display: flex; justify-content: center; padding: 20px; }
-        .container { width: 100%; max-width: 400px; }
-        .back-btn { background: none; border: none; color: white; font-size: 1.2rem; cursor: pointer; margin-bottom: 20px; }
+        body { background: #050511; color: white; font-family: 'Hind Siliguri', sans-serif; display: flex; flex-direction: column; align-items: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; }
         
-        .p-img-box { text-align: center; margin-bottom: 20px; }
-        .p-img { width: 100px; height: 100px; border-radius: 50%; border: 3px solid #00f2ff; display: inline-block; background-size: cover; background-color: #333; }
+        .container { width: 100%; max-width: 450px; background: rgba(255, 255, 255, 0.05); padding: 25px; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 0 20px rgba(0,0,0,0.5); backdrop-filter: blur(10px); }
         
-        .input-group { margin-bottom: 15px; }
-        label { display: block; color: #aaa; font-size: 0.8rem; margin-bottom: 5px; }
-        input { width: 100%; padding: 12px; background: #1a1a2e; border: 1px solid #333; color: white; border-radius: 8px; box-sizing: border-box; }
+        /* Header */
+        .header { display: flex; align-items: center; margin-bottom: 30px; }
+        .back-btn { background: none; border: none; color: #aaa; font-size: 1.5rem; cursor: pointer; margin-right: 15px; padding: 0; }
+        h2 { margin: 0; font-family: 'Orbitron'; color: #00f2ff; font-size: 1.5rem; }
+
+        /* Profile Image Section */
+        .p-img-box { position: relative; width: 120px; height: 120px; margin: 0 auto 20px auto; }
+        .p-img { width: 100%; height: 100%; border-radius: 50%; border: 3px solid #00f2ff; background-size: cover; background-position: center; background-color: #222; background-image: url('https://i.ibb.co/5r2L3x9/user.png'); box-shadow: 0 0 15px rgba(0, 242, 255, 0.3); }
         
-        .btn { width: 100%; padding: 12px; background: #00f2ff; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        .btn-red { background: #ff0055; color: white; margin-top: 30px; }
+        /* Camera Icon Overlay */
+        .upload-icon { position: absolute; bottom: 5px; right: 5px; background: #00f2ff; color: #000; width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.2rem; border: 2px solid #050511; transition: 0.3s; }
+        .upload-icon:active { transform: scale(0.9); }
+
+        /* Form Inputs */
+        .input-group { margin-bottom: 20px; }
+        label { display: block; color: #ccc; font-size: 0.9rem; margin-bottom: 8px; font-weight: 600; }
+        input { width: 100%; padding: 15px; background: #151525; border: 1px solid #333; color: white; border-radius: 10px; box-sizing: border-box; font-family: 'Hind Siliguri'; font-size: 1rem; transition: 0.3s; }
+        input:focus { border-color: #00f2ff; outline: none; background: #1a1a30; }
+
+        /* Buttons */
+        .btn { width: 100%; padding: 15px; background: linear-gradient(90deg, #00f2ff, #008cff); border: none; border-radius: 10px; font-weight: bold; font-size: 1rem; cursor: pointer; color: #000; margin-top: 5px; box-shadow: 0 5px 15px rgba(0, 140, 255, 0.3); transition: 0.3s; }
+        .btn:active { transform: scale(0.98); }
+        
+        .btn-red { background: linear-gradient(90deg, #ff0055, #ff0000); color: white; margin-top: 30px; box-shadow: 0 5px 15px rgba(255, 0, 85, 0.3); }
+
+        /* Hidden File Input */
+        #file-input { display: none; }
     </style>
 </head>
 <body>
+
     <div class="container">
-        <button class="back-btn" onclick="location.href='home.html'">⬅ Back</button>
+        <div class="header">
+            <button class="back-btn" onclick="location.href='home.html'">⬅</button>
+            <h2>My Profile</h2>
+        </div>
         
+        <!-- Profile Image with Upload Button -->
         <div class="p-img-box">
             <div class="p-img" id="display-pic"></div>
-            <p id="display-name" style="font-weight: bold; font-size: 1.2rem;">User</p>
+            <!-- Click this camera icon to open gallery -->
+            <label for="file-input" class="upload-icon">📷</label>
+            <input type="file" id="file-input" accept="image/*">
         </div>
+        <p id="display-name-text" style="text-align:center; color:#00f2ff; margin-top:-10px; margin-bottom:20px; font-weight:bold;">Loading...</p>
 
+        <!-- Name Change -->
         <div class="input-group">
-            <label>Change Name</label>
-            <input type="text" id="new-name">
-            <button class="btn" onclick="updateName()">Save Name</button>
-        </div>
-
-        <div class="input-group">
-            <label>Profile Pic URL</label>
-            <input type="text" id="new-pic" placeholder="https://example.com/image.jpg">
-            <button class="btn" onclick="updatePic()">Update Pic</button>
+            <label>আপনার নাম</label>
+            <input type="text" id="new-name" placeholder="নাম লিখুন...">
+            <button class="btn" onclick="updateName()">নাম সেভ করুন</button>
         </div>
         
+        <!-- Password Change -->
         <div class="input-group">
-            <label>Change Password</label>
-            <input type="password" id="new-pass" placeholder="New Password">
-            <button class="btn" onclick="updatePass()">Update Password</button>
+            <label>পাসওয়ার্ড পরিবর্তন (অপশনাল)</label>
+            <input type="password" id="new-pass" placeholder="নতুন পাসওয়ার্ড দিন">
+            <button class="btn" style="background: #333; color: #fff; box-shadow:none; border:1px solid #555;" onclick="updatePass()">পাসওয়ার্ড আপডেট করুন</button>
         </div>
 
-        <button class="btn btn-red" onclick="logout()">LOGOUT</button>
+        <button class="btn btn-red" onclick="logout()">লগআউট</button>
     </div>
 
     <script type="module">
@@ -60,35 +83,91 @@
         const auth = getAuth(app);
         const db = getDatabase(app);
 
+        // Load User Data
         onAuthStateChanged(auth, (user) => {
             if(user) {
                 const userRef = ref(db, 'users/' + user.uid);
                 onValue(userRef, (s) => {
                     const d = s.val();
-                    document.getElementById('display-name').innerText = d.name;
-                    document.getElementById('new-name').value = d.name;
-                    if(d.profilePic) document.getElementById('display-pic').style.backgroundImage = `url(${d.profilePic})`;
+                    if(d) {
+                        document.getElementById('display-name-text').innerText = d.name || "User";
+                        document.getElementById('new-name').value = d.name || "";
+                        if(d.profilePic) {
+                            document.getElementById('display-pic').style.backgroundImage = `url(${d.profilePic})`;
+                        }
+                    }
                 });
-            } else location.href = 'index.html';
+            } else {
+                location.href = 'login.html'; // Redirect if not logged in
+            }
         });
 
+        // 1. Update Name
         window.updateName = () => {
             const n = document.getElementById('new-name').value;
-            if(n) update(ref(db, 'users/' + auth.currentUser.uid), { name: n }).then(() => alert('Name Updated!'));
+            if(n) {
+                update(ref(db, 'users/' + auth.currentUser.uid), { name: n })
+                .then(() => alert('✅ নাম পরিবর্তন হয়েছে!'));
+            }
         };
 
-        window.updatePic = () => {
-            const p = document.getElementById('new-pic').value;
-            if(p) update(ref(db, 'users/' + auth.currentUser.uid), { profilePic: p }).then(() => alert('Pic Updated!'));
-        };
+        // 2. Image Upload Logic (Compress & Save)
+        document.getElementById('file-input').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
 
+            // Check file size (Must be image)
+            if(file.size > 5000000) return alert("ফাইলটি অনেক বড়! ৫MB এর কম দিন।");
+
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            
+            reader.onload = function(event) {
+                const img = new Image();
+                img.src = event.target.result;
+                
+                img.onload = function() {
+                    // Create Canvas to resize image (Required for Realtime DB)
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    
+                    // Resize to max 300px width (Mobile Friendly)
+                    const maxWidth = 300;
+                    const scaleFactor = maxWidth / img.width;
+                    canvas.width = maxWidth;
+                    canvas.height = img.height * scaleFactor;
+
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    
+                    // Convert to Base64 String (Low quality to save space)
+                    const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.7);
+
+                    // Save to Database
+                    update(ref(db, 'users/' + auth.currentUser.uid), { profilePic: compressedDataUrl })
+                    .then(() => {
+                        document.getElementById('display-pic').style.backgroundImage = `url(${compressedDataUrl})`;
+                        alert('✅ প্রোফাইল পিকচার আপডেট হয়েছে!');
+                    })
+                    .catch(err => alert("Error: " + err.message));
+                }
+            }
+        });
+
+        // 3. Update Password
         window.updatePass = () => {
             const p = document.getElementById('new-pass').value;
-            if(p.length < 6) return alert('Password too short!');
-            updatePassword(auth.currentUser, p).then(() => alert('Password Changed!')).catch(e => alert(e.message));
+            if(p.length < 6) return alert('পাসওয়ার্ড অন্তত ৬ অক্ষরের হতে হবে!');
+            
+            updatePassword(auth.currentUser, p)
+            .then(() => {
+                alert('✅ পাসওয়ার্ড পরিবর্তন হয়েছে! আবার লগইন করুন।');
+                signOut(auth).then(() => location.href = 'login.html');
+            })
+            .catch(e => alert("Error: " + e.message));
         };
 
-        window.logout = () => signOut(auth).then(() => location.href = 'index.html');
+        // 4. Logout
+        window.logout = () => signOut(auth).then(() => location.href = 'login.html');
     </script>
 </body>
 </html>
