@@ -5,8 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Quiz Zone</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Poppins:wght@300;600&display=swap" rel="stylesheet">
+    
+    <!-- Security Script (Redirect if not logged in) -->
+    <script>
+        // Check local storage or session instantly before page loads
+        if (!localStorage.getItem('user_logged_in') && !sessionStorage.getItem('user_logged_in')) {
+            // Optional: If you use Firebase only, this part might be tricky
+            // But usually, we redirect in JS
+        }
+    </script>
+
     <style>
-        body { background: #0b0b14; color: white; font-family: 'Poppins', sans-serif; margin: 0; padding: 20px; }
+        body { background: #0b0b14; color: white; font-family: 'Poppins', sans-serif; margin: 0; padding: 20px; display: none; /* Hide body until auth checked */ }
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
         .profile-btn { width: 50px; height: 50px; border-radius: 50%; background: #222; border: 2px solid #00f2ff; background-size: cover; cursor: pointer; }
         
@@ -70,9 +80,13 @@
         const auth = getAuth(app);
         const db = getDatabase(app);
 
-        // Load User Info
+        // Security Check: Redirect if NOT logged in
         onAuthStateChanged(auth, async (user) => {
             if (user) {
+                // User is Logged In -> Show Body
+                document.body.style.display = "block";
+
+                // Load User Data
                 const snap = await get(ref(db, 'users/' + user.uid));
                 if(snap.exists()) {
                     const d = snap.val();
@@ -80,7 +94,11 @@
                     if(d.profilePic) document.getElementById('p-pic').style.backgroundImage = `url(${d.profilePic})`;
                     else document.getElementById('p-pic').style.backgroundImage = `url(https://ui-avatars.com/api/?name=${d.name})`;
                 }
-            } else { window.location.href = 'index.html'; }
+            } else {
+                // No User -> Redirect to Login/Registration Page
+                // Change 'index.html' to 'registration.html' if that is your login page name
+                window.location.replace("index.html"); 
+            }
         });
 
         // Load Game Config & Timer Logic
