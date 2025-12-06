@@ -2,172 +2,200 @@
 <html lang="bn">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>User Profile</title>
-    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600&family=Orbitron:wght@500&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Quiz Zone</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Poppins:wght@300;600&display=swap" rel="stylesheet">
+    
     <style>
-        body { background: #050511; color: white; font-family: 'Hind Siliguri', sans-serif; display: flex; flex-direction: column; align-items: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; }
+        body { background: #0b0b14; color: white; font-family: 'Poppins', sans-serif; margin: 0; padding: 20px; display: none; }
         
-        .container { width: 100%; max-width: 450px; background: rgba(255, 255, 255, 0.05); padding: 25px; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 0 20px rgba(0,0,0,0.5); backdrop-filter: blur(10px); }
+        /* HEADER with Profile Button */
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
         
-        /* Header */
-        .header { display: flex; align-items: center; margin-bottom: 30px; }
-        .back-btn { background: none; border: none; color: #aaa; font-size: 1.5rem; cursor: pointer; margin-right: 15px; padding: 0; }
-        h2 { margin: 0; font-family: 'Orbitron'; color: #00f2ff; font-size: 1.5rem; }
+        /* Profile Icon Style */
+        .profile-btn {
+            width: 50px; height: 50px;
+            border-radius: 50%;
+            border: 2px solid #00f2ff;
+            background-color: #222;
+            background-size: cover;
+            background-position: center;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(0, 242, 255, 0.5);
+            transition: 0.3s;
+        }
+        .profile-btn:hover { transform: scale(1.1); box-shadow: 0 0 20px #00f2ff; }
 
-        /* Profile Image Section */
-        .p-img-box { position: relative; width: 120px; height: 120px; margin: 0 auto 20px auto; }
-        .p-img { width: 100%; height: 100%; border-radius: 50%; border: 3px solid #00f2ff; background-size: cover; background-position: center; background-color: #222; background-image: url('https://i.ibb.co/5r2L3x9/user.png'); box-shadow: 0 0 15px rgba(0, 242, 255, 0.3); }
+        .user-info { text-align: left; }
+        .u-name { font-weight: bold; font-size: 1.1rem; color: #00f2ff; }
         
-        /* Camera Icon Overlay */
-        .upload-icon { position: absolute; bottom: 5px; right: 5px; background: #00f2ff; color: #000; width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.2rem; border: 2px solid #050511; transition: 0.3s; }
-        .upload-icon:active { transform: scale(0.9); }
-
-        /* Form Inputs */
-        .input-group { margin-bottom: 20px; }
-        label { display: block; color: #ccc; font-size: 0.9rem; margin-bottom: 8px; font-weight: 600; }
-        input { width: 100%; padding: 15px; background: #151525; border: 1px solid #333; color: white; border-radius: 10px; box-sizing: border-box; font-family: 'Hind Siliguri'; font-size: 1rem; transition: 0.3s; }
-        input:focus { border-color: #00f2ff; outline: none; background: #1a1a30; }
-
-        /* Buttons */
-        .btn { width: 100%; padding: 15px; background: linear-gradient(90deg, #00f2ff, #008cff); border: none; border-radius: 10px; font-weight: bold; font-size: 1rem; cursor: pointer; color: #000; margin-top: 5px; box-shadow: 0 5px 15px rgba(0, 140, 255, 0.3); transition: 0.3s; }
-        .btn:active { transform: scale(0.98); }
+        .hero { 
+            background: linear-gradient(135deg, #1a0b2e, #000); 
+            border: 1px solid rgba(0, 242, 255, 0.2); 
+            padding: 30px; border-radius: 20px; text-align: center;
+            box-shadow: 0 0 30px rgba(0, 242, 255, 0.1);
+        }
+        h1 { font-family: 'Orbitron', sans-serif; background: linear-gradient(to right, #00f2ff, #ff0055); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 2.2rem; margin: 10px 0; }
         
-        .btn-red { background: linear-gradient(90deg, #ff0055, #ff0000); color: white; margin-top: 30px; box-shadow: 0 5px 15px rgba(255, 0, 85, 0.3); }
+        .play-btn {
+            background: #333; color: #aaa; font-size: 1.2rem; font-family: 'Orbitron', sans-serif;
+            padding: 15px 40px; border: none; border-radius: 50px; cursor: not-allowed; margin-top: 20px;
+            box-shadow: none; transition: 0.3s; width: 100%; max-width: 250px;
+        }
+        .play-btn.active {
+            background: #00f2ff; color: black; cursor: pointer;
+            box-shadow: 0 0 20px rgba(0, 242, 255, 0.5); font-weight: bold;
+        }
+        .play-btn.active:hover { transform: scale(1.05); box-shadow: 0 0 40px rgba(0, 242, 255, 0.8); }
+        .play-btn.finished { background: #00ff88; color: black; cursor: default; }
 
-        /* Hidden File Input */
-        #file-input { display: none; }
+        .status-text { margin-top: 15px; font-size: 0.9rem; color: #aaa; font-weight: bold; letter-spacing: 1px; }
+        
+        .stats { display: flex; gap: 15px; margin-top: 30px; }
+        .stat-card { flex: 1; background: rgba(255,255,255,0.05); padding: 20px; border-radius: 15px; text-align: center; border: 1px solid rgba(255,255,255,0.1); }
+        .stat-val { font-size: 1.5rem; font-weight: bold; color: #ff0055; margin-top: 5px; }
     </style>
 </head>
 <body>
+    <div class="header">
+        <div class="user-info">
+            <div class="u-name" id="u-name">Loading...</div>
+            <div style="font-size: 0.8rem; color: #888;">Quiz Agent</div>
+        </div>
+        <!-- Profile Button -->
+        <div class="profile-btn" id="p-pic" onclick="location.href='profile.html'"></div>
+    </div>
 
-    <div class="container">
-        <div class="header">
-            <button class="back-btn" onclick="location.href='home.html'">⬅</button>
-            <h2>My Profile</h2>
-        </div>
-        
-        <!-- Profile Image with Upload Button -->
-        <div class="p-img-box">
-            <div class="p-img" id="display-pic"></div>
-            <!-- Click this camera icon to open gallery -->
-            <label for="file-input" class="upload-icon">📷</label>
-            <input type="file" id="file-input" accept="image/*">
-        </div>
-        <p id="display-name-text" style="text-align:center; color:#00f2ff; margin-top:-10px; margin-bottom:20px; font-weight:bold;">Loading...</p>
+    <div class="hero">
+        <p id="hero-status" style="font-size: 0.8rem; letter-spacing: 2px;">CHECKING SCHEDULE...</p>
+        <h1>QUIZ GAME</h1>
+        <button class="play-btn" id="btn-play" disabled>LOCKED</button>
+        <div class="status-text" id="time-left"></div>
+    </div>
 
-        <!-- Name Change -->
-        <div class="input-group">
-            <label>আপনার নাম</label>
-            <input type="text" id="new-name" placeholder="নাম লিখুন...">
-            <button class="btn" onclick="updateName()">নাম সেভ করুন</button>
+    <div class="stats">
+        <div class="stat-card">
+            <div style="font-size: 0.9rem; color: #aaa;">My Score</div>
+            <div class="stat-val" id="score">0</div>
         </div>
-        
-        <!-- Password Change -->
-        <div class="input-group">
-            <label>পাসওয়ার্ড পরিবর্তন (অপশনাল)</label>
-            <input type="password" id="new-pass" placeholder="নতুন পাসওয়ার্ড দিন">
-            <button class="btn" style="background: #333; color: #fff; box-shadow:none; border:1px solid #555;" onclick="updatePass()">পাসওয়ার্ড আপডেট করুন</button>
+        <div class="stat-card">
+            <div style="font-size: 0.9rem; color: #aaa;">Status</div>
+            <div class="stat-val" id="g-stat" style="color: #00f2ff; font-size: 1rem;">Active</div>
         </div>
-
-        <button class="btn btn-red" onclick="logout()">লগআউট</button>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-        import { getAuth, updatePassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
-        import { getDatabase, ref, update, onValue } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+        import { getDatabase, ref, get, onValue } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
 
         const firebaseConfig = { apiKey: "AIzaSyBVwD0U7_QeX8EyOrZ4fm7OG_ow1b391-M", authDomain: "game-f739d.firebaseapp.com", databaseURL: "https://game-f739d-default-rtdb.firebaseio.com", projectId: "game-f739d", storageBucket: "game-f739d.firebasestorage.app", messagingSenderId: "744868437950", appId: "1:744868437950:web:622410843c8aeb229463ef" };
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getDatabase(app);
 
-        // Load User Data
-        onAuthStateChanged(auth, (user) => {
-            if(user) {
-                const userRef = ref(db, 'users/' + user.uid);
-                onValue(userRef, (s) => {
-                    const d = s.val();
-                    if(d) {
-                        document.getElementById('display-name-text').innerText = d.name || "User";
-                        document.getElementById('new-name').value = d.name || "";
-                        if(d.profilePic) {
-                            document.getElementById('display-pic').style.backgroundImage = `url(${d.profilePic})`;
+        let userFinished = false;
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                document.body.style.display = "block"; 
+                
+                onValue(ref(db, 'users/' + user.uid), (snap) => {
+                    if(snap.exists()) {
+                        const d = snap.val();
+                        document.getElementById('u-name').innerText = d.name;
+                        document.getElementById('score').innerText = d.points || 0;
+                        
+                        // Set Profile Pic
+                        const picUrl = d.profilePic || `https://ui-avatars.com/api/?name=${d.name}&background=00f2ff&color=000`;
+                        document.getElementById('p-pic').style.backgroundImage = `url('${picUrl}')`;
+
+                        if(d.gameFinished === true) {
+                            userFinished = true;
+                            document.getElementById('g-stat').innerText = "Finished";
+                            document.getElementById('g-stat').style.color = "#00ff88";
+                        } else {
+                            userFinished = false;
+                            document.getElementById('g-stat').innerText = "Not Played";
                         }
+                        updateButtonState();
                     }
                 });
+
+                loadGameConfig();
+
             } else {
-                location.href = 'login.html'; // Redirect if not logged in
+                window.location.replace("registration.html"); 
             }
         });
 
-        // 1. Update Name
-        window.updateName = () => {
-            const n = document.getElementById('new-name').value;
-            if(n) {
-                update(ref(db, 'users/' + auth.currentUser.uid), { name: n })
-                .then(() => alert('✅ নাম পরিবর্তন হয়েছে!'));
-            }
-        };
+        let gameConfig = {};
+        function loadGameConfig() {
+            onValue(ref(db, 'settings/gameConfig'), (snap) => {
+                gameConfig = snap.val() || {};
+                updateButtonState();
+                setInterval(updateButtonState, 1000);
+            });
+        }
 
-        // 2. Image Upload Logic (Compress & Save)
-        document.getElementById('file-input').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-
-            // Check file size (Must be image)
-            if(file.size > 5000000) return alert("ফাইলটি অনেক বড়! ৫MB এর কম দিন।");
-
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
+        function updateButtonState() {
+            const btn = document.getElementById('btn-play');
+            const status = document.getElementById('hero-status');
+            const timeTxt = document.getElementById('time-left');
             
-            reader.onload = function(event) {
-                const img = new Image();
-                img.src = event.target.result;
-                
-                img.onload = function() {
-                    // Create Canvas to resize image (Required for Realtime DB)
-                    const canvas = document.createElement('canvas');
-                    const ctx = canvas.getContext('2d');
-                    
-                    // Resize to max 300px width (Mobile Friendly)
-                    const maxWidth = 300;
-                    const scaleFactor = maxWidth / img.width;
-                    canvas.width = maxWidth;
-                    canvas.height = img.height * scaleFactor;
+            if(userFinished) {
+                btn.innerText = "COMPLETED";
+                btn.className = "play-btn finished";
+                btn.disabled = true;
+                status.innerText = "THANKS FOR PLAYING";
+                status.style.color = "#00ff88";
+                timeTxt.innerText = "Wait for next event.";
+                return;
+            }
 
-                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                    
-                    // Convert to Base64 String (Low quality to save space)
-                    const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.7);
+            if(gameConfig.startTime && gameConfig.endTime) {
+                const now = new Date().getTime();
+                const start = new Date(gameConfig.startTime).getTime();
+                const end = new Date(gameConfig.endTime).getTime();
 
-                    // Save to Database
-                    update(ref(db, 'users/' + auth.currentUser.uid), { profilePic: compressedDataUrl })
-                    .then(() => {
-                        document.getElementById('display-pic').style.backgroundImage = `url(${compressedDataUrl})`;
-                        alert('✅ প্রোফাইল পিকচার আপডেট হয়েছে!');
-                    })
-                    .catch(err => alert("Error: " + err.message));
+                if(now < start) {
+                    status.innerText = "UPCOMING EVENT";
+                    status.style.color = "orange";
+                    btn.innerText = "WAITING";
+                    btn.className = "play-btn";
+                    btn.disabled = true;
+                    
+                    const diff = start - now;
+                    const h = Math.floor(diff / (1000 * 60 * 60));
+                    const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                    timeTxt.innerText = `Starts in: ${h}h ${m}m`;
+                } 
+                else if (now >= start && now <= end) {
+                    status.innerText = "● LIVE NOW";
+                    status.style.color = "#00f2ff";
+                    btn.innerText = "PLAY GAME";
+                    btn.className = "play-btn active";
+                    btn.disabled = false;
+                    btn.onclick = () => location.href = 'start.html';
+                    
+                    const diff = end - now;
+                    const m = Math.floor(diff / 60000);
+                    timeTxt.innerText = `Ends in: ${m} mins`;
+                } 
+                else {
+                    status.innerText = "EVENT ENDED";
+                    status.style.color = "red";
+                    btn.innerText = "TIME OVER";
+                    btn.className = "play-btn";
+                    btn.disabled = true;
+                    timeTxt.innerText = "Next game coming soon...";
                 }
+            } else {
+                status.innerText = "NO SCHEDULE";
+                btn.innerText = "LOCKED";
+                btn.disabled = true;
             }
-        });
-
-        // 3. Update Password
-        window.updatePass = () => {
-            const p = document.getElementById('new-pass').value;
-            if(p.length < 6) return alert('পাসওয়ার্ড অন্তত ৬ অক্ষরের হতে হবে!');
-            
-            updatePassword(auth.currentUser, p)
-            .then(() => {
-                alert('✅ পাসওয়ার্ড পরিবর্তন হয়েছে! আবার লগইন করুন।');
-                signOut(auth).then(() => location.href = 'login.html');
-            })
-            .catch(e => alert("Error: " + e.message));
-        };
-
-        // 4. Logout
-        window.logout = () => signOut(auth).then(() => location.href = 'login.html');
+        }
     </script>
 </body>
 </html>
