@@ -6,54 +6,55 @@
     <title>Dashboard - Quiz Zone</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Poppins:wght@300;600&display=swap" rel="stylesheet">
     
-    <!-- Security Script (Redirect if not logged in) -->
-    <script>
-        // Check local storage or session instantly before page loads
-        if (!localStorage.getItem('user_logged_in') && !sessionStorage.getItem('user_logged_in')) {
-            // Optional: If you use Firebase only, this part might be tricky
-            // But usually, we redirect in JS
-        }
-    </script>
-
     <style>
-        body { background: #0b0b14; color: white; font-family: 'Poppins', sans-serif; margin: 0; padding: 20px; display: none; /* Hide body until auth checked */ }
+        body { background: #0b0b14; color: white; font-family: 'Poppins', sans-serif; margin: 0; padding: 20px; display: none; /* লোড হওয়ার আগে হাইড থাকবে */ }
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
-        .profile-btn { width: 50px; height: 50px; border-radius: 50%; background: #222; border: 2px solid #00f2ff; background-size: cover; cursor: pointer; }
+        .logout-btn { background: #333; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 0.8rem; }
         
         .hero { 
             background: linear-gradient(135deg, #1a0b2e, #000); 
             border: 1px solid rgba(0, 242, 255, 0.2); 
             padding: 30px; border-radius: 20px; text-align: center;
             box-shadow: 0 0 30px rgba(0, 242, 255, 0.1);
+            position: relative; overflow: hidden;
         }
-        h1 { font-family: 'Orbitron', sans-serif; background: linear-gradient(to right, #00f2ff, #ff0055); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 2.5rem; margin: 0; }
+        h1 { font-family: 'Orbitron', sans-serif; background: linear-gradient(to right, #00f2ff, #ff0055); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 2.2rem; margin: 10px 0; }
         
         .play-btn {
-            background: #333; color: #aaa; font-size: 1.5rem; font-family: 'Orbitron', sans-serif;
-            padding: 15px 50px; border: none; border-radius: 50px; cursor: not-allowed; margin-top: 20px;
-            box-shadow: none; transition: 0.3s;
+            background: #333; color: #aaa; font-size: 1.2rem; font-family: 'Orbitron', sans-serif;
+            padding: 15px 40px; border: none; border-radius: 50px; cursor: not-allowed; margin-top: 20px;
+            box-shadow: none; transition: 0.3s; width: 100%; max-width: 250px;
         }
         .play-btn.active {
             background: #00f2ff; color: black; cursor: pointer;
-            box-shadow: 0 0 20px rgba(0, 242, 255, 0.5);
+            box-shadow: 0 0 20px rgba(0, 242, 255, 0.5); font-weight: bold;
         }
-        .play-btn.active:hover { transform: scale(1.1); box-shadow: 0 0 40px rgba(0, 242, 255, 0.8); }
+        .play-btn.active:hover { transform: scale(1.05); box-shadow: 0 0 40px rgba(0, 242, 255, 0.8); }
+        .play-btn.finished { background: #00ff88; color: black; cursor: default; }
 
-        .status-text { margin-top: 10px; font-size: 0.9rem; color: #ff0055; font-weight: bold; letter-spacing: 1px; }
+        .status-text { margin-top: 15px; font-size: 0.9rem; color: #aaa; font-weight: bold; letter-spacing: 1px; }
         
         .stats { display: flex; gap: 15px; margin-top: 30px; }
         .stat-card { flex: 1; background: rgba(255,255,255,0.05); padding: 20px; border-radius: 15px; text-align: center; border: 1px solid rgba(255,255,255,0.1); }
-        .stat-val { font-size: 1.5rem; font-weight: bold; color: #ff0055; }
+        .stat-val { font-size: 1.5rem; font-weight: bold; color: #ff0055; margin-top: 5px; }
+        
+        /* User Info */
+        .user-info { text-align: left; }
+        .u-name { font-weight: bold; font-size: 1.1rem; color: #00f2ff; }
+        .u-phone { font-size: 0.8rem; color: #888; }
     </style>
 </head>
 <body>
     <div class="header">
-        <h3 style="margin:0;">QUIZ ZONE</h3>
-        <div class="profile-btn" id="p-pic" onclick="location.href='profile.html'"></div>
+        <div class="user-info">
+            <div class="u-name" id="u-name">Loading...</div>
+            <div class="u-phone" id="u-phone">...</div>
+        </div>
+        <button class="logout-btn" onclick="logout()">LOGOUT</button>
     </div>
 
     <div class="hero">
-        <p id="hero-status">CHECKING SCHEDULE...</p>
+        <p id="hero-status" style="font-size: 0.8rem; letter-spacing: 2px;">CHECKING SCHEDULE...</p>
         <h1>QUIZ GAME</h1>
         <button class="play-btn" id="btn-play" disabled>LOCKED</button>
         <div class="status-text" id="time-left"></div>
@@ -61,18 +62,18 @@
 
     <div class="stats">
         <div class="stat-card">
-            <div>My Score</div>
+            <div style="font-size: 0.9rem; color: #aaa;">My Score</div>
             <div class="stat-val" id="score">0</div>
         </div>
         <div class="stat-card">
-            <div>Rank</div>
-            <div class="stat-val" style="color: #00f2ff;">#N/A</div>
+            <div style="font-size: 0.9rem; color: #aaa;">Status</div>
+            <div class="stat-val" id="g-stat" style="color: #00f2ff; font-size: 1rem;">Active</div>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
         import { getDatabase, ref, get, onValue } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
 
         const firebaseConfig = { apiKey: "AIzaSyBVwD0U7_QeX8EyOrZ4fm7OG_ow1b391-M", authDomain: "game-f739d.firebaseapp.com", databaseURL: "https://game-f739d-default-rtdb.firebaseio.com", projectId: "game-f739d", storageBucket: "game-f739d.firebasestorage.app", messagingSenderId: "744868437950", appId: "1:744868437950:web:622410843c8aeb229463ef" };
@@ -80,78 +81,123 @@
         const auth = getAuth(app);
         const db = getDatabase(app);
 
-        // Security Check: Redirect if NOT logged in
+        let userFinished = false;
+
+        // 1. Security & User Data Load
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                // User is Logged In -> Show Body
-                document.body.style.display = "block";
+                document.body.style.display = "block"; // Show UI
+                
+                // Realtime Listener for User Data (Score/Status)
+                onValue(ref(db, 'users/' + user.uid), (snap) => {
+                    if(snap.exists()) {
+                        const d = snap.val();
+                        document.getElementById('u-name').innerText = d.name;
+                        document.getElementById('u-phone').innerText = d.phone;
+                        document.getElementById('score').innerText = d.points || 0;
+                        
+                        // Check if user finished
+                        if(d.gameFinished === true) {
+                            userFinished = true;
+                            document.getElementById('g-stat').innerText = "Finished";
+                            document.getElementById('g-stat').style.color = "#00ff88";
+                        } else {
+                            userFinished = false;
+                            document.getElementById('g-stat').innerText = "Not Played";
+                            document.getElementById('g-stat').style.color = "orange";
+                        }
+                        updateButtonState(); // Re-check button
+                    }
+                });
 
-                // Load User Data
-                const snap = await get(ref(db, 'users/' + user.uid));
-                if(snap.exists()) {
-                    const d = snap.val();
-                    document.getElementById('score').innerText = d.points || 0;
-                    if(d.profilePic) document.getElementById('p-pic').style.backgroundImage = `url(${d.profilePic})`;
-                    else document.getElementById('p-pic').style.backgroundImage = `url(https://ui-avatars.com/api/?name=${d.name})`;
-                }
+                // Load Game Config
+                loadGameConfig();
+
             } else {
-                // No User -> Redirect to Login/Registration Page
-                // Change 'index.html' to 'registration.html' if that is your login page name
-                window.location.replace("index.html"); 
+                window.location.replace("registration.html"); 
             }
         });
 
-        // Load Game Config & Timer Logic
-        onValue(ref(db, 'settings/gameConfig'), (snap) => {
-            const config = snap.val();
+        let gameConfig = {};
+
+        function loadGameConfig() {
+            onValue(ref(db, 'settings/gameConfig'), (snap) => {
+                gameConfig = snap.val() || {};
+                updateButtonState();
+                // Start Timer Loop
+                setInterval(updateButtonState, 1000);
+            });
+        }
+
+        function updateButtonState() {
             const btn = document.getElementById('btn-play');
             const status = document.getElementById('hero-status');
             const timeTxt = document.getElementById('time-left');
+            
+            // Priority 1: If User Finished
+            if(userFinished) {
+                btn.innerText = "COMPLETED";
+                btn.className = "play-btn finished";
+                btn.disabled = true;
+                status.innerText = "THANKS FOR PLAYING";
+                status.style.color = "#00ff88";
+                timeTxt.innerText = "Wait for next event.";
+                return;
+            }
 
-            if(config && config.startTime && config.endTime) {
+            // Priority 2: Time Check
+            if(gameConfig.startTime && gameConfig.endTime) {
                 const now = new Date().getTime();
-                const start = new Date(config.startTime).getTime();
-                const end = new Date(config.endTime).getTime();
+                const start = new Date(gameConfig.startTime).getTime();
+                const end = new Date(gameConfig.endTime).getTime();
 
-                if(now >= start && now <= end) {
-                    // LIVE
-                    status.innerText = "GAME IS LIVE!";
-                    status.style.color = "#00f2ff";
-                    btn.innerText = "PLAY NOW";
-                    btn.disabled = false;
-                    btn.classList.add('active');
-                    btn.onclick = () => location.href = 'start.html';
-                    
-                    // Show time left
-                    const left = Math.floor((end - now) / 1000 / 60);
-                    timeTxt.innerText = `Ends in: ${left} mins`;
-                } 
-                else if (now < start) {
+                if(now < start) {
                     // UPCOMING
                     status.innerText = "UPCOMING EVENT";
                     status.style.color = "orange";
                     btn.innerText = "WAITING";
+                    btn.className = "play-btn";
                     btn.disabled = true;
-                    btn.classList.remove('active');
-                    btn.onclick = null;
                     
-                    const dateStr = new Date(config.startTime).toLocaleString('bn-BD');
-                    timeTxt.innerText = `Starts: ${dateStr}`;
+                    // Show Countdown
+                    const diff = start - now;
+                    const h = Math.floor(diff / (1000 * 60 * 60));
+                    const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                    const s = Math.floor((diff % (1000 * 60)) / 1000);
+                    timeTxt.innerText = `Starts in: ${h}h ${m}m ${s}s`;
+                } 
+                else if (now >= start && now <= end) {
+                    // LIVE
+                    status.innerText = "● LIVE NOW";
+                    status.style.color = "#00f2ff";
+                    btn.innerText = "PLAY GAME";
+                    btn.className = "play-btn active";
+                    btn.disabled = false;
+                    btn.onclick = () => location.href = 'start.html';
+                    
+                    const diff = end - now;
+                    const m = Math.floor(diff / 60000);
+                    timeTxt.innerText = `Ends in: ${m} mins`;
                 } 
                 else {
                     // ENDED
                     status.innerText = "EVENT ENDED";
                     status.style.color = "red";
-                    btn.innerText = "CLOSED";
+                    btn.innerText = "TIME OVER";
+                    btn.className = "play-btn";
                     btn.disabled = true;
-                    btn.classList.remove('active');
                     timeTxt.innerText = "Next game coming soon...";
                 }
             } else {
-                status.innerText = "NO GAME SCHEDULED";
+                status.innerText = "NO SCHEDULE";
+                btn.innerText = "LOCKED";
                 btn.disabled = true;
             }
-        });
+        }
+
+        window.logout = () => {
+            signOut(auth).then(() => location.reload());
+        }
     </script>
 </body>
 </html>
