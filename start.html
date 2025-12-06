@@ -16,7 +16,6 @@
         .opt-btn:disabled { opacity: 0.6; cursor: not-allowed; }
         .correct { background: #00ff88 !important; color: black; }
         .wrong { background: #ff0055 !important; }
-        #error-log { color: red; font-size: 0.9rem; margin-top: 10px; white-space: pre-wrap; display: none; }
     </style>
 </head>
 <body>
@@ -29,9 +28,8 @@
         <div class="timer-bar-bg"><div class="timer-bar" id="t-bar"></div></div>
         <div id="timer" style="font-size:2rem; color:#00f2ff; margin:10px 0;">--</div>
 
-        <div class="question-box" id="q-text">প্রশ্ন লোড হচ্ছে...</div>
+        <div class="question-box" id="q-text">যাচাই করা হচ্ছে...</div>
         <div class="options" id="opt-area"></div>
-        <div id="error-log"></div>
     </div>
 
     <script type="module">
@@ -51,15 +49,13 @@
         let VIEW_TIME, ANS_TIME, MAX_Q;
         let currentUser = null;
 
-        // 1. Check Login & Status
         onAuthStateChanged(auth, async (user) => {
             if(user) {
                 currentUser = user;
-                // Check if user already played
                 const uSnap = await get(ref(db, 'users/' + user.uid));
                 if(uSnap.exists()) {
                     if(uSnap.val().gameFinished === true) {
-                        alert("Your limit is over! You completed all questions.");
+                        alert("Your limit is over!");
                         window.location.href = "home.html";
                     } else {
                         initGame();
@@ -72,40 +68,52 @@
 
         async function initGame() {
             try {
-                // 2. Get Settings from Admin Panel
+                // 1. Get Settings
                 const snap = await get(ref(db, 'settings/gameConfig'));
+                if(!snap.exists()) return alert("Config Error!");
                 
-                if(!snap.exists()) {
-                    // Default fallback if no settings found
-                    VIEW_TIME = 15; ANS_TIME = 25; MAX_Q = 10;
-                } else {
-                    const conf = snap.val();
-                    VIEW_TIME = conf.viewTime || 15;
-                    ANS_TIME = conf.answerTime || 25;
-                    
-                    // HERE IS THE KEY CHANGE: Set Limit from Admin Panel
-                    MAX_Q = parseInt(conf.questionLimit) || 10; 
+                const conf = snap.val();
+                const now = new Date().getTime();
+
+                // === TIME CHECK 1: Start Time ===
+                if(conf.startTime) {
+                    const start = new Date(conf.startTime).getTime();
+                    if(now < start) {
+                        const dateStr = new Date(conf.startTime).toLocaleString('bn-BD');
+                        alert(`খেলা এখনো শুরু হয়নি!\nশুরুর সময়: ${dateStr}`);
+                        window.location.href = "home.html";
+                        return;
+                    }
                 }
+
+                // === TIME CHECK 2: End Time (NEW) ===
+                if(conf.endTime) {
+                    const end = new Date(conf.endTime).getTime();
+                    if(now > end) {
+                        alert("গেমের সময় শেষ হয়ে গেছে! আপনি আর অংশগ্রহণ করতে পারবেন না।");
+                        window.location.href = "home.html";
+                        return;
+                    }
+                }
+                // =====================================
+
+                VIEW_TIME = conf.viewTime || 15;
+                ANS_TIME = conf.answerTime || 25;
+                MAX_Q = parseInt(conf.questionLimit) || 10;
                 
-                // 3. Fetch Questions based on MAX_Q
                 await fetchAndConsumeManualQuestions();
 
-            } catch(e) {
-                showError(e.message);
-            }
+            } catch(e) { console.error(e); }
         }
 
         async function fetchAndConsumeManualQuestions() {
-            document.getElementById('q-text').innerText = `স্টক থেকে ${MAX_Q} টি প্রশ্ন সংগ্রহ করা হচ্ছে...`;
-
-            // Fetch ALL available questions
+            document.getElementById('q-text').innerText = "প্রশ্ন লোড হচ্ছে...";
             const qRef = ref(db, 'manualQuestions');
             const snap = await get(qRef);
 
             if (!snap.exists()) {
-                document.getElementById('q-text').innerText = "স্টকে কোনো প্রশ্ন নেই!";
                 alert("দুঃখিত! স্টকে কোনো প্রশ্ন নেই।");
-                setTimeout(() => location.href = 'home.html', 3000);
+                location.href = 'home.html';
                 return;
             }
 
@@ -118,23 +126,13 @@
                 return;
             }
 
-            // 4. Limit the questions (Admin Limit vs Available Limit)
-            // If Admin says 20, but DB has 100, we take 20.
-            // If Admin says 20, but DB has 15, we take 15.
             const limit = Math.min(MAX_Q, keys.length);
-            
-            // Randomly select 'limit' number of questions
             const selectedKeys = keys.sort(() => 0.5 - Math.random()).slice(0, limit);
 
-            // Create Question Array
             questions = selectedKeys.map(k => allData[k]);
 
-            // 5. DELETE FROM DATABASE (Consumption Logic)
             const updates = {};
-            selectedKeys.forEach(k => {
-                updates[`manualQuestions/${k}`] = null;
-            });
-            
+            selectedKeys.forEach(k => { updates[`manualQuestions/${k}`] = null; });
             await update(ref(db), updates); 
 
             startQ();
@@ -157,13 +155,9 @@
                 document.getElementById('opt-area').appendChild(b);
             });
 
-            // Phase 1: View Question
             runTimer(VIEW_TIME, () => {
-                // Phase 2: Answer
                 document.querySelectorAll('.opt-btn').forEach(b => b.disabled = false);
-                runTimer(ANS_TIME, () => {
-                    curQ++; startQ();
-                });
+                runTimer(ANS_TIME, () => { curQ++; startQ(); });
             });
         }
 
@@ -195,26 +189,15 @@
         }
 
         async function endGame() {
-            document.getElementById('q-text').innerText = "You have completed all questions!";
-            document.getElementById('opt-area').innerHTML = `<h3>Total Score: ${score}</h3>`;
-            
+            document.getElementById('q-text').innerText = "All Questions Completed!";
+            document.getElementById('opt-area').innerHTML = `<h3>Score: ${score}</h3>`;
             if(currentUser) {
                 const refU = ref(db, 'users/' + currentUser.uid);
                 const snap = await get(refU);
                 let old = 0; if(snap.exists()) old = snap.val().points || 0;
-                
-                // Update Points AND set gameFinished to true
-                await update(refU, { 
-                    points: old + score,
-                    gameFinished: true 
-                });
+                await update(refU, { points: old + score, gameFinished: true });
             }
             setTimeout(() => location.href = 'home.html', 4000);
-        }
-
-        function showError(msg) {
-            document.getElementById('error-log').style.display = 'block';
-            document.getElementById('error-log').innerText = msg;
         }
     </script>
 </body>
