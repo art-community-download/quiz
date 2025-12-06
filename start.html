@@ -36,7 +36,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-        import { getAuth } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
         import { getDatabase, ref, update, get } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
 
         const firebaseConfig = { apiKey: "AIzaSyBVwD0U7_QeX8EyOrZ4fm7OG_ow1b391-M", authDomain: "game-f739d.firebaseapp.com", databaseURL: "https://game-f739d-default-rtdb.firebaseio.com", projectId: "game-f739d", storageBucket: "game-f739d.firebasestorage.app", messagingSenderId: "744868437950", appId: "1:744868437950:web:622410843c8aeb229463ef" };
@@ -49,19 +49,45 @@
         let score = 0;
         let timerInt;
         let VIEW_TIME, ANS_TIME, MAX_Q;
+        let currentUser = null;
+
+        // 1. Check Login & Status
+        onAuthStateChanged(auth, async (user) => {
+            if(user) {
+                currentUser = user;
+                // Check if user already played
+                const uSnap = await get(ref(db, 'users/' + user.uid));
+                if(uSnap.exists()) {
+                    if(uSnap.val().gameFinished === true) {
+                        alert("Your limit is over! You completed all questions.");
+                        window.location.href = "home.html";
+                    } else {
+                        initGame();
+                    }
+                }
+            } else {
+                location.href = 'registration.html';
+            }
+        });
 
         async function initGame() {
             try {
-                // 1. Get Settings
+                // 2. Get Settings from Admin Panel
                 const snap = await get(ref(db, 'settings/gameConfig'));
-                if(!snap.exists()) throw new Error("Game Config Not Found");
                 
-                const conf = snap.val();
-                VIEW_TIME = conf.viewTime || 15;
-                ANS_TIME = conf.answerTime || 25;
-                MAX_Q = conf.questionLimit || 10;
+                if(!snap.exists()) {
+                    // Default fallback if no settings found
+                    VIEW_TIME = 15; ANS_TIME = 25; MAX_Q = 10;
+                } else {
+                    const conf = snap.val();
+                    VIEW_TIME = conf.viewTime || 15;
+                    ANS_TIME = conf.answerTime || 25;
+                    
+                    // HERE IS THE KEY CHANGE: Set Limit from Admin Panel
+                    MAX_Q = parseInt(conf.questionLimit) || 10; 
+                }
                 
-                // 2. Fetch Questions from Stock (No API)
+                // 3. Fetch Questions based on MAX_Q
                 await fetchAndConsumeManualQuestions();
 
             } catch(e) {
@@ -70,15 +96,15 @@
         }
 
         async function fetchAndConsumeManualQuestions() {
-            document.getElementById('q-text').innerText = "স্টক থেকে প্রশ্ন সংগ্রহ করা হচ্ছে...";
+            document.getElementById('q-text').innerText = `স্টক থেকে ${MAX_Q} টি প্রশ্ন সংগ্রহ করা হচ্ছে...`;
 
-            // Fetch ALL questions
+            // Fetch ALL available questions
             const qRef = ref(db, 'manualQuestions');
             const snap = await get(qRef);
 
             if (!snap.exists()) {
                 document.getElementById('q-text').innerText = "স্টকে কোনো প্রশ্ন নেই!";
-                alert("দুঃখিত! স্টকে কোনো প্রশ্ন নেই। অনুগ্রহ করে অ্যাডমিনকে জানান।");
+                alert("দুঃখিত! স্টকে কোনো প্রশ্ন নেই।");
                 setTimeout(() => location.href = 'home.html', 3000);
                 return;
             }
@@ -92,16 +118,18 @@
                 return;
             }
 
-            // Adjust Limit if not enough questions
-            if (keys.length < MAX_Q) MAX_Q = keys.length;
-
-            // Randomly select keys
-            const selectedKeys = keys.sort(() => 0.5 - Math.random()).slice(0, MAX_Q);
+            // 4. Limit the questions (Admin Limit vs Available Limit)
+            // If Admin says 20, but DB has 100, we take 20.
+            // If Admin says 20, but DB has 15, we take 15.
+            const limit = Math.min(MAX_Q, keys.length);
+            
+            // Randomly select 'limit' number of questions
+            const selectedKeys = keys.sort(() => 0.5 - Math.random()).slice(0, limit);
 
             // Create Question Array
             questions = selectedKeys.map(k => allData[k]);
 
-            // 🛑 DELETE FROM DATABASE IMMEDIATELY 🛑
+            // 5. DELETE FROM DATABASE (Consumption Logic)
             const updates = {};
             selectedKeys.forEach(k => {
                 updates[`manualQuestions/${k}`] = null;
@@ -167,23 +195,27 @@
         }
 
         async function endGame() {
-            document.getElementById('q-text').innerText = "স্কোর সেভ হচ্ছে...";
-            const user = auth.currentUser;
-            if(user) {
-                const refU = ref(db, 'users/' + user.uid);
+            document.getElementById('q-text').innerText = "You have completed all questions!";
+            document.getElementById('opt-area').innerHTML = `<h3>Total Score: ${score}</h3>`;
+            
+            if(currentUser) {
+                const refU = ref(db, 'users/' + currentUser.uid);
                 const snap = await get(refU);
                 let old = 0; if(snap.exists()) old = snap.val().points || 0;
-                await update(refU, { points: old + score });
+                
+                // Update Points AND set gameFinished to true
+                await update(refU, { 
+                    points: old + score,
+                    gameFinished: true 
+                });
             }
-            setTimeout(() => location.href = 'home.html', 3000);
+            setTimeout(() => location.href = 'home.html', 4000);
         }
 
         function showError(msg) {
             document.getElementById('error-log').style.display = 'block';
             document.getElementById('error-log').innerText = msg;
         }
-
-        setTimeout(initGame, 1000);
     </script>
 </body>
 </html>
