@@ -3,197 +3,245 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Quiz Zone</title>
+    <title>Agent Profile</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Poppins:wght@300;600&display=swap" rel="stylesheet">
-    
     <style>
-        body { background: #0b0b14; color: white; font-family: 'Poppins', sans-serif; margin: 0; padding: 20px; display: none; }
+        * { box-sizing: border-box; }
+        body { 
+            background: #050511; 
+            background-image: radial-gradient(circle at top, #1a0b2e 0%, #000 100%);
+            color: white; 
+            font-family: 'Poppins', sans-serif; 
+            margin: 0; padding: 20px; 
+            min-height: 100vh;
+            display: flex; flex-direction: column; align-items: center;
+        }
+
+        /* HEADER */
+        .header { width: 100%; max-width: 500px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .back-btn { text-decoration: none; color: #00f2ff; font-family: 'Orbitron'; font-size: 1rem; display: flex; align-items: center; gap: 5px; transition: 0.3s; }
+        .back-btn:hover { text-shadow: 0 0 10px #00f2ff; transform: translateX(-5px); }
+
+        /* PROFILE CARD */
+        .profile-card {
+            width: 100%; max-width: 450px;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 25px;
+            padding: 40px 20px;
+            text-align: center;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* PROFILE IMAGE WRAPPER */
+        .img-container {
+            position: relative;
+            width: 180px; height: 180px;
+            margin: 0 auto 20px auto;
+        }
         
-        /* HEADER with Profile Button */
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
-        
-        /* Profile Icon Style */
-        .profile-btn {
-            width: 50px; height: 50px;
+        .img-border {
+            width: 100%; height: 100%;
             border-radius: 50%;
-            border: 2px solid #00f2ff;
-            background-color: #222;
-            background-size: cover;
-            background-position: center;
-            cursor: pointer;
-            box-shadow: 0 0 10px rgba(0, 242, 255, 0.5);
+            padding: 5px;
+            background: linear-gradient(45deg, #00f2ff, #ff0055);
+            animation: spinBorder 4s linear infinite;
+            box-shadow: 0 0 30px rgba(0, 242, 255, 0.3);
+        }
+
+        .profile-img {
+            width: 100%; height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 4px solid #111;
+            background: #222;
+        }
+
+        .camera-btn {
+            position: absolute; bottom: 10px; right: 10px;
+            background: #00f2ff; color: black;
+            width: 45px; height: 45px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; font-size: 1.2rem;
+            box-shadow: 0 0 15px rgba(0, 242, 255, 0.6);
+            transition: 0.3s;
+            border: 2px solid #fff;
+        }
+        .camera-btn:hover { transform: scale(1.1); background: white; }
+
+        /* TEXT INFO */
+        h2 { font-family: 'Orbitron', sans-serif; margin: 10px 0 5px 0; font-size: 1.8rem; letter-spacing: 1px; }
+        .badge { background: rgba(0, 242, 255, 0.15); color: #00f2ff; padding: 5px 15px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; border: 1px solid rgba(0, 242, 255, 0.3); display: inline-block; margin-bottom: 20px; }
+
+        /* STATS GRID */
+        .stats-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 15px;
+            margin-bottom: 30px;
+        }
+        .stat-box {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px; border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .stat-label { color: #888; font-size: 0.8rem; text-transform: uppercase; }
+        .stat-val { font-family: 'Orbitron'; font-size: 1.4rem; font-weight: bold; margin-top: 5px; }
+
+        /* DETAILS LIST */
+        .details-list { text-align: left; margin-top: 20px; }
+        .detail-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px; border-radius: 12px;
+            margin-bottom: 10px;
+            display: flex; align-items: center; gap: 15px;
+        }
+        .d-icon { color: #00f2ff; font-size: 1.2rem; width: 30px; text-align: center; }
+        .d-text { display: flex; flex-direction: column; }
+        .d-label { font-size: 0.7rem; color: #aaa; }
+        .d-info { font-size: 1rem; font-weight: 600; color: white; word-break: break-all; }
+
+        /* BUTTONS */
+        .logout-btn {
+            width: 100%; padding: 15px;
+            background: linear-gradient(90deg, #ff0055, #ff4444);
+            border: none; border-radius: 50px;
+            color: white; font-weight: bold; font-family: 'Orbitron';
+            font-size: 1rem; cursor: pointer; margin-top: 20px;
+            box-shadow: 0 5px 20px rgba(255, 0, 85, 0.3);
             transition: 0.3s;
         }
-        .profile-btn:hover { transform: scale(1.1); box-shadow: 0 0 20px #00f2ff; }
+        .logout-btn:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(255, 0, 85, 0.5); }
 
-        .user-info { text-align: left; }
-        .u-name { font-weight: bold; font-size: 1.1rem; color: #00f2ff; }
-        
-        .hero { 
-            background: linear-gradient(135deg, #1a0b2e, #000); 
-            border: 1px solid rgba(0, 242, 255, 0.2); 
-            padding: 30px; border-radius: 20px; text-align: center;
-            box-shadow: 0 0 30px rgba(0, 242, 255, 0.1);
+        @keyframes spinBorder {
+            0% { background: linear-gradient(0deg, #00f2ff, #ff0055); }
+            100% { background: linear-gradient(360deg, #00f2ff, #ff0055); }
         }
-        h1 { font-family: 'Orbitron', sans-serif; background: linear-gradient(to right, #00f2ff, #ff0055); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 2.2rem; margin: 10px 0; }
-        
-        .play-btn {
-            background: #333; color: #aaa; font-size: 1.2rem; font-family: 'Orbitron', sans-serif;
-            padding: 15px 40px; border: none; border-radius: 50px; cursor: not-allowed; margin-top: 20px;
-            box-shadow: none; transition: 0.3s; width: 100%; max-width: 250px;
-        }
-        .play-btn.active {
-            background: #00f2ff; color: black; cursor: pointer;
-            box-shadow: 0 0 20px rgba(0, 242, 255, 0.5); font-weight: bold;
-        }
-        .play-btn.active:hover { transform: scale(1.05); box-shadow: 0 0 40px rgba(0, 242, 255, 0.8); }
-        .play-btn.finished { background: #00ff88; color: black; cursor: default; }
-
-        .status-text { margin-top: 15px; font-size: 0.9rem; color: #aaa; font-weight: bold; letter-spacing: 1px; }
-        
-        .stats { display: flex; gap: 15px; margin-top: 30px; }
-        .stat-card { flex: 1; background: rgba(255,255,255,0.05); padding: 20px; border-radius: 15px; text-align: center; border: 1px solid rgba(255,255,255,0.1); }
-        .stat-val { font-size: 1.5rem; font-weight: bold; color: #ff0055; margin-top: 5px; }
     </style>
 </head>
 <body>
+
     <div class="header">
-        <div class="user-info">
-            <div class="u-name" id="u-name">Loading...</div>
-            <div style="font-size: 0.8rem; color: #888;">Quiz Agent</div>
-        </div>
-        <!-- Profile Button -->
-        <div class="profile-btn" id="p-pic" onclick="location.href='profile.html'"></div>
+        <a href="home.html" class="back-btn">❮ DASHBOARD</a>
+        <span style="color: #555; font-size: 0.9rem;">ID: <span id="uid-short">...</span></span>
     </div>
 
-    <div class="hero">
-        <p id="hero-status" style="font-size: 0.8rem; letter-spacing: 2px;">CHECKING SCHEDULE...</p>
-        <h1>QUIZ GAME</h1>
-        <button class="play-btn" id="btn-play" disabled>LOCKED</button>
-        <div class="status-text" id="time-left"></div>
-    </div>
+    <div class="profile-card">
+        <!-- IMAGE -->
+        <div class="img-container">
+            <div class="img-border">
+                <img id="big-p-pic" class="profile-img" src="" alt="Profile">
+            </div>
+            <!-- Upload Trigger -->
+            <input type="file" id="file-upload" accept="image/*" style="display: none;" onchange="uploadImage()">
+            <div class="camera-btn" onclick="document.getElementById('file-upload').click()">📷</div>
+        </div>
 
-    <div class="stats">
-        <div class="stat-card">
-            <div style="font-size: 0.9rem; color: #aaa;">My Score</div>
-            <div class="stat-val" id="score">0</div>
+        <!-- NAME & BADGE -->
+        <h2 id="disp-name">Loading...</h2>
+        <div class="badge">VERIFIED AGENT</div>
+
+        <!-- STATS -->
+        <div class="stats-grid">
+            <div class="stat-box">
+                <div class="stat-label">Total Score</div>
+                <div class="stat-val" id="disp-score" style="color: #00f2ff;">0</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Game Status</div>
+                <div class="stat-val" id="disp-status" style="color: #ff0055; font-size: 1rem; margin-top: 8px;">--</div>
+            </div>
         </div>
-        <div class="stat-card">
-            <div style="font-size: 0.9rem; color: #aaa;">Status</div>
-            <div class="stat-val" id="g-stat" style="color: #00f2ff; font-size: 1rem;">Active</div>
+
+        <!-- INFO LIST -->
+        <div class="details-list">
+            <div class="detail-item">
+                <div class="d-icon">📞</div>
+                <div class="d-text">
+                    <span class="d-label">PHONE NUMBER</span>
+                    <span class="d-info" id="disp-phone">...</span>
+                </div>
+            </div>
+            <div class="detail-item">
+                <div class="d-icon">📧</div>
+                <div class="d-text">
+                    <span class="d-label">EMAIL ADDRESS</span>
+                    <span class="d-info" id="disp-email">...</span>
+                </div>
+            </div>
         </div>
+
+        <button class="logout-btn" onclick="logout()">LOGOUT SYSTEM</button>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
-        import { getDatabase, ref, get, onValue } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+        import { getDatabase, ref, get, update } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
 
         const firebaseConfig = { apiKey: "AIzaSyBVwD0U7_QeX8EyOrZ4fm7OG_ow1b391-M", authDomain: "game-f739d.firebaseapp.com", databaseURL: "https://game-f739d-default-rtdb.firebaseio.com", projectId: "game-f739d", storageBucket: "game-f739d.firebasestorage.app", messagingSenderId: "744868437950", appId: "1:744868437950:web:622410843c8aeb229463ef" };
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getDatabase(app);
 
-        let userFinished = false;
+        let currentUid = null;
 
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                document.body.style.display = "block"; 
-                
-                onValue(ref(db, 'users/' + user.uid), (snap) => {
-                    if(snap.exists()) {
-                        const d = snap.val();
-                        document.getElementById('u-name').innerText = d.name;
-                        document.getElementById('score').innerText = d.points || 0;
-                        
-                        // Set Profile Pic
-                        const picUrl = d.profilePic || `https://ui-avatars.com/api/?name=${d.name}&background=00f2ff&color=000`;
-                        document.getElementById('p-pic').style.backgroundImage = `url('${picUrl}')`;
+                currentUid = user.uid;
+                document.getElementById('uid-short').innerText = user.uid.substring(0,6);
 
-                        if(d.gameFinished === true) {
-                            userFinished = true;
-                            document.getElementById('g-stat').innerText = "Finished";
-                            document.getElementById('g-stat').style.color = "#00ff88";
-                        } else {
-                            userFinished = false;
-                            document.getElementById('g-stat').innerText = "Not Played";
-                        }
-                        updateButtonState();
+                const snap = await get(ref(db, 'users/' + user.uid));
+                if(snap.exists()) {
+                    const d = snap.val();
+                    document.getElementById('disp-name').innerText = d.name;
+                    document.getElementById('disp-phone').innerText = d.phone;
+                    document.getElementById('disp-email').innerText = d.email;
+                    document.getElementById('disp-score').innerText = d.points || 0;
+
+                    // Game Status Check
+                    if(d.gameFinished) {
+                        document.getElementById('disp-status').innerText = "COMPLETED";
+                        document.getElementById('disp-status').style.color = "#00ff88";
+                    } else {
+                        document.getElementById('disp-status').innerText = "PENDING";
+                        document.getElementById('disp-status').style.color = "orange";
                     }
-                });
 
-                loadGameConfig();
-
+                    // Profile Pic Logic
+                    const pic = d.profilePic || `https://ui-avatars.com/api/?name=${d.name}&background=00f2ff&color=000&size=250&bold=true`;
+                    document.getElementById('big-p-pic').src = pic;
+                }
             } else {
-                window.location.replace("registration.html"); 
+                window.location.href = "registration.html";
             }
         });
 
-        let gameConfig = {};
-        function loadGameConfig() {
-            onValue(ref(db, 'settings/gameConfig'), (snap) => {
-                gameConfig = snap.val() || {};
-                updateButtonState();
-                setInterval(updateButtonState, 1000);
-            });
+        // Upload Logic (Max 1MB)
+        window.uploadImage = () => {
+            const file = document.getElementById('file-upload').files[0];
+            if(!file) return;
+
+            if(file.size > 1024 * 1024) return alert("Image is too large! Max 1MB.");
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const base64Img = e.target.result;
+                document.getElementById('big-p-pic').src = base64Img; // Instant preview
+
+                if(currentUid) {
+                    update(ref(db, 'users/' + currentUid), { profilePic: base64Img })
+                    .then(() => alert("Profile Picture Updated Successfully!"))
+                    .catch(err => alert("Failed: " + err.message));
+                }
+            }
+            reader.readAsDataURL(file);
         }
 
-        function updateButtonState() {
-            const btn = document.getElementById('btn-play');
-            const status = document.getElementById('hero-status');
-            const timeTxt = document.getElementById('time-left');
-            
-            if(userFinished) {
-                btn.innerText = "COMPLETED";
-                btn.className = "play-btn finished";
-                btn.disabled = true;
-                status.innerText = "THANKS FOR PLAYING";
-                status.style.color = "#00ff88";
-                timeTxt.innerText = "Wait for next event.";
-                return;
-            }
-
-            if(gameConfig.startTime && gameConfig.endTime) {
-                const now = new Date().getTime();
-                const start = new Date(gameConfig.startTime).getTime();
-                const end = new Date(gameConfig.endTime).getTime();
-
-                if(now < start) {
-                    status.innerText = "UPCOMING EVENT";
-                    status.style.color = "orange";
-                    btn.innerText = "WAITING";
-                    btn.className = "play-btn";
-                    btn.disabled = true;
-                    
-                    const diff = start - now;
-                    const h = Math.floor(diff / (1000 * 60 * 60));
-                    const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-                    timeTxt.innerText = `Starts in: ${h}h ${m}m`;
-                } 
-                else if (now >= start && now <= end) {
-                    status.innerText = "● LIVE NOW";
-                    status.style.color = "#00f2ff";
-                    btn.innerText = "PLAY GAME";
-                    btn.className = "play-btn active";
-                    btn.disabled = false;
-                    btn.onclick = () => location.href = 'start.html';
-                    
-                    const diff = end - now;
-                    const m = Math.floor(diff / 60000);
-                    timeTxt.innerText = `Ends in: ${m} mins`;
-                } 
-                else {
-                    status.innerText = "EVENT ENDED";
-                    status.style.color = "red";
-                    btn.innerText = "TIME OVER";
-                    btn.className = "play-btn";
-                    btn.disabled = true;
-                    timeTxt.innerText = "Next game coming soon...";
-                }
-            } else {
-                status.innerText = "NO SCHEDULE";
-                btn.innerText = "LOCKED";
-                btn.disabled = true;
+        window.logout = () => {
+            if(confirm("Exit System?")) {
+                signOut(auth).then(() => window.location.href = "registration.html");
             }
         }
     </script>
