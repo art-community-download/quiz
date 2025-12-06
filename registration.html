@@ -22,7 +22,8 @@
     <div class="card">
         <div id="login-box">
             <h2>USER LOGIN</h2>
-            <input type="email" id="l-email" placeholder="Email">
+            <!-- Login with Phone -->
+            <input type="number" id="l-phone" placeholder="Phone Number">
             <input type="password" id="l-pass" placeholder="Password">
             <button class="btn" onclick="login()">ENTER GAME</button>
             <p class="toggle">New Agent? <span onclick="toggleForm()">Register</span></p>
@@ -31,8 +32,8 @@
         <div id="reg-box" class="hidden">
             <h2>JOIN REQUEST</h2>
             <input type="text" id="r-name" placeholder="Full Name">
+            <!-- Register with Phone Only -->
             <input type="number" id="r-phone" placeholder="Phone Number">
-            <input type="email" id="r-email" placeholder="Email">
             <input type="password" id="r-pass" placeholder="Password (6+ chars)">
             <input type="text" id="r-ref" placeholder="Referral Code (Required)">
             <button class="btn" onclick="register()">SEND REQUEST</button>
@@ -50,16 +51,24 @@
         const auth = getAuth(app);
         const db = getDatabase(app);
 
+        // Dummy domain to trick Firebase into using Email Auth with Phone numbers
+        const DOMAIN = "@game.local";
+
         window.toggleForm = () => {
             document.getElementById('login-box').classList.toggle('hidden');
             document.getElementById('reg-box').classList.toggle('hidden');
         }
 
         window.login = async () => {
-            const email = document.getElementById('l-email').value;
+            const phone = document.getElementById('l-phone').value;
             const pass = document.getElementById('l-pass').value;
+            
+            if(!phone || !pass) return alert("Please enter Phone and Password");
+
+            const fakeEmail = phone + DOMAIN; 
+
             try {
-                const userCred = await signInWithEmailAndPassword(auth, email, pass);
+                const userCred = await signInWithEmailAndPassword(auth, fakeEmail, pass);
                 checkStatus(userCred.user.uid);
             } catch (e) { alert("Login Failed: " + e.message); }
         }
@@ -67,11 +76,12 @@
         window.register = async () => {
             const name = document.getElementById('r-name').value;
             const phone = document.getElementById('r-phone').value;
-            const email = document.getElementById('r-email').value;
             const pass = document.getElementById('r-pass').value;
             const refCode = document.getElementById('r-ref').value;
 
-            if(!name || !phone || !email || !pass || !refCode) return alert("Fill all fields!");
+            if(!name || !phone || !pass || !refCode) return alert("Fill all fields!");
+
+            const fakeEmail = phone + DOMAIN;
 
             const refSnap = await get(ref(db, 'settings/referralCodes'));
             let valid = false;
@@ -83,10 +93,13 @@
             if(!valid) return alert("Invalid Referral Code!");
 
             try {
-                const cred = await createUserWithEmailAndPassword(auth, email, pass);
+                const cred = await createUserWithEmailAndPassword(auth, fakeEmail, pass);
                 await set(ref(db, 'users/' + cred.user.uid), {
-                    name, phone, email, referralUsed: refCode,
-                    status: 'pending', points: 0, joined: Date.now()
+                    name, phone, 
+                    email: fakeEmail, // Storing internal email
+                    referralUsed: refCode,
+                    status: 'pending', points: 0, joined: Date.now(),
+                    gameFinished: false // Initial status
                 });
                 alert("Request Sent! Wait for Admin Approval.");
                 window.location.reload();
