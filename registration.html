@@ -20,22 +20,22 @@
 </head>
 <body>
     <div class="card">
+        <!-- LOGIN SECTION -->
         <div id="login-box">
             <h2>USER LOGIN</h2>
-            <!-- Login with Phone -->
-            <input type="number" id="l-phone" placeholder="Phone Number">
+            <input type="number" id="l-phone" placeholder="Phone Number (e.g. 017...)" inputmode="numeric">
             <input type="password" id="l-pass" placeholder="Password">
             <button class="btn" onclick="login()">ENTER GAME</button>
             <p class="toggle">New Agent? <span onclick="toggleForm()">Register</span></p>
         </div>
 
+        <!-- REGISTER SECTION -->
         <div id="reg-box" class="hidden">
             <h2>JOIN REQUEST</h2>
             <input type="text" id="r-name" placeholder="Full Name">
-            <!-- Register with Phone Only -->
-            <input type="number" id="r-phone" placeholder="Phone Number">
+            <input type="number" id="r-phone" placeholder="Phone Number (Unique)" inputmode="numeric">
             <input type="password" id="r-pass" placeholder="Password (6+ chars)">
-            <input type="text" id="r-ref" placeholder="Referral Code (Required)">
+            <input type="text" id="r-ref" placeholder="Referral Code">
             <button class="btn" onclick="register()">SEND REQUEST</button>
             <p class="toggle">Already joined? <span onclick="toggleForm()">Login</span></p>
         </div>
@@ -46,73 +46,107 @@
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
         import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
 
+        // Firebase Config
         const firebaseConfig = { apiKey: "AIzaSyBVwD0U7_QeX8EyOrZ4fm7OG_ow1b391-M", authDomain: "game-f739d.firebaseapp.com", databaseURL: "https://game-f739d-default-rtdb.firebaseio.com", projectId: "game-f739d", storageBucket: "game-f739d.firebasestorage.app", messagingSenderId: "744868437950", appId: "1:744868437950:web:622410843c8aeb229463ef" };
+        
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getDatabase(app);
 
-        // Dummy domain to trick Firebase into using Email Auth with Phone numbers
-        const DOMAIN = "@game.local";
+        // SECRET DOMAIN (Do not change this)
+        const DOMAIN = "@game.com";
 
         window.toggleForm = () => {
             document.getElementById('login-box').classList.toggle('hidden');
             document.getElementById('reg-box').classList.toggle('hidden');
         }
 
+        // ================= LOGIN FUNCTION =================
         window.login = async () => {
-            const phone = document.getElementById('l-phone').value;
-            const pass = document.getElementById('l-pass').value;
+            const phone = document.getElementById('l-phone').value.trim();
+            const pass = document.getElementById('l-pass').value.trim();
             
             if(!phone || !pass) return alert("Please enter Phone and Password");
 
+            // Convert Phone to Fake Email
             const fakeEmail = phone + DOMAIN; 
 
             try {
                 const userCred = await signInWithEmailAndPassword(auth, fakeEmail, pass);
+                // Check if User is Approved
                 checkStatus(userCred.user.uid);
-            } catch (e) { alert("Login Failed: " + e.message); }
+            } catch (e) { 
+                console.error(e);
+                if(e.code === 'auth/user-not-found') alert("No account found with this phone number!");
+                else if(e.code === 'auth/wrong-password') alert("Wrong Password!");
+                else alert("Login Failed: " + e.message); 
+            }
         }
 
+        // ================= REGISTER FUNCTION =================
         window.register = async () => {
-            const name = document.getElementById('r-name').value;
-            const phone = document.getElementById('r-phone').value;
-            const pass = document.getElementById('r-pass').value;
-            const refCode = document.getElementById('r-ref').value;
+            const name = document.getElementById('r-name').value.trim();
+            const phone = document.getElementById('r-phone').value.trim();
+            const pass = document.getElementById('r-pass').value.trim();
+            const refCode = document.getElementById('r-ref').value.trim();
 
             if(!name || !phone || !pass || !refCode) return alert("Fill all fields!");
+            if(pass.length < 6) return alert("Password must be at least 6 characters!");
 
-            const fakeEmail = phone + DOMAIN;
-
+            // Validate Referral Code
             const refSnap = await get(ref(db, 'settings/referralCodes'));
             let valid = false;
+            if(refCode === 'ADMIN123') valid = true; // Master Code
             if(refSnap.exists()) {
                  if(Object.values(refSnap.val()).includes(refCode)) valid = true;
             }
-            if(refCode === 'ADMIN123') valid = true; 
 
             if(!valid) return alert("Invalid Referral Code!");
 
+            // Convert Phone to Fake Email
+            const fakeEmail = phone + DOMAIN;
+
             try {
+                // Create User in Auth
                 const cred = await createUserWithEmailAndPassword(auth, fakeEmail, pass);
+                
+                // Save User Data in Database
                 await set(ref(db, 'users/' + cred.user.uid), {
-                    name, phone, 
-                    email: fakeEmail, // Storing internal email
+                    name, 
+                    phone, 
+                    email: fakeEmail, 
                     referralUsed: refCode,
-                    status: 'pending', points: 0, joined: Date.now(),
-                    gameFinished: false // Initial status
+                    status: 'pending', 
+                    points: 0, 
+                    joined: Date.now(),
+                    gameFinished: false
                 });
-                alert("Request Sent! Wait for Admin Approval.");
-                window.location.reload();
-            } catch (e) { alert("Error: " + e.message); }
+
+                alert("Account Created! Please Login now.");
+                window.location.reload(); // Refresh page to go to login
+            } catch (e) { 
+                if(e.code === 'auth/email-already-in-use') alert("This Phone Number is already registered!");
+                else alert("Error: " + e.message); 
+            }
         }
 
         async function checkStatus(uid) {
             const s = await get(ref(db, 'users/' + uid));
             if(s.exists()){
                 const d = s.val();
-                if(d.status === 'approved') window.location.href = 'home.html';
-                else if(d.status === 'blocked') { alert('You are BLOCKED!'); signOut(auth); }
-                else { alert('Your account is Pending Approval.'); signOut(auth); }
+                if(d.status === 'approved') {
+                    window.location.href = 'home.html';
+                }
+                else if(d.status === 'blocked') { 
+                    alert('You are BLOCKED by Admin!'); 
+                    signOut(auth); 
+                }
+                else { 
+                    alert('Your account is Pending Approval. Ask Admin to approve.'); 
+                    signOut(auth); 
+                }
+            } else {
+                alert("Database Error: User data not found!");
             }
         }
     </script>
