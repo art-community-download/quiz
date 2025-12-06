@@ -20,20 +20,21 @@
 </head>
 <body>
     <div class="card">
-        <!-- LOGIN SECTION -->
+        <!-- LOGIN SECTION (Email & Password) -->
         <div id="login-box">
             <h2>USER LOGIN</h2>
-            <input type="number" id="l-phone" placeholder="Phone Number (e.g. 017...)" inputmode="numeric">
+            <input type="email" id="l-email" placeholder="Email Address">
             <input type="password" id="l-pass" placeholder="Password">
             <button class="btn" onclick="login()">ENTER GAME</button>
             <p class="toggle">New Agent? <span onclick="toggleForm()">Register</span></p>
         </div>
 
-        <!-- REGISTER SECTION -->
+        <!-- REGISTER SECTION (Email, Phone & Password) -->
         <div id="reg-box" class="hidden">
             <h2>JOIN REQUEST</h2>
             <input type="text" id="r-name" placeholder="Full Name">
-            <input type="number" id="r-phone" placeholder="Phone Number (Unique)" inputmode="numeric">
+            <input type="email" id="r-email" placeholder="Email Address (e.g. gmail.com)">
+            <input type="number" id="r-phone" placeholder="Phone Number">
             <input type="password" id="r-pass" placeholder="Password (6+ chars)">
             <input type="text" id="r-ref" placeholder="Referral Code">
             <button class="btn" onclick="register()">SEND REQUEST</button>
@@ -53,44 +54,37 @@
         const auth = getAuth(app);
         const db = getDatabase(app);
 
-        // SECRET DOMAIN (Do not change this)
-        const DOMAIN = "@game.com";
-
         window.toggleForm = () => {
             document.getElementById('login-box').classList.toggle('hidden');
             document.getElementById('reg-box').classList.toggle('hidden');
         }
 
-        // ================= LOGIN FUNCTION =================
+        // ================= LOGIN FUNCTION (With Email) =================
         window.login = async () => {
-            const phone = document.getElementById('l-phone').value.trim();
+            const email = document.getElementById('l-email').value.trim();
             const pass = document.getElementById('l-pass').value.trim();
             
-            if(!phone || !pass) return alert("Please enter Phone and Password");
-
-            // Convert Phone to Fake Email
-            const fakeEmail = phone + DOMAIN; 
+            if(!email || !pass) return alert("Please enter Email and Password");
 
             try {
-                const userCred = await signInWithEmailAndPassword(auth, fakeEmail, pass);
+                const userCred = await signInWithEmailAndPassword(auth, email, pass);
                 // Check if User is Approved
                 checkStatus(userCred.user.uid);
             } catch (e) { 
                 console.error(e);
-                if(e.code === 'auth/user-not-found') alert("No account found with this phone number!");
-                else if(e.code === 'auth/wrong-password') alert("Wrong Password!");
-                else alert("Login Failed: " + e.message); 
+                alert("Login Failed: " + e.message); 
             }
         }
 
-        // ================= REGISTER FUNCTION =================
+        // ================= REGISTER FUNCTION (With Email) =================
         window.register = async () => {
             const name = document.getElementById('r-name').value.trim();
+            const email = document.getElementById('r-email').value.trim();
             const phone = document.getElementById('r-phone').value.trim();
             const pass = document.getElementById('r-pass').value.trim();
             const refCode = document.getElementById('r-ref').value.trim();
 
-            if(!name || !phone || !pass || !refCode) return alert("Fill all fields!");
+            if(!name || !email || !phone || !pass || !refCode) return alert("Fill all fields!");
             if(pass.length < 6) return alert("Password must be at least 6 characters!");
 
             // Validate Referral Code
@@ -103,18 +97,15 @@
 
             if(!valid) return alert("Invalid Referral Code!");
 
-            // Convert Phone to Fake Email
-            const fakeEmail = phone + DOMAIN;
-
             try {
-                // Create User in Auth
-                const cred = await createUserWithEmailAndPassword(auth, fakeEmail, pass);
+                // Create User in Auth using Email
+                const cred = await createUserWithEmailAndPassword(auth, email, pass);
                 
                 // Save User Data in Database
                 await set(ref(db, 'users/' + cred.user.uid), {
                     name, 
                     phone, 
-                    email: fakeEmail, 
+                    email, 
                     referralUsed: refCode,
                     status: 'pending', 
                     points: 0, 
@@ -125,8 +116,7 @@
                 alert("Account Created! Please Login now.");
                 window.location.reload(); // Refresh page to go to login
             } catch (e) { 
-                if(e.code === 'auth/email-already-in-use') alert("This Phone Number is already registered!");
-                else alert("Error: " + e.message); 
+                alert("Error: " + e.message); 
             }
         }
 
