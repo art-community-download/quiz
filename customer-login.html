@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Customer Login | Poultry Shop</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* ==========================================================
+       CSS RESET & DESIGN TOKENS (BLACK & GOLD OBSIDIAN)
+       ========================================================== */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg-dark: #07080b;
+      --card-bg: rgba(18, 20, 28, 0.78);
+      --card-border: rgba(212, 175, 55, 0.25);
+      --border-bright: rgba(212, 175, 55, 0.6);
+      --gold-primary: #d4af37;
+      --gold-light: #f5d77f;
+      --gold-dark: #997519;
+      --gold-gradient: linear-gradient(135deg, #f7df87 0%, #d4af37 50%, #997519 100%);
+      --text-main: #f3f4f6;
+      --text-muted: #94a3b8;
+      --danger: #ef4444;
+      --success: #10b981;
+      --gold-glow: 0 0 25px rgba(212, 175, 55, 0.25);
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: 'Outfit', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px 16px;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Ambient Animated Background Lights */
+    .ambient-glow {
+      position: fixed;
+      width: 450px;
+      height: 450px;
+      border-radius: 50%;
+      filter: blur(140px);
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.15;
+      background: radial-gradient(circle, var(--gold-primary), transparent 70%);
+    }
+
+    .glow-1 { top: -100px; left: -100px; }
+    .glow-2 { bottom: -100px; right: -100px; }
+
+    /* Language Switcher Button (Top Right) */
+    .lang-switcher-wrap {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      z-index: 20;
+    }
+
+    .btn-lang {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--card-border);
+      color: var(--gold-light);
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      backdrop-filter: blur(8px);
+      transition: all 0.2s ease;
+    }
+
+    .btn-lang:hover {
+      background: rgba(212, 175, 55, 0.15);
+      border-color: var(--gold-primary);
+    }
+
+    /* Login Card Container (Mobile First: max 440px) */
+    .login-container {
+      width: 100%;
+      max-width: 440px;
+      position: relative;
+      z-index: 10;
+    }
+
+    .glass-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      padding: 36px 28px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8), var(--gold-glow);
+      transition: border-color 0.3s ease;
+    }
+
+    /* Header Section */
+    .brand-header {
+      text-align: center;
+      margin-bottom: 26px;
+    }
+
+    .logo-frame {
+      width: 82px;
+      height: 82px;
+      margin: 0 auto 14px auto;
+      border-radius: 20px;
+      background: radial-gradient(circle at 30% 30%, #2a251b, #111216);
+      border: 1.5px solid var(--gold-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      box-shadow: 0 0 20px rgba(212, 175, 55, 0.25);
+      transition: transform 0.3s ease;
+    }
+
+    .logo-frame img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .logo-frame svg {
+      width: 42px;
+      height: 42px;
+      stroke: var(--gold-primary);
+    }
+
+    /* Dynamic Shop Title */
+    .shop-title {
+      font-family: 'Cinzel', serif;
+      font-size: 1.35rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      background: var(--gold-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+    }
+
+    /* Branding Animation Classes */
+    .anim-soft_fade { animation: animFade 3s ease-in-out infinite alternate; }
+    .anim-gentle_shine { animation: animShine 4s linear infinite; }
+    .anim-subtle_glow { animation: animGlow 2.5s ease-in-out infinite alternate; }
+
+    @keyframes animFade { 0% { opacity: 0.85; } 100% { opacity: 1; } }
+    @keyframes animShine { 0% { filter: brightness(0.95); } 50% { filter: brightness(1.25); } 100% { filter: brightness(0.95); } }
+    @keyframes animGlow { 0% { text-shadow: 0 0 5px rgba(212,175,55,0.2); } 100% { text-shadow: 0 0 20px rgba(212,175,55,0.6); } }
+
+    /* Store Status Indicator */
+    .store-status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.74rem;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 20px;
+      margin-bottom: 8px;
+    }
+
+    .status-open {
+      background: rgba(16, 185, 129, 0.15);
+      color: #6ee7b7;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .status-closed {
+      background: rgba(239, 68, 68, 0.15);
+      color: #fca5a5;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    .welcome-text {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    /* Form Fields */
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #e2e8f0;
+      margin-bottom: 7px;
+    }
+
+    .input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-icon {
+      position: absolute;
+      left: 14px;
+      color: var(--gold-primary);
+      opacity: 0.8;
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-field {
+      width: 100%;
+      height: 48px;
+      background: rgba(10, 11, 16, 0.75);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 0 44px 0 42px;
+      font-family: inherit;
+      font-size: 0.92rem;
+      color: #fff;
+      outline: none;
+      transition: all 0.25s ease;
+    }
+
+    .input-field:focus {
+      border-color: var(--gold-primary);
+      box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.18);
+      background: rgba(15, 17, 24, 0.95);
+    }
+
+    .toggle-pass-btn {
+      position: absolute;
+      right: 12px;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 6px;
+      display: flex;
+      align-items: center;
+    }
+
+    .toggle-pass-btn:hover { color: var(--gold-light); }
+
+    /* Remember & Forgot Row */
+    .form-options-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 22px;
+      font-size: 0.82rem;
+    }
+
+    .remember-label {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      color: var(--text-muted);
+      cursor: pointer;
+    }
+
+    .custom-checkbox {
+      accent-color: var(--gold-primary);
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+    }
+
+    .forgot-link {
+      color: var(--gold-light);
+      text-decoration: none;
+      font-weight: 500;
+      transition: text-decoration 0.2s ease;
+    }
+
+    .forgot-link:hover { text-decoration: underline; }
+
+    /* Submit Button with Spinner */
+    .btn-submit {
+      width: 100%;
+      height: 50px;
+      background: var(--gold-gradient);
+      color: var(--text-dark);
+      border: none;
+      border-radius: 12px;
+      font-family: inherit;
+      font-size: 0.98rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 4px 18px rgba(212, 175, 55, 0.35);
+      transition: all 0.25s ease;
+    }
+
+    .btn-submit:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 24px rgba(212, 175, 55, 0.5);
+    }
+
+    .btn-submit:disabled {
+      opacity: 0.75;
+      cursor: not-allowed;
+    }
+
+    .spinner {
+      display: none;
+      width: 18px;
+      height: 18px;
+      border: 2px solid rgba(13, 15, 20, 0.3);
+      border-top-color: #07080b;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Footer Register Navigation */
+    .card-footer-nav {
+      text-align: center;
+      margin-top: 22px;
+      font-size: 0.86rem;
+      color: var(--text-muted);
+    }
+
+    .register-link {
+      color: var(--gold-light);
+      text-decoration: none;
+      font-weight: 700;
+      margin-left: 4px;
+    }
+
+    .register-link:hover { text-decoration: underline; }
+
+    /* Status Alert Message */
+    .alert-banner {
+      display: none;
+      padding: 12px 14px;
+      border-radius: 10px;
+      font-size: 0.84rem;
+      line-height: 1.4;
+      margin-bottom: 18px;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .alert-banner.error {
+      display: flex;
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      color: #fca5a5;
+    }
+
+    .alert-banner.success {
+      display: flex;
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      color: #6ee7b7;
+    }
+
+    /* Modal: Forgot Password */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(8px);
+      z-index: 100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .modal-box {
+      background: #0d0f15;
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      width: 100%;
+      max-width: 400px;
+      padding: 24px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8), var(--gold-glow);
+    }
+
+    .modal-title {
+      font-family: 'Cinzel', serif;
+      font-size: 1.1rem;
+      color: var(--gold-light);
+      margin-bottom: 8px;
+    }
+
+    .modal-desc {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-bottom: 18px;
+      line-height: 1.4;
+    }
+
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .btn-modal {
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 0.84rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+    }
+
+    .btn-modal-cancel {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--card-border);
+      color: #e2e8f0;
+    }
+
+    .btn-modal-submit {
+      background: var(--gold-gradient);
+      color: var(--text-dark);
+      font-weight: 700;
+    }
+
+    @media (max-width: 480px) {
+      .glass-card { padding: 30px 20px; border-radius: 20px; }
+      .shop-title { font-size: 1.2rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Ambient Lights -->
+  <div class="ambient-glow glow-1"></div>
+  <div class="ambient-glow glow-2"></div>
+
+  <!-- Language Switcher (Top Right) -->
+  <div class="lang-switcher-wrap">
+    <button class="btn-lang" id="btnLangToggle">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+      <span id="langButtonText">English</span>
+    </button>
+  </div>
+
+  <main class="login-container">
+    <div class="glass-card">
+
+      <!-- Dynamic Shop Branding Header -->
+      <header class="brand-header">
+        <div class="logo-frame" id="shopLogoFrame">
+          <!-- Fallback Rooster Icon -->
+          <svg id="fallbackLogoIcon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2C8.5 2 6 4.5 6 8c0 2 .8 3.8 2.2 5.1L5 22h14l-3.2-8.9C17.2 11.8 18 10 18 8c0-3.5-2.5-6-6-6z"/>
+          </svg>
+          <img id="shopLogoImg" src="" alt="Shop Logo" style="display:none;" />
+        </div>
+
+        <h1 class="shop-title" id="shopTitleText">POULTRY SHOP</h1>
+
+        <!-- Store Open/Closed Live Status Badge -->
+        <div>
+          <span class="store-status-pill status-open" id="storeStatusBadge">
+            <span style="width:6px; height:6px; border-radius:50%; background:currentColor;"></span>
+            <span id="storeStatusLabel">দোকান খোলা আছে</span>
+          </span>
+        </div>
+
+        <p class="welcome-text" data-i18n="welcome_sub">তাজা ও হালাল পোল্ট্রি অর্ডারের জন্য লগইন করুন</p>
+      </header>
+
+      <!-- Alert Notification Banner -->
+      <div id="alertBanner" class="alert-banner">
+        <span id="alertMessage">বার্তা</span>
+      </div>
+
+      <!-- Customer Login Form -->
+      <form id="customerLoginForm" autocomplete="off" novalidate>
+
+        <!-- Email / Identifier Input -->
+        <div class="form-group">
+          <label class="form-label" for="userEmail" data-i18n="lbl_email">ইমেইল অ্যাড্রেস (Email Address)</label>
+          <div class="input-wrapper">
+            <span class="input-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+            </span>
+            <input 
+              type="email" 
+              id="userEmail" 
+              class="input-field" 
+              placeholder="customer@example.com" 
+              required 
+              spellcheck="false"
+            />
+          </div>
+        </div>
+
+        <!-- Password Input -->
+        <div class="form-group">
+          <label class="form-label" for="userPassword" data-i18n="lbl_password">পাসওয়ার্ড (Password)</label>
+          <div class="input-wrapper">
+            <span class="input-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            </span>
+            <input 
+              type="password" 
+              id="userPassword" 
+              class="input-field" 
+              placeholder="••••••••••••" 
+              required 
+            />
+            <button type="button" id="btnTogglePassword" class="toggle-pass-btn" title="Show / Hide Password">
+              <svg id="eyeIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Options Row: Remember Me & Forgot Password -->
+        <div class="form-options-row">
+          <label class="remember-label">
+            <input type="checkbox" id="chkRememberMe" class="custom-checkbox" checked />
+            <span data-i18n="lbl_remember">মনে রাখুন (Remember)</span>
+          </label>
+          <a href="javascript:void(0)" class="forgot-link" id="btnOpenForgotModal" data-i18n="lbl_forgot">পাসওয়ার্ড ভুলে গেছেন?</a>
+        </div>
+
+        <!-- Login Button -->
+        <button type="submit" id="btnSubmitLogin" class="btn-submit">
+          <span id="btnSubmitText" data-i18n="btn_login">লগইন করুন</span>
+          <div id="btnSpinner" class="spinner"></div>
+        </button>
+
+      </form>
+
+      <!-- Register Link -->
+      <footer class="card-footer-nav">
+        <span data-i18n="no_account">অ্যাকাউন্ট নেই?</span>
+        <a href="customer-register.html" class="register-link" data-i18n="btn_register">নতুন অ্যাকাউন্ট খুলুন</a>
+      </footer>
+
+    </div>
+  </main>
+
+  <!-- ==========================================================
+       MODAL: FORGOT PASSWORD (FIREBASE AUTH RESET EMAIL)
+       ========================================================== -->
+  <div class="modal-backdrop" id="forgotModal">
+    <div class="modal-box">
+      <h3 class="modal-title" data-i18n="modal_forgot_title">পাসওয়ার্ড রিসেট করুন</h3>
+      <p class="modal-desc" data-i18n="modal_forgot_desc">আপনার অ্যাকাউন্টের নিবন্ধিত ইমেইল প্রবেশ করান। আমরা একটি পাসওয়ার্ড রিসেট লিংক পাঠাব।</p>
+      
+      <div id="forgotAlert" class="alert-banner">
+        <span id="forgotAlertMsg"></span>
+      </div>
+
+      <form id="forgotPassForm" autocomplete="off">
+        <div class="form-group">
+          <label class="form-label" data-i18n="lbl_email">ইমেইল অ্যাড্রেস</label>
+          <div class="input-wrapper">
+            <input type="email" id="forgotEmail" class="input-field" style="padding-left:14px;" placeholder="customer@example.com" required />
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-modal btn-modal-cancel" id="btnCancelForgot" data-i18n="btn_cancel">বাতিল</button>
+          <button type="submit" class="btn-modal btn-modal-submit" id="btnSubmitForgot" data-i18n="btn_send_link">লিংক পাঠান</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==========================================================
+       MODULAR FIREBASE SDK (v10) & LOGIN SCRIPT
+       ========================================================== -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { 
+      getAuth, 
+      signInWithEmailAndPassword, 
+      sendPasswordResetEmail, 
+      setPersistence, 
+      browserLocalPersistence, 
+      browserSessionPersistence,
+      signOut,
+      onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { 
+      getDatabase, 
+      ref, 
+      onValue, 
+      get 
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+    // 1. Firebase Configuration (Matches Project Credentials)
+    const firebaseConfig = {
+      apiKey: "AIzaSyDYPsjlOmRwH2F5P8fFoiirP1FLjgh3c8A",
+      authDomain: "murgi-dfd67.firebaseapp.com",
+      databaseURL: "https://murgi-dfd67-default-rtdb.firebaseio.com",
+      projectId: "murgi-dfd67",
+      storageBucket: "murgi-dfd67.firebasestorage.app",
+      messagingSenderId: "209696889864",
+      appId: "1:209696889864:web:3eaa16034f00cca45505bd"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
+
+    // Translation Dictionary
+    const i18n = {
+      en: {
+        welcome_sub: "Login to order fresh and halal poultry",
+        lbl_email: "Email Address",
+        lbl_password: "Password",
+        lbl_remember: "Remember me",
+        lbl_forgot: "Forgot Password?",
+        btn_login: "Login to Account",
+        no_account: "Don't have an account?",
+        btn_register: "Register Now",
+        modal_forgot_title: "Reset Password",
+        modal_forgot_desc: "Enter your registered email address. We will send you a password reset link.",
+        btn_cancel: "Cancel",
+        btn_send_link: "Send Reset Link",
+        status_open_text: "Store Open for Orders",
+        status_closed_text: "Store Currently Closed",
+        lang_switch_to: "বাংলা",
+        err_suspended: "Your account is temporarily suspended. Please contact shop administration.",
+        err_invalid_creds: "Invalid email or password. Please verify your credentials.",
+        err_too_many: "Too many failed login attempts. Please try again later.",
+        err_network: "Network connection error. Check your internet connection.",
+        reset_sent_success: "Password reset link sent! Check your email inbox."
+      },
+      bn: {
+        welcome_sub: "তাজা ও হালাল পোল্ট্রি অর্ডারের জন্য লগইন করুন",
+        lbl_email: "ইমেইল অ্যাড্রেস (Email Address)",
+        lbl_password: "পাসওয়ার্ড (Password)",
+        lbl_remember: "মনে রাখুন (Remember)",
+        lbl_forgot: "পাসওয়ার্ড ভুলে গেছেন?",
+        btn_login: "লগইন করুন",
+        no_account: "অ্যাকাউন্ট নেই?",
+        btn_register: "নতুন অ্যাকাউন্ট খুলুন",
+        modal_forgot_title: "পাসওয়ার্ড রিসেট করুন",
+        modal_forgot_desc: "আপনার অ্যাকাউন্টের নিবন্ধিত ইমেইল প্রবেশ করান। আমরা একটি পাসওয়ার্ড রিসেট লিংক পাঠাব।",
+        btn_cancel: "বাতিল",
+        btn_send_link: "লিংক পাঠান",
+        status_open_text: "দোকান খোলা আছে",
+        status_closed_text: "দোকান সাময়িকভাবে বন্ধ",
+        lang_switch_to: "English",
+        err_suspended: "আপনার অ্যাকাউন্টটি সাময়িকভাবে স্থগিত করা হয়েছে। দোকানের সাথে যোগাযোগ করুন।",
+        err_invalid_creds: "ভুল ইমেইল বা পাসওয়ার্ড দেওয়া হয়েছে। অনুগ্রহ করে যাচাই করুন।",
+        err_too_many: "অতিরিক্ত ভুল চেষ্টার কারণে সাময়িকভাবে ব্লক করা হয়েছে। কিছুক্ষণ পর চেষ্টা করুন।",
+        err_network: "ইন্টারনেট সংযোগে ত্রুটি। সংযোগ পরীক্ষা করুন।",
+        reset_sent_success: "পাসওয়ার্ড রিসেট লিংক পাঠানো হয়েছে! আপনার ইমেইল চেক করুন।"
+      }
+    };
+
+    let currentLang = localStorage.getItem('poultry_customer_lang') || 'bn';
+
+    function setLanguage(lang) {
+      currentLang = lang;
+      localStorage.setItem('poultry_customer_lang', lang);
+      document.documentElement.lang = lang;
+
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (i18n[lang][key]) el.textContent = i18n[lang][key];
+      });
+
+      document.getElementById('langButtonText').textContent = i18n[lang].lang_switch_to;
+    }
+
+    document.getElementById('btnLangToggle').addEventListener('click', () => {
+      setLanguage(currentLang === 'en' ? 'bn' : 'en');
+    });
+
+    // DOM References
+    const customerLoginForm = document.getElementById('customerLoginForm');
+    const userEmailInput = document.getElementById('userEmail');
+    const userPasswordInput = document.getElementById('userPassword');
+    const chkRememberMe = document.getElementById('chkRememberMe');
+    const btnSubmitLogin = document.getElementById('btnSubmitLogin');
+    const btnSubmitText = document.getElementById('btnSubmitText');
+    const btnSpinner = document.getElementById('btnSpinner');
+    const btnTogglePassword = document.getElementById('btnTogglePassword');
+    const eyeIcon = document.getElementById('eyeIcon');
+    const alertBanner = document.getElementById('alertBanner');
+    const alertMessage = document.getElementById('alertMessage');
+
+    // Branding DOM
+    const shopLogoFrame = document.getElementById('shopLogoFrame');
+    const shopLogoImg = document.getElementById('shopLogoImg');
+    const fallbackLogoIcon = document.getElementById('fallbackLogoIcon');
+    const shopTitleText = document.getElementById('shopTitleText');
+    const storeStatusBadge = document.getElementById('storeStatusBadge');
+    const storeStatusLabel = document.getElementById('storeStatusLabel');
+
+    // Forgot Modal DOM
+    const forgotModal = document.getElementById('forgotModal');
+    const btnOpenForgotModal = document.getElementById('btnOpenForgotModal');
+    const btnCancelForgot = document.getElementById('btnCancelForgot');
+    const forgotPassForm = document.getElementById('forgotPassForm');
+    const forgotEmail = document.getElementById('forgotEmail');
+    const forgotAlert = document.getElementById('forgotAlert');
+    const forgotAlertMsg = document.getElementById('forgotAlertMsg');
+    const btnSubmitForgot = document.getElementById('btnSubmitForgot');
+
+    function showAlert(msg, isError = true) {
+      alertBanner.className = `alert-banner ${isError ? 'error' : 'success'}`;
+      alertMessage.textContent = msg;
+      alertBanner.style.display = 'flex';
+    }
+
+    function hideAlert() {
+      alertBanner.style.display = 'none';
+    }
+
+    // Toggle Password Visibility
+    btnTogglePassword.addEventListener('click', () => {
+      const isPassword = userPasswordInput.type === 'password';
+      userPasswordInput.type = isPassword ? 'text' : 'password';
+      eyeIcon.innerHTML = isPassword 
+        ? `<path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" y1="2" x2="22" y2="22"/>`
+        : `<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>`;
+    });
+
+    // ==========================================================
+    // DYNAMIC SHOP BRANDING REALTIME LISTENERS
+    // ==========================================================
+    function listenToShopBranding() {
+      // 1. Shop Profile (Name & Logo)
+      onValue(ref(db, 'settings/shopProfile'), (snap) => {
+        const prof = snap.val() || {};
+        if (prof.shopName) shopTitleText.textContent = prof.shopName;
+        
+        if (prof.logoUrl) {
+          shopLogoImg.src = prof.logoUrl;
+          shopLogoImg.onload = () => {
+            shopLogoImg.style.display = 'block';
+            fallbackLogoIcon.style.display = 'none';
+          };
+          shopLogoImg.onerror = () => {
+            shopLogoImg.style.display = 'none';
+            fallbackLogoIcon.style.display = 'block';
+          };
+        } else {
+          shopLogoImg.style.display = 'none';
+          fallbackLogoIcon.style.display = 'block';
+        }
+      });
+
+      // 2. Branding (Animation Style, Glow & Logo Size)
+      onValue(ref(db, 'settings/branding'), (snap) => {
+        const brand = snap.val() || {};
+        const anim = brand.animation || 'gentle_shine';
+        const glow = brand.glow || 'on';
+        const size = brand.logoSize || 82;
+
+        shopLogoFrame.style.width = `${size}px`;
+        shopLogoFrame.style.height = `${size}px`;
+
+        shopTitleText.className = `shop-title anim-${anim}`;
+
+        if (glow === 'on') {
+          shopTitleText.style.textShadow = '0 0 18px rgba(212, 175, 55, 0.45)';
+          shopLogoFrame.style.boxShadow = '0 0 25px rgba(212, 175, 55, 0.35)';
+        } else {
+          shopTitleText.style.textShadow = 'none';
+          shopLogoFrame.style.boxShadow = 'none';
+        }
+      });
+
+      // 3. Shop Status (Open / Closed)
+      onValue(ref(db, 'settings/shopStatus'), (snap) => {
+        const st = snap.val() || {};
+        const isOpen = (st.isOpen !== false);
+        const t = i18n[currentLang];
+
+        if (isOpen) {
+          storeStatusBadge.className = 'store-status-pill status-open';
+          storeStatusLabel.textContent = t.status_open_text;
+        } else {
+          storeStatusBadge.className = 'store-status-pill status-closed';
+          storeStatusLabel.textContent = st.closureReason || t.status_closed_text;
+        }
+      });
+    }
+
+    // ==========================================================
+    // AUTO REDIRECT IF ALREADY AUTHENTICATED
+    // ==========================================================
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        // Verify customer node
+        const custRef = ref(db, `customers/${user.uid}`);
+        const snap = await get(custRef);
+        const data = snap.val();
+
+        // If active customer, redirect directly to customer-home.html
+        if (!data || (data.status !== 'suspended' && data.accountStatus !== 'disabled')) {
+          window.location.replace('customer-home.html');
+        }
+      }
+    });
+
+    // ==========================================================
+    // CUSTOMER LOGIN FLOW
+    // ==========================================================
+    customerLoginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      hideAlert();
+
+      const email = userEmailInput.value.trim();
+      const password = userPasswordInput.value;
+      const t = i18n[currentLang];
+
+      if (!email || !password) {
+        showAlert(t.err_invalid_creds);
+        return;
+      }
+
+      // UI Loading state
+      btnSubmitLogin.disabled = true;
+      btnSubmitText.textContent = currentLang === 'bn' ? "যাচাই করা হচ্ছে..." : "Verifying...";
+      btnSpinner.style.display = "block";
+
+      try {
+        // Set Persistence based on Remember Me
+        const persistenceType = chkRememberMe.checked ? browserLocalPersistence : browserSessionPersistence;
+        await setPersistence(auth, persistenceType);
+
+        // Sign In with Firebase Authentication
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+
+        // Verify Customer Account Status from Firebase Realtime Database
+        const custSnap = await get(ref(db, `customers/${user.uid}`));
+        const userSnap = await get(ref(db, `users/${user.uid}`));
+
+        const record = custSnap.exists() ? custSnap.val() : (userSnap.exists() ? userSnap.val() : null);
+
+        // Check if Suspended by Admin
+        if (record && (record.status === 'suspended' || record.accountStatus === 'disabled')) {
+          await signOut(auth);
+          showAlert(t.err_suspended);
+          btnSubmitLogin.disabled = false;
+          btnSubmitText.textContent = t.btn_login;
+          btnSpinner.style.display = "none";
+          return;
+        }
+
+        // Successful Login: Redirect strictly to Customer App Home Page
+        showAlert(currentLang === 'bn' ? "লগইন সফল হয়েছে! স্বাগতম..." : "Login successful! Redirecting...", false);
+        setTimeout(() => {
+          window.location.replace('customer-home.html');
+        }, 800);
+
+      } catch (err) {
+        console.error("Login Error:", err);
+        btnSubmitLogin.disabled = false;
+        btnSubmitText.textContent = t.btn_login;
+        btnSpinner.style.display = "none";
+
+        let errorMsg = t.err_invalid_creds;
+        if (err.code === 'auth/too-many-requests') {
+          errorMsg = t.err_too_many;
+        } else if (err.code === 'auth/network-request-failed') {
+          errorMsg = t.err_network;
+        }
+        showAlert(errorMsg);
+      }
+    });
+
+    // ==========================================================
+    // FORGOT PASSWORD MODAL FLOW
+    // ==========================================================
+    btnOpenForgotModal.addEventListener('click', () => {
+      forgotPassForm.reset();
+      forgotAlert.style.display = 'none';
+      if (userEmailInput.value) forgotEmail.value = userEmailInput.value.trim();
+      forgotModal.style.display = 'flex';
+    });
+
+    btnCancelForgot.addEventListener('click', () => {
+      forgotModal.style.display = 'none';
+    });
+
+    forgotPassForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = forgotEmail.value.trim();
+      const t = i18n[currentLang];
+
+      if (!email) return;
+
+      btnSubmitForgot.disabled = true;
+      btnSubmitForgot.textContent = currentLang === 'bn' ? "পাঠানো হচ্ছে..." : "Sending...";
+
+      try {
+        await sendPasswordResetEmail(auth, email);
+        forgotAlert.className = 'alert-banner success';
+        forgotAlertMsg.textContent = t.reset_sent_success;
+        forgotAlert.style.display = 'flex';
+        btnSubmitForgot.style.display = 'none';
+      } catch (err) {
+        forgotAlert.className = 'alert-banner error';
+        forgotAlertMsg.textContent = err.message || t.err_network;
+        forgotAlert.style.display = 'flex';
+        btnSubmitForgot.disabled = false;
+        btnSubmitForgot.textContent = t.btn_send_link;
+      }
+    });
+
+    // Initialize Branding Listeners & Language
+    listenToShopBranding();
+    setLanguage(currentLang);
+  </script>
+</body>
+</html>
