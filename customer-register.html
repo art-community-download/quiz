@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Customer Registration | Poultry Shop</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* ==========================================================
+       CSS RESET & DESIGN TOKENS (BLACK & GOLD OBSIDIAN)
+       ========================================================== */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg-dark: #07080b;
+      --card-bg: rgba(18, 20, 28, 0.82);
+      --card-border: rgba(212, 175, 55, 0.25);
+      --gold-primary: #d4af37;
+      --gold-light: #f5d77f;
+      --gold-dark: #997519;
+      --gold-gradient: linear-gradient(135deg, #f7df87 0%, #d4af37 50%, #997519 100%);
+      --text-main: #f3f4f6;
+      --text-muted: #94a3b8;
+      --danger: #ef4444;
+      --success: #10b981;
+      --gold-glow: 0 0 25px rgba(212, 175, 55, 0.22);
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: 'Outfit', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 30px 16px;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Ambient Lights */
+    .ambient-glow {
+      position: fixed;
+      width: 450px;
+      height: 450px;
+      border-radius: 50%;
+      filter: blur(140px);
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.15;
+      background: radial-gradient(circle, var(--gold-primary), transparent 70%);
+    }
+    .glow-1 { top: -100px; left: -100px; }
+    .glow-2 { bottom: -100px; right: -100px; }
+
+    /* Language Switcher Button (Top Right) */
+    .lang-switcher-wrap {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      z-index: 20;
+    }
+
+    .btn-lang {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--card-border);
+      color: var(--gold-light);
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      backdrop-filter: blur(8px);
+      transition: all 0.2s ease;
+    }
+
+    .btn-lang:hover {
+      background: rgba(212, 175, 55, 0.15);
+      border-color: var(--gold-primary);
+    }
+
+    /* Registration Card Container (Mobile First: max 500px) */
+    .register-container {
+      width: 100%;
+      max-width: 500px;
+      position: relative;
+      z-index: 10;
+      margin: auto;
+    }
+
+    .glass-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      padding: 36px 28px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8), var(--gold-glow);
+    }
+
+    /* Header Section */
+    .brand-header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .logo-frame {
+      width: 78px;
+      height: 78px;
+      margin: 0 auto 12px auto;
+      border-radius: 20px;
+      background: radial-gradient(circle at 30% 30%, #2a251b, #111216);
+      border: 1.5px solid var(--gold-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      box-shadow: 0 0 20px rgba(212, 175, 55, 0.25);
+    }
+
+    .logo-frame img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .logo-frame svg {
+      width: 40px;
+      height: 40px;
+      stroke: var(--gold-primary);
+    }
+
+    .shop-title {
+      font-family: 'Cinzel', serif;
+      font-size: 1.35rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      background: var(--gold-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+    }
+
+    /* Branding Animation Classes */
+    .anim-soft_fade { animation: animFade 3s ease-in-out infinite alternate; }
+    .anim-gentle_shine { animation: animShine 4s linear infinite; }
+    .anim-subtle_glow { animation: animGlow 2.5s ease-in-out infinite alternate; }
+
+    @keyframes animFade { 0% { opacity: 0.85; } 100% { opacity: 1; } }
+    @keyframes animShine { 0% { filter: brightness(0.95); } 50% { filter: brightness(1.25); } 100% { filter: brightness(0.95); } }
+    @keyframes animGlow { 0% { text-shadow: 0 0 5px rgba(212,175,55,0.2); } 100% { text-shadow: 0 0 20px rgba(212,175,55,0.6); } }
+
+    .store-status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.74rem;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 20px;
+      margin-bottom: 8px;
+    }
+
+    .status-open {
+      background: rgba(16, 185, 129, 0.15);
+      color: #6ee7b7;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .status-closed {
+      background: rgba(239, 68, 68, 0.15);
+      color: #fca5a5;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    .form-section-title {
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: var(--gold-light);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 4px;
+      margin: 18px 0 14px 0;
+    }
+
+    /* Form Inputs */
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #e2e8f0;
+      margin-bottom: 6px;
+    }
+
+    .input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-field, .form-select, .form-textarea {
+      width: 100%;
+      height: 46px;
+      background: rgba(10, 11, 16, 0.75);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 0 14px;
+      font-family: inherit;
+      font-size: 0.9rem;
+      color: #fff;
+      outline: none;
+      transition: all 0.25s ease;
+    }
+
+    .input-field:focus, .form-select:focus, .form-textarea:focus {
+      border-color: var(--gold-primary);
+      box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.18);
+      background: rgba(15, 17, 24, 0.95);
+    }
+
+    .form-textarea {
+      height: auto;
+      padding: 10px 14px;
+      resize: vertical;
+      min-height: 70px;
+    }
+
+    .toggle-pass-btn {
+      position: absolute;
+      right: 12px;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 6px;
+      display: flex;
+      align-items: center;
+    }
+
+    .toggle-pass-btn:hover { color: var(--gold-light); }
+
+    /* GPS Location Box */
+    .gps-box {
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px dashed var(--card-border);
+      border-radius: 14px;
+      padding: 14px;
+      margin-bottom: 16px;
+    }
+
+    .btn-detect-gps {
+      width: 100%;
+      height: 42px;
+      background: rgba(212, 175, 55, 0.12);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      color: var(--gold-light);
+      font-family: inherit;
+      font-size: 0.84rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-detect-gps:hover {
+      background: rgba(212, 175, 55, 0.22);
+      border-color: var(--gold-primary);
+    }
+
+    .gps-status-text {
+      font-size: 0.76rem;
+      color: var(--text-muted);
+      margin-top: 8px;
+      display: block;
+      line-height: 1.4;
+    }
+
+    /* Terms Checkbox Row */
+    .terms-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin: 18px 0;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    .custom-checkbox {
+      accent-color: var(--gold-primary);
+      width: 17px;
+      height: 17px;
+      cursor: pointer;
+      margin-top: 2px;
+      flex-shrink: 0;
+    }
+
+    .terms-link {
+      color: var(--gold-light);
+      text-decoration: underline;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    /* Submit Button */
+    .btn-submit {
+      width: 100%;
+      height: 50px;
+      background: var(--gold-gradient);
+      color: var(--text-dark);
+      border: none;
+      border-radius: 12px;
+      font-family: inherit;
+      font-size: 0.98rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 4px 18px rgba(212, 175, 55, 0.35);
+      transition: all 0.25s ease;
+    }
+
+    .btn-submit:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 24px rgba(212, 175, 55, 0.5);
+    }
+
+    .btn-submit:disabled {
+      opacity: 0.75;
+      cursor: not-allowed;
+    }
+
+    .spinner {
+      display: none;
+      width: 18px;
+      height: 18px;
+      border: 2px solid rgba(13, 15, 20, 0.3);
+      border-top-color: #07080b;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Alert Banner */
+    .alert-banner {
+      display: none;
+      padding: 12px 14px;
+      border-radius: 10px;
+      font-size: 0.84rem;
+      line-height: 1.4;
+      margin-bottom: 18px;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .alert-banner.error {
+      display: flex;
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      color: #fca5a5;
+    }
+
+    .alert-banner.success {
+      display: flex;
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      color: #6ee7b7;
+    }
+
+    .card-footer-nav {
+      text-align: center;
+      margin-top: 22px;
+      font-size: 0.86rem;
+      color: var(--text-muted);
+    }
+
+    .login-link {
+      color: var(--gold-light);
+      text-decoration: none;
+      font-weight: 700;
+      margin-left: 4px;
+    }
+    .login-link:hover { text-decoration: underline; }
+
+    /* Modal: Terms & Conditions */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(8px);
+      z-index: 100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .modal-box {
+      background: #0d0f15;
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      width: 100%;
+      max-width: 480px;
+      padding: 24px;
+      max-height: 85vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8), var(--gold-glow);
+    }
+
+    .modal-title {
+      font-family: 'Cinzel', serif;
+      font-size: 1.15rem;
+      color: var(--gold-light);
+      margin-bottom: 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 8px;
+    }
+
+    .rules-list {
+      padding-left: 18px;
+      font-size: 0.82rem;
+      color: #e2e8f0;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    .rules-list li { margin-bottom: 8px; }
+
+    .btn-modal-close {
+      width: 100%;
+      padding: 10px;
+      border-radius: 10px;
+      background: var(--gold-gradient);
+      color: var(--text-dark);
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+    }
+
+    @media (max-width: 480px) {
+      .glass-card { padding: 30px 18px; border-radius: 20px; }
+      .shop-title { font-size: 1.2rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="ambient-glow glow-1"></div>
+  <div class="ambient-glow glow-2"></div>
+
+  <!-- Language Switcher -->
+  <div class="lang-switcher-wrap">
+    <button class="btn-lang" id="btnLangToggle">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+      <span id="langButtonText">English</span>
+    </button>
+  </div>
+
+  <main class="register-container">
+    <div class="glass-card">
+
+      <!-- Dynamic Shop Branding Header -->
+      <header class="brand-header">
+        <div class="logo-frame" id="shopLogoFrame">
+          <svg id="fallbackLogoIcon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2C8.5 2 6 4.5 6 8c0 2 .8 3.8 2.2 5.1L5 22h14l-3.2-8.9C17.2 11.8 18 10 18 8c0-3.5-2.5-6-6-6z"/>
+          </svg>
+          <img id="shopLogoImg" src="" alt="Shop Logo" style="display:none;" />
+        </div>
+
+        <h1 class="shop-title" id="shopTitleText">POULTRY SHOP</h1>
+
+        <div>
+          <span class="store-status-pill status-open" id="storeStatusBadge">
+            <span style="width:6px; height:6px; border-radius:50%; background:currentColor;"></span>
+            <span id="storeStatusLabel">দোকান খোলা আছে</span>
+          </span>
+        </div>
+
+        <p style="font-size:0.85rem; color:var(--text-muted);" data-i18n="reg_sub">নতুন অ্যাকাউন্ট তৈরি করে তাজা পোল্ট্রি অর্ডার করুন</p>
+      </header>
+
+      <!-- Alert Notification Banner -->
+      <div id="alertBanner" class="alert-banner">
+        <span id="alertMessage">বার্তা</span>
+      </div>
+
+      <!-- Registration Form -->
+      <form id="registerForm" autocomplete="off" novalidate>
+
+        <!-- SECTION: PERSONAL INFORMATION -->
+        <div class="form-section-title" data-i18n="sec_personal">১. ব্যক্তিগত তথ্য (Personal Info)</div>
+
+        <div class="form-group">
+          <label class="form-label" for="regFullName" data-i18n="lbl_name">পুরো নাম (Full Name) *</label>
+          <input type="text" id="regFullName" class="input-field" placeholder="e.g. আব্দুল করিম" required />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="regUsername" data-i18n="lbl_username">ইউজারনেম (Username) *</label>
+          <input type="text" id="regUsername" class="input-field" placeholder="e.g. karim_poultry" required spellcheck="false" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="regEmail" data-i18n="lbl_email">ইমেইল অ্যাড্রেস (Email Address) *</label>
+          <input type="email" id="regEmail" class="input-field" placeholder="karim@example.com" required spellcheck="false" />
+          <small style="color:var(--text-muted); font-size:0.72rem;">* পাসওয়ার্ড রিসেট ও অর্ডার রসিদের জন্য ব্যবহৃত হবে</small>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="regWhatsApp" data-i18n="lbl_whatsapp">WhatsApp Mobile Number *</label>
+          <input type="tel" id="regWhatsApp" class="input-field" placeholder="017XXXXXXXX" required />
+          <small style="color:var(--text-muted); font-size:0.72rem;">* ১১ ডিজিটের সঠিক বাংলাদেশি মোবাইল নম্বর দিন</small>
+        </div>
+
+        <!-- Password Inputs -->
+        <div class="form-group">
+          <label class="form-label" for="regPassword" data-i18n="lbl_password">পাসওয়ার্ড (Password) *</label>
+          <div class="input-wrapper">
+            <input type="password" id="regPassword" class="input-field" placeholder="কমপক্ষে ৬ অক্ষর" required />
+            <button type="button" class="toggle-pass-btn" onclick="togglePass('regPassword', this)">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="regConfirmPassword" data-i18n="lbl_confirm_pass">পাসওয়ার্ড নিশ্চিত করুন (Confirm Password) *</label>
+          <div class="input-wrapper">
+            <input type="password" id="regConfirmPassword" class="input-field" placeholder="পুনরায় পাসওয়ার্ড লিখুন" required />
+            <button type="button" class="toggle-pass-btn" onclick="togglePass('regConfirmPassword', this)">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Admin Referral Code -->
+        <div class="form-group">
+          <label class="form-label" for="regReferralCode" data-i18n="lbl_referral">Admin Referral Code *</label>
+          <input type="text" id="regReferralCode" class="input-field" placeholder="e.g. MURGI-XXXXX" style="text-transform:uppercase; font-family:monospace; font-weight:700;" required />
+          <small style="color:var(--gold-light); font-size:0.72rem;">* দোকান কর্তৃপক্ষ কর্তৃক প্রদত্ত ওয়ান-টাইম রেফারেল কোড আবশ্যক</small>
+        </div>
+
+        <!-- SECTION: CUSTOMER CATEGORY -->
+        <div class="form-section-title" data-i18n="sec_category">২. গ্রাহকের ধরন (Customer Category)</div>
+
+        <div class="form-group">
+          <label class="form-label" for="regCategory" data-i18n="lbl_category">ক্যাটাগরি নির্বাচন করুন *</label>
+          <select id="regCategory" class="form-select" required>
+            <option value="normal" selected>Normal Customer (সাধারণ খুচরা ক্রেতা)</option>
+            <option value="restaurant">Restaurant (রেস্তোরাঁ / বিরিয়ানি হাউজ)</option>
+            <option value="hotel">Hotel (আবাসিক / ডাইনিং হোটেল)</option>
+            <option value="club">Club (ক্লাব / ক্যাটারিং সমিতি)</option>
+            <option value="bakery">Bakery (বেকারি / ফাস্টফুড শপ)</option>
+            <option value="cafe">Cafe (ক্যাফেটেরিয়া)</option>
+            <option value="catering">Catering Service (ক্যাটারিং সার্ভিস)</option>
+            <option value="otherBusiness">Other Business (অন্যান্য বাণিজ্যিক প্রতিষ্ঠান)</option>
+          </select>
+        </div>
+
+        <!-- Conditional Business Name Field -->
+        <div class="form-group" id="businessNameGroup" style="display:none;">
+          <label class="form-label" for="regBusinessName" data-i18n="lbl_biz_name">ব্যবসা প্রতিষ্ঠানের নাম (Business Name) *</label>
+          <input type="text" id="regBusinessName" class="input-field" placeholder="e.g. মায়ের দোয়া রেস্তোরাঁ" />
+          <small style="color:var(--text-muted); font-size:0.72rem;">* বাণিজ্যিক গ্রাহকদের ক্ষেত্রে অ্যাডমিন অনুমোদনের পর বিশেষ পাইকারি মূল্য প্রযোজ্য হবে</small>
+        </div>
+
+        <!-- SECTION: DELIVERY LOCATION -->
+        <div class="form-section-title" data-i18n="sec_location">৩. ডেলিভারি ঠিকানা ও জিপিএস (Delivery Location)</div>
+
+        <div class="gps-box">
+          <button type="button" class="btn-detect-gps" id="btnDetectGPS">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 12 8 12s8-6.75 8-12a8 8 0 0 0-8-8z"/><circle cx="12" cy="10" r="3"/></svg>
+            <span id="gpsBtnText" data-i18n="btn_detect_gps">Detect My Current Location</span>
+          </button>
+          <input type="hidden" id="geoLatitude" />
+          <input type="hidden" id="geoLongitude" />
+          <span class="gps-status-text" id="gpsStatusText">সঠিক ডেলিভারি দূরত্ব ও চার্জ নির্ধারণের জন্য লোকেশন বাটন চাপুন।</span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="regAddress" data-i18n="lbl_address">সম্পূর্ণ ডেলিভারি ঠিকানা (Detailed Address) *</label>
+          <textarea id="regAddress" class="form-textarea" placeholder="বাসা/হোল্ডিং নম্বর, রোড, এলাকা, ল্যান্ডমার্ক ইত্যাদি বিস্তারিত লিখুন..." required></textarea>
+        </div>
+
+        <!-- Terms and Conditions Checkbox -->
+        <div class="terms-row">
+          <input type="checkbox" id="chkTerms" class="custom-checkbox" required />
+          <label for="chkTerms">
+            <span data-i18n="terms_agree">আমি দোকানের সকল</span> 
+            <span class="terms-link" id="btnOpenTerms" data-i18n="terms_link">শর্তাবলী ও নীতিমালা (Terms & Conditions)</span> 
+            <span data-i18n="terms_agree_post">পড়েছি এবং তা মেনে চলতে সম্মতি জানাচ্ছি।</span>
+          </label>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" id="btnSubmitRegister" class="btn-submit">
+          <span id="btnSubmitText" data-i18n="btn_register">অ্যাকাউন্ট তৈরি করুন</span>
+          <div id="btnSpinner" class="spinner"></div>
+        </button>
+
+      </form>
+
+      <footer class="card-footer-nav">
+        <span data-i18n="already_account">ইতিমধ্যে অ্যাকাউন্ট আছে?</span>
+        <a href="customer-login.html" class="login-link" data-i18n="btn_login">লগইন করুন</a>
+      </footer>
+
+    </div>
+  </main>
+
+  <!-- ==========================================================
+       MODAL: 10 PLATFORM TERMS & CONDITIONS
+       ========================================================== -->
+  <div class="modal-backdrop" id="termsModal">
+    <div class="modal-box">
+      <h3 class="modal-title" data-i18n="modal_terms_title">দোকানের শর্তাবলী ও নীতিমালা</h3>
+      <ol class="rules-list">
+        <li>এটি একটি একক পোল্ট্রি শপ অর্ডারিং প্ল্যাটফর্ম (মাল্টি-ভেন্ডর মার্কেটপ্লেস নয়)।</li>
+        <li>গ্রাহককে অবশ্যই সত্য ও নির্ভুল ব্যক্তিগত তথ্য প্রদান করতে হবে।</li>
+        <li>জরুরি যোগাযোগ ও অর্ডার সমন্বয়ের জন্য একটি সচল WhatsApp মোবাইল নম্বর থাকা বাধ্যতামূলক।</li>
+        <li>সঠিক ও নির্দিষ্ট ডেলিভারি ঠিকানা প্রদান করতে হবে যাতে ডেলিভারি রাইডার সহজেই পৌঁছাতে পারেন।</li>
+        <li>অনুমোদিত কাস্টমার ক্যাটাগরি (খুচরা বনাম বাণিজ্যিক রেস্তোরাঁ) অনুযায়ী পণ্যের মূল্য পরিবর্তিত হতে পারে।</li>
+        <li>সকল অর্ডার দোকানের পণ্য মজুদ ও অ্যাডমিন অনুমোদনের ওপর নির্ভরশীল।</li>
+        <li>গ্রাহক কোনো ফেক বা হয়রানিমূলক অর্ডার করতে পারবেন না।</li>
+        <li>অর্ডার বাতিলের ক্ষেত্রে দোকানের ২০ মিনিটের নির্ধারিত ক্যান্সেলেশন নীতিমালা কার্যকর হবে।</li>
+        <li>অ্যাকাউন্টের গুরুতর অপব্যবহার বা মিথ্যা তথ্যের প্রমাণ পেলে অ্যাডমিন অ্যাকাউন্ট স্থগিত করতে পারবেন।</li>
+        <li>দোকান কর্তৃপক্ষ প্রয়োজনে যেকোনো সময় এই নীতিমালা হালনাগাদ করার অধিকার সংরক্ষণ করে।</li>
+      </ol>
+      <button type="button" class="btn-modal-close" id="btnCloseTerms" data-i18n="btn_agree_close">আমি সম্মত (I Agree)</button>
+    </div>
+  </div>
+
+  <!-- ==========================================================
+       MODULAR FIREBASE SDK (v10) & REGISTRATION SCRIPT
+       ========================================================== -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { 
+      getAuth, 
+      createUserWithEmailAndPassword, 
+      updateProfile 
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { 
+      getDatabase, 
+      ref, 
+      get, 
+      set, 
+      update, 
+      push, 
+      serverTimestamp, 
+      onValue 
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+    // 1. Firebase Configuration (Matches Project Credentials)
+    const firebaseConfig = {
+      apiKey: "AIzaSyDYPsjlOmRwH2F5P8fFoiirP1FLjgh3c8A",
+      authDomain: "murgi-dfd67.firebaseapp.com",
+      databaseURL: "https://murgi-dfd67-default-rtdb.firebaseio.com",
+      projectId: "murgi-dfd67",
+      storageBucket: "murgi-dfd67.firebasestorage.app",
+      messagingSenderId: "209696889864",
+      appId: "1:209696889864:web:3eaa16034f00cca45505bd"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
+
+    // Translation Dictionary
+    const i18n = {
+      en: {
+        reg_sub: "Create a new account to order fresh poultry",
+        sec_personal: "1. Personal Information",
+        lbl_name: "Full Name *",
+        lbl_username: "Username *",
+        lbl_email: "Email Address *",
+        lbl_whatsapp: "WhatsApp Mobile Number *",
+        lbl_password: "Password *",
+        lbl_confirm_pass: "Confirm Password *",
+        lbl_referral: "Admin Referral Code *",
+        sec_category: "2. Customer Category",
+        lbl_category: "Select Category *",
+        lbl_biz_name: "Business Name *",
+        sec_location: "3. Delivery Location & GPS",
+        btn_detect_gps: "Detect My Current Location",
+        lbl_address: "Detailed Delivery Address *",
+        terms_agree: "I agree to the shop's",
+        terms_link: "Terms & Conditions",
+        terms_agree_post: "and understand all policies.",
+        btn_register: "Create Account",
+        already_account: "Already have an account?",
+        btn_login: "Login here",
+        modal_terms_title: "Shop Terms & Conditions",
+        btn_agree_close: "I Agree",
+        lang_switch_to: "বাংলা",
+        status_open_text: "Store Open for Orders",
+        status_closed_text: "Store Currently Closed",
+        err_pass_match: "Passwords do not match!",
+        err_pass_len: "Password must be at least 6 characters.",
+        err_phone_invalid: "Please enter a valid 11-digit Bangladeshi mobile number (01XXXXXXXXX).",
+        err_terms: "You must accept the Terms & Conditions to register.",
+        err_biz_req: "Business name is required for commercial categories.",
+        err_ref_invalid: "Invalid or nonexistent referral code.",
+        err_ref_used: "This referral code has already been used.",
+        err_ref_disabled: "This referral code is inactive or disabled.",
+        err_ref_expired: "This referral code has expired."
+      },
+      bn: {
+        reg_sub: "নতুন অ্যাকাউন্ট তৈরি করে তাজা পোল্ট্রি অর্ডার করুন",
+        sec_personal: "১. ব্যক্তিগত তথ্য (Personal Info)",
+        lbl_name: "পুরো নাম (Full Name) *",
+        lbl_username: "ইউজারনেম (Username) *",
+        lbl_email: "ইমেইল অ্যাড্রেস (Email Address) *",
+        lbl_whatsapp: "WhatsApp Mobile Number *",
+        lbl_password: "পাসওয়ার্ড (Password) *",
+        lbl_confirm_pass: "পাসওয়ার্ড নিশ্চিত করুন (Confirm Password) *",
+        lbl_referral: "Admin Referral Code *",
+        sec_category: "২. গ্রাহকের ধরন (Customer Category)",
+        lbl_category: "ক্যাটাগরি নির্বাচন করুন *",
+        lbl_biz_name: "ব্যবসা প্রতিষ্ঠানের নাম (Business Name) *",
+        sec_location: "৩. ডেলিভারি ঠিকানা ও জিপিএস (Delivery Location)",
+        btn_detect_gps: "Detect My Current Location",
+        lbl_address: "সম্পূর্ণ ডেলিভারি ঠিকানা (Detailed Address) *",
+        terms_agree: "আমি দোকানের সকল",
+        terms_link: "শর্তাবলী ও নীতিমালা (Terms & Conditions)",
+        terms_agree_post: "পড়েছি এবং তা মেনে চলতে সম্মতি জানাচ্ছি।",
+        btn_register: "অ্যাকাউন্ট তৈরি করুন",
+        already_account: "ইতিমধ্যে অ্যাকাউন্ট আছে?",
+        btn_login: "লগইন করুন",
+        modal_terms_title: "দোকানের শর্তাবলী ও নীতিমালা",
+        btn_agree_close: "আমি সম্মত (I Agree)",
+        lang_switch_to: "English",
+        status_open_text: "দোকান খোলা আছে",
+        status_closed_text: "দোকান সাময়িকভাবে বন্ধ",
+        err_pass_match: "উভয় পাসওয়ার্ড একই হতে হবে!",
+        err_pass_len: "পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে।",
+        err_phone_invalid: "সঠিক ১১ ডিজিটের বাংলাদেশি মোবাইল নম্বর দিন (01XXXXXXXXX)।",
+        err_terms: "রেজিস্ট্রেশনের জন্য শর্তাবলী মেনে নেওয়া আবশ্যক।",
+        err_biz_req: "বাণিজ্যিক ক্যাটাগরির জন্য প্রতিষ্ঠানের নাম আবশ্যক।",
+        err_ref_invalid: "রেফারেল কোডটি সঠিক নয় বা অস্তিত্বহীন।",
+        err_ref_used: "এই রেফারেল কোডটি ইতিপূর্বে ব্যবহার করা হয়েছে।",
+        err_ref_disabled: "এই রেফারেল কোডটি নিষ্ক্রিয় রয়েছে।",
+        err_ref_expired: "এই রেফারেল কোডের মেয়াদ শেষ হয়ে গেছে।"
+      }
+    };
+
+    let currentLang = localStorage.getItem('poultry_customer_lang') || 'bn';
+
+    function setLanguage(lang) {
+      currentLang = lang;
+      localStorage.setItem('poultry_customer_lang', lang);
+      document.documentElement.lang = lang;
+
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (i18n[lang][key]) el.textContent = i18n[lang][key];
+      });
+
+      document.getElementById('langButtonText').textContent = i18n[lang].lang_switch_to;
+    }
+
+    document.getElementById('btnLangToggle').addEventListener('click', () => {
+      setLanguage(currentLang === 'en' ? 'bn' : 'en');
+    });
+
+    // DOM Elements
+    const registerForm = document.getElementById('registerForm');
+    const regCategory = document.getElementById('regCategory');
+    const businessNameGroup = document.getElementById('businessNameGroup');
+    const regBusinessName = document.getElementById('regBusinessName');
+
+    const btnDetectGPS = document.getElementById('btnDetectGPS');
+    const gpsBtnText = document.getElementById('gpsBtnText');
+    const gpsStatusText = document.getElementById('gpsStatusText');
+    const geoLatitude = document.getElementById('geoLatitude');
+    const geoLongitude = document.getElementById('geoLongitude');
+    const regAddress = document.getElementById('regAddress');
+
+    const alertBanner = document.getElementById('alertBanner');
+    const alertMessage = document.getElementById('alertMessage');
+    const btnSubmitRegister = document.getElementById('btnSubmitRegister');
+    const btnSubmitText = document.getElementById('btnSubmitText');
+    const btnSpinner = document.getElementById('btnSpinner');
+
+    // Terms Modal DOM
+    const termsModal = document.getElementById('termsModal');
+    const btnOpenTerms = document.getElementById('btnOpenTerms');
+    const btnCloseTerms = document.getElementById('btnCloseTerms');
+    const chkTerms = document.getElementById('chkTerms');
+
+    // Branding DOM
+    const shopLogoFrame = document.getElementById('shopLogoFrame');
+    const shopLogoImg = document.getElementById('shopLogoImg');
+    const fallbackLogoIcon = document.getElementById('fallbackLogoIcon');
+    const shopTitleText = document.getElementById('shopTitleText');
+    const storeStatusBadge = document.getElementById('storeStatusBadge');
+    const storeStatusLabel = document.getElementById('storeStatusLabel');
+
+    function showAlert(msg, isError = true) {
+      alertBanner.className = `alert-banner ${isError ? 'error' : 'success'}`;
+      alertMessage.textContent = msg;
+      alertBanner.style.display = 'flex';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function hideAlert() {
+      alertBanner.style.display = 'none';
+    }
+
+    // Toggle Show / Hide Password
+    window.togglePass = function(inputId, btn) {
+      const field = document.getElementById(inputId);
+      const isPass = field.type === 'password';
+      field.type = isPass ? 'text' : 'password';
+      btn.innerHTML = isPass 
+        ? `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" y1="2" x2="22" y2="22"/></svg>`
+        : `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>`;
+    };
+
+    // Category Change: Show Business Name conditionally
+    regCategory.addEventListener('change', (e) => {
+      const isBusiness = e.target.value !== 'normal';
+      businessNameGroup.style.display = isBusiness ? 'block' : 'none';
+      regBusinessName.required = isBusiness;
+    });
+
+    // Terms Modal
+    btnOpenTerms.addEventListener('click', () => termsModal.style.display = 'flex');
+    btnCloseTerms.addEventListener('click', () => {
+      termsModal.style.display = 'none';
+      chkTerms.checked = true;
+    });
+
+    // ==========================================================
+    // DYNAMIC SHOP BRANDING REALTIME LISTENERS
+    // ==========================================================
+    function listenToShopBranding() {
+      onValue(ref(db, 'settings/shopProfile'), (snap) => {
+        const prof = snap.val() || {};
+        if (prof.shopName) shopTitleText.textContent = prof.shopName;
+        if (prof.logoUrl) {
+          shopLogoImg.src = prof.logoUrl;
+          shopLogoImg.onload = () => { shopLogoImg.style.display = 'block'; fallbackLogoIcon.style.display = 'none'; };
+          shopLogoImg.onerror = () => { shopLogoImg.style.display = 'none'; fallbackLogoIcon.style.display = 'block'; };
+        } else {
+          shopLogoImg.style.display = 'none'; fallbackLogoIcon.style.display = 'block';
+        }
+      });
+
+      onValue(ref(db, 'settings/branding'), (snap) => {
+        const brand = snap.val() || {};
+        const anim = brand.animation || 'gentle_shine';
+        const glow = brand.glow || 'on';
+        const size = brand.logoSize || 78;
+
+        shopLogoFrame.style.width = `${size}px`;
+        shopLogoFrame.style.height = `${size}px`;
+        shopTitleText.className = `shop-title anim-${anim}`;
+
+        if (glow === 'on') {
+          shopTitleText.style.textShadow = '0 0 18px rgba(212, 175, 55, 0.45)';
+          shopLogoFrame.style.boxShadow = '0 0 25px rgba(212, 175, 55, 0.35)';
+        } else {
+          shopTitleText.style.textShadow = 'none';
+          shopLogoFrame.style.boxShadow = 'none';
+        }
+      });
+
+      onValue(ref(db, 'settings/shopStatus'), (snap) => {
+        const st = snap.val() || {};
+        const isOpen = (st.isOpen !== false);
+        const t = i18n[currentLang];
+
+        if (isOpen) {
+          storeStatusBadge.className = 'store-status-pill status-open';
+          storeStatusLabel.textContent = t.status_open_text;
+        } else {
+          storeStatusBadge.className = 'store-status-pill status-closed';
+          storeStatusLabel.textContent = st.closureReason || t.status_closed_text;
+        }
+      });
+    }
+
+    // ==========================================================
+    // GPS GEOLOCATION & ADDRESS DETECTION
+    // ==========================================================
+    btnDetectGPS.addEventListener('click', () => {
+      if (!navigator.geolocation) {
+        gpsStatusText.textContent = "আপনার ব্রাউজারে জিপিএস সুবিধা সমর্থিত নয়। অনুগ্রহ করে নিচে ম্যানুয়ালি ঠিকানা লিখুন।";
+        return;
+      }
+
+      gpsBtnText.textContent = "Detecting GPS...";
+      gpsStatusText.textContent = "স্যাটেলাইট থেকে অবস্থান সংগ্রহ করা হচ্ছে, অনুগ্রহ করে পারমিশন Allow করুন...";
+
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const lat = position.coords.latitude;
+          const lng = position.coords.longitude;
+
+          geoLatitude.value = lat;
+          geoLongitude.value = lng;
+
+          gpsBtnText.textContent = "Location Detected ✓";
+          gpsStatusText.textContent = `অক্ষাংশ: ${lat.toFixed(4)}, দ্রাঘিমাংশ: ${lng.toFixed(4)} (সফলভাবে সনাক্ত হয়েছে)`;
+
+          // Reverse Geocoding attempt via free OSM Nominatim API
+          try {
+            const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
+            if (response.ok) {
+              const data = await response.json();
+              if (data && data.display_name) {
+                regAddress.value = data.display_name;
+              }
+            }
+          } catch (e) {
+            console.log("Geocoding failed, manual address entry available.");
+          }
+        },
+        (error) => {
+          gpsBtnText.textContent = "Detect Location";
+          let msg = "লোকেশন পারমিশন পাওয়া যায়নি।";
+          if (error.code === error.PERMISSION_DENIED) {
+            msg = "লোকেশন পারমিশন বাতিল করা হয়েছে। ব্রাউজার সেটিংসে গিয়ে Location Allow করুন অথবা নিচে ম্যানুয়ালি ঠিকানা লিখুন।";
+          }
+          gpsStatusText.textContent = msg;
+        },
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+      );
+    });
+
+    // ==========================================================
+    // REGISTRATION FORM SUBMISSION
+    // ==========================================================
+    registerForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      hideAlert();
+
+      const t = i18n[currentLang];
+      const fullName = document.getElementById('regFullName').value.trim();
+      const username = document.getElementById('regUsername').value.trim();
+      const email = document.getElementById('regEmail').value.trim();
+      const whatsapp = document.getElementById('regWhatsApp').value.trim();
+      const password = document.getElementById('regPassword').value;
+      const confirmPassword = document.getElementById('regConfirmPassword').value;
+      const referralCode = document.getElementById('regReferralCode').value.trim().toUpperCase();
+      const category = regCategory.value;
+      const businessName = regBusinessName.value.trim();
+      const address = regAddress.value.trim();
+      const lat = parseFloat(geoLatitude.value) || null;
+      const lng = parseFloat(geoLongitude.value) || null;
+
+      // 1. Password Checks
+      if (password !== confirmPassword) {
+        showAlert(t.err_pass_match);
+        return;
+      }
+      if (password.length < 6) {
+        showAlert(t.err_pass_len);
+        return;
+      }
+
+      // 2. Phone Validation (Bangladesh mobile: 11 digits starting with 01)
+      const bdPhoneRegex = /^(?:\+8801|01)[3-9]\d{8}$/;
+      if (!bdPhoneRegex.test(whatsapp)) {
+        showAlert(t.err_phone_invalid);
+        return;
+      }
+
+      // 3. Terms Check
+      if (!chkTerms.checked) {
+        showAlert(t.err_terms);
+        return;
+      }
+
+      // 4. Business Category Check
+      if (category !== 'normal' && !businessName) {
+        showAlert(t.err_biz_req);
+        return;
+      }
+
+      // UI Loading State
+      btnSubmitRegister.disabled = true;
+      btnSubmitText.textContent = currentLang === 'bn' ? "যাচাই করা হচ্ছে..." : "Verifying...";
+      btnSpinner.style.display = "block";
+
+      try {
+        // 5. ATOMIC VALIDATION: Check Admin Referral Code in `referralCodes/{code}`
+        const refCodeSnap = await get(ref(db, `referralCodes/${referralCode}`));
+        if (!refCodeSnap.exists()) {
+          throw new Error(t.err_ref_invalid);
+        }
+
+        const refData = refCodeSnap.val();
+        if (refData.used === true) {
+          throw new Error(t.err_ref_used);
+        }
+        if (refData.status === 'disabled') {
+          throw new Error(t.err_ref_disabled);
+        }
+        if (refData.expiryDate && new Date(refData.expiryDate).getTime() < Date.now()) {
+          throw new Error(t.err_ref_expired);
+        }
+
+        btnSubmitText.textContent = currentLang === 'bn' ? "অ্যাকাউন্ট তৈরি হচ্ছে..." : "Creating Account...";
+
+        // 6. Create Firebase Authentication User
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+
+        // Set Display Name in Firebase Auth profile
+        await updateProfile(user, { displayName: fullName });
+
+        // Normalize Phone
+        const normalizedPhone = whatsapp.startsWith('+88') ? whatsapp : `+88${whatsapp}`;
+
+        // 7. Business Approval Rule
+        const isCommercial = (category !== 'normal');
+        const approvedCategory = 'normal'; // Always normal until approved by Admin
+        const businessApproved = false;
+        const businessApprovalStatus = isCommercial ? 'pending' : 'none';
+
+        // 8. Save Customer Profile to `customers/{uid}` & `users/{uid}`
+        const customerProfile = {
+          uid: user.uid,
+          fullName,
+          username,
+          email,
+          phone: normalizedPhone,
+          whatsapp: normalizedPhone,
+          requestedCategory: category,
+          approvedCategory: approvedCategory,
+          category: approvedCategory, // For instant compatibility
+          businessName: isCommercial ? businessName : null,
+          businessApproved,
+          businessApprovalStatus,
+          deliveryAddress: address,
+          latitude: lat,
+          longitude: lng,
+          referralCodeUsed: referralCode,
+          termsAccepted: true,
+          status: 'active',
+          role: 'customer',
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp()
+        };
+
+        // Write Customer Records
+        await set(ref(db, `customers/${user.uid}`), customerProfile);
+        await set(ref(db, `users/${user.uid}`), customerProfile);
+
+        // 9. Consume Referral Code Atomically
+        await update(ref(db, `referralCodes/${referralCode}`), {
+          used: true,
+          usedByUid: user.uid,
+          usedByName: fullName,
+          usedAt: serverTimestamp()
+        });
+
+        // 10. If commercial tier, automatically submit ticket to `customerRequests` for Admin review
+        if (isCommercial) {
+          const newReqRef = push(ref(db, 'customerRequests'));
+          await set(newReqRef, {
+            requestId: newReqRef.key,
+            customerUid: user.uid,
+            customerName: fullName,
+            customerPhone: normalizedPhone,
+            customerCategory: 'normal',
+            requestedCategory: category,
+            businessName,
+            requestType: 'business_approval',
+            subject: `New Business Account Approval: ${businessName}`,
+            message: `Customer registered as ${category}. Requesting approval for wholesale business pricing.`,
+            status: 'pending',
+            createdAt: serverTimestamp()
+          });
+        }
+
+        // Success: Redirect to Customer Home
+        showAlert(currentLang === 'bn' ? "রেজিস্ট্রেশন সফল হয়েছে! অ্যাপে নিয়ে যাওয়া হচ্ছে..." : "Registration successful! Redirecting...", false);
+        setTimeout(() => {
+          window.location.replace('customer-home.html');
+        }, 1200);
+
+      } catch (err) {
+        console.error("Registration Error:", err);
+        btnSubmitRegister.disabled = false;
+        btnSubmitText.textContent = t.btn_register;
+        btnSpinner.style.display = "none";
+
+        let errorMsg = err.message || "রেজিস্ট্রেশন ব্যর্থ হয়েছে। তথ্য আবার যাচাই করুন।";
+        if (err.code === 'auth/email-already-in-use') {
+          errorMsg = "এই ইমেইল দিয়ে ইতিপূর্বে একটি অ্যাকাউন্ট খোলা হয়েছে।";
+        } else if (err.code === 'auth/invalid-email') {
+          errorMsg = "ইমেইল অ্যাড্রেসটি সঠিক ফরম্যাটে নয়।";
+        }
+        showAlert(errorMsg);
+      }
+    });
+
+    listenToShopBranding();
+    setLanguage(currentLang);
+  </script>
+</body>
+</html>
