@@ -3,47 +3,176 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quiz Zone - Loading</title>
+    <title>POULTRY SHOP - Loading...</title>
+    <!-- Google Fonts for Luxury & Bengali typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Hind+Siliguri:wght@400;500;600&display=swap" rel="stylesheet">
+
     <style>
-        body { margin: 0; height: 100vh; background: #050511; display: flex; justify-content: center; align-items: center; flex-direction: column; font-family: monospace; overflow: hidden; }
-        .loader { width: 80px; height: 80px; border: 5px solid rgba(0, 242, 255, 0.1); border-top: 5px solid #00f2ff; border-radius: 50%; animation: spin 1s linear infinite; box-shadow: 0 0 20px #00f2ff; }
-        h1 { color: white; margin-top: 20px; letter-spacing: 5px; text-shadow: 0 0 10px #00f2ff; animation: blink 1.5s infinite; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #111417;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Hind Siliguri', sans-serif;
+            overflow: hidden;
+            color: #ffffff;
+        }
+
+        .splash-container {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        /* Golden Logo Box */
+        .logo-box {
+            width: 125px;
+            height: 125px;
+            border: 2px solid #e5b853;
+            border-radius: 32px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 0 25px rgba(229, 184, 83, 0.25);
+            margin-bottom: 30px;
+            animation: pulseGlow 2s infinite alternate;
+        }
+
+        .keyhole-icon {
+            width: 50px;
+            height: 60px;
+            fill: none;
+            stroke: #e5b853;
+            stroke-width: 4;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        /* Main Title */
+        .title {
+            font-family: 'Cinzel', serif;
+            font-size: 26px;
+            letter-spacing: 2px;
+            color: #f0c365;
+            text-shadow: 0 0 15px rgba(240, 195, 101, 0.3);
+            margin-bottom: 22px;
+            font-weight: 700;
+        }
+
+        /* Status Pill Badge */
+        .status-badge {
+            background-color: #0d2822;
+            border: 1px solid #145946;
+            padding: 6px 18px;
+            border-radius: 50px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #4ade80;
+            margin-bottom: 20px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #4ade80;
+            border-radius: 50%;
+            display: inline-block;
+            box-shadow: 0 0 8px #4ade80;
+        }
+
+        /* Subtitle Text */
+        .subtitle {
+            color: #8c9ba5;
+            font-size: 15px;
+            font-weight: 400;
+            margin-bottom: 35px;
+        }
+
+        /* Modern Loading Bar */
+        .loading-bar-container {
+            width: 160px;
+            height: 3px;
+            background: rgba(229, 184, 83, 0.15);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .loading-bar {
+            width: 0%;
+            height: 100%;
+            background: #e5b853;
+            box-shadow: 0 0 10px #e5b853;
+            animation: progress 2.3s ease-in-out forwards;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 0 15px rgba(229, 184, 83, 0.2); }
+            100% { box-shadow: 0 0 35px rgba(229, 184, 83, 0.45); }
+        }
+
+        @keyframes progress {
+            0% { width: 0%; }
+            50% { width: 60%; }
+            100% { width: 100%; }
+        }
     </style>
 </head>
 <body>
-    <div class="loader"></div>
-    <h1>QUIZ ZONE</h1>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
-        import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+    <div class="splash-container">
+        <!-- Logo with Keyhole -->
+        <div class="logo-box">
+            <svg class="keyhole-icon" viewBox="0 0 24 24">
+                <circle cx="12" cy="9" r="4"></circle>
+                <path d="M10 13 L8 21 L16 21 L14 13"></path>
+            </svg>
+        </div>
 
-        const firebaseConfig = { apiKey: "AIzaSyBVwD0U7_QeX8EyOrZ4fm7OG_ow1b391-M", authDomain: "game-f739d.firebaseapp.com", databaseURL: "https://game-f739d-default-rtdb.firebaseio.com", projectId: "game-f739d", storageBucket: "game-f739d.firebasestorage.app", messagingSenderId: "744868437950", appId: "1:744868437950:web:622410843c8aeb229463ef" };
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getDatabase(app);
+        <!-- Shop Name -->
+        <h1 class="title">POULTRY SHOP</h1>
 
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                const snap = await get(ref(db, 'users/' + user.uid));
-                if (snap.exists()) {
-                    const data = snap.val();
-                    if (data.status === 'blocked') {
-                        alert("আপনার অ্যাকাউন্ট ব্লক করা হয়েছে!");
-                        window.location.href = 'registration.html';
-                    } else if (data.status === 'approved') {
-                        window.location.href = 'home.html';
-                    } else {
-                        window.location.href = 'registration.html'; 
-                    }
-                } else { window.location.href = 'registration.html'; }
-            } else {
-                setTimeout(() => window.location.href = 'registration.html', 1500);
-            }
-        });
+        <!-- Status -->
+        <div class="status-badge">
+            <span class="status-dot"></span>
+            <span>দোকান খোলা আছে</span>
+        </div>
+
+        <!-- Subtitle -->
+        <p class="subtitle">তাজা ও হালাল পোল্ট্রি অর্ডারের জন্য লগইন করুন</p>
+
+        <!-- Loading Progress Bar -->
+        <div class="loading-bar-container">
+            <div class="loading-bar"></div>
+        </div>
+    </div>
+
+    <script>
+        // ২.৫ সেকেন্ড (২৫০০ মিলি-সেকেন্ড) পর লগইন পেজে নিয়ে যাবে
+        setTimeout(function() {
+            window.location.href = "customer-login.html";
+        }, 2500);
     </script>
+
 </body>
 </html>
