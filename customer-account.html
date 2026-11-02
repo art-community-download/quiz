@@ -1,0 +1,1321 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>My Account | Poultry Shop</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    /* ==========================================================
+       CSS RESET & FRESH GREEN THEME
+       ========================================================== */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    :root {
+      --bg-main: #f8fafc;
+      --bg-card: #ffffff;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --text-light: #94a3b8;
+      
+      --primary-green: #10b981;
+      --primary-dark: #047857;
+      --primary-deep: #064e3b;
+      --green-light: #ecfdf5;
+      --green-border: rgba(16, 185, 129, 0.2);
+      
+      --gold-accent: #d97706;
+      --gold-light: #fef3c7;
+      --danger: #ef4444;
+      --danger-light: #fef2f2;
+      
+      --border-subtle: #e2e8f0;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+      --shadow-md: 0 4px 14px rgba(0,0,0,0.08);
+      
+      --bottom-nav-height: 64px;
+    }
+
+    body {
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      font-family: 'Outfit', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding-bottom: calc(var(--bottom-nav-height) + 26px);
+      overflow-x: hidden;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 520px;
+      margin: 0 auto;
+      padding: 0 16px;
+    }
+
+    /* Top Sticky Header */
+    .top-header {
+      background: #ffffff;
+      border-bottom: 1px solid var(--border-subtle);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      box-shadow: var(--shadow-sm);
+      padding: 10px 16px;
+    }
+
+    .header-content {
+      max-width: 520px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand-center {
+      text-align: center;
+      flex: 1;
+    }
+
+    .shop-logo-frame {
+      width: 40px;
+      height: 40px;
+      margin: 0 auto 2px auto;
+      border-radius: 12px;
+      background: var(--green-light);
+      border: 1.5px solid var(--primary-green);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .shop-logo-frame img { width: 100%; height: 100%; object-fit: cover; }
+    .shop-logo-frame svg { width: 22px; height: 22px; stroke: var(--primary-green); }
+
+    .shop-name-title {
+      font-family: 'Cinzel', serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--primary-deep);
+      line-height: 1.2;
+    }
+
+    .btn-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: var(--bg-main);
+      border: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-main);
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    /* Profile Hero Card */
+    .profile-hero-card {
+      background: #ffffff;
+      border: 1px solid var(--border-subtle);
+      border-radius: 20px;
+      padding: 20px;
+      margin: 16px 0 12px 0;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .user-avatar-circle {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: var(--primary-deep);
+      color: var(--gold-light);
+      font-family: 'Cinzel', serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      border: 2px solid var(--primary-green);
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+    }
+
+    .profile-meta h2 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text-main);
+      line-height: 1.2;
+    }
+
+    .profile-meta p {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin: 3px 0 6px 0;
+    }
+
+    .badge-tier {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 6px;
+      text-transform: capitalize;
+    }
+
+    .tier-retail { background: var(--green-light); color: var(--primary-dark); border: 1px solid var(--green-border); }
+    .tier-commercial { background: var(--gold-light); color: var(--gold-accent); border: 1px solid rgba(217,119,6,0.3); }
+
+    /* Real Orders Stats Ribbon */
+    .order-stats-ribbon {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .stat-ribbon-card {
+      background: #ffffff;
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      padding: 10px 4px;
+      text-align: center;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .stat-ribbon-val {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--primary-deep);
+    }
+
+    .stat-ribbon-lbl {
+      font-size: 0.68rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* Menu / Action Cards */
+    .action-menu-card {
+      background: #ffffff;
+      border: 1px solid var(--border-subtle);
+      border-radius: 18px;
+      padding: 16px;
+      margin-bottom: 14px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .card-heading-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .card-heading-row h3 {
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-edit-action {
+      background: var(--green-light);
+      border: 1px solid var(--green-border);
+      color: var(--primary-dark);
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-size: 0.74rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    /* Info Field Rows */
+    .info-data-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.82rem;
+      margin-bottom: 8px;
+      color: var(--text-muted);
+    }
+    .info-data-row strong { color: var(--text-main); font-weight: 600; }
+
+    /* Button Links */
+    .btn-primary-action {
+      width: 100%;
+      height: 44px;
+      background: var(--primary-green);
+      color: #ffffff;
+      border: none;
+      border-radius: 12px;
+      font-family: inherit;
+      font-size: 0.88rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      text-decoration: none;
+      margin-top: 6px;
+    }
+
+    .btn-primary-action:hover { background: var(--primary-dark); }
+
+    .btn-logout-danger {
+      width: 100%;
+      height: 44px;
+      background: var(--danger-light);
+      border: 1px solid rgba(239, 68, 68, 0.25);
+      color: var(--danger);
+      border-radius: 14px;
+      font-family: inherit;
+      font-size: 0.88rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin: 16px 0 24px 0;
+    }
+
+    /* Modals */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(4px);
+      z-index: 1100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .modal-dialog {
+      background: #ffffff;
+      border-radius: 24px;
+      width: 100%;
+      max-width: 440px;
+      overflow: hidden;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.25);
+      animation: popModal 0.25s ease-out;
+    }
+
+    @keyframes popModal {
+      from { transform: scale(0.95); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .modal-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .modal-body {
+      padding: 20px;
+      max-height: 75vh;
+      overflow-y: auto;
+    }
+
+    .modal-footer {
+      padding: 14px 20px;
+      background: var(--bg-main);
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      border-top: 1px solid var(--border-subtle);
+    }
+
+    .form-group {
+      margin-bottom: 14px;
+    }
+
+    .form-label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-main);
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .form-input, .form-select, .form-textarea {
+      width: 100%;
+      height: 42px;
+      border-radius: 10px;
+      border: 1px solid var(--border-subtle);
+      padding: 0 12px;
+      font-family: inherit;
+      font-size: 0.88rem;
+      outline: none;
+    }
+
+    .form-textarea {
+      height: auto;
+      padding: 10px;
+      resize: vertical;
+    }
+
+    /* Fixed Bottom Navigation */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: var(--bottom-nav-height);
+      background: #ffffff;
+      border-top: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      z-index: 100;
+      box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.05);
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.68rem;
+      font-weight: 600;
+      gap: 3px;
+      flex: 1;
+      height: 100%;
+      position: relative;
+    }
+
+    .nav-item svg { width: 20px; height: 20px; stroke: currentColor; }
+    .nav-item.active { color: var(--primary-dark); }
+    .nav-item.active svg { stroke: var(--primary-dark); }
+  </style>
+</head>
+<body>
+
+  <!-- Top Sticky Header -->
+  <header class="top-header">
+    <div class="header-content">
+      <a href="customer-home.html" class="btn-icon" title="Home">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      </a>
+
+      <div class="brand-center">
+        <div class="shop-logo-frame" id="shopLogoFrame">
+          <svg id="fallbackLogoIcon" viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M12 2C8.5 2 6 4.5 6 8c0 2 .8 3.8 2.2 5.1L5 22h14l-3.2-8.9C17.2 11.8 18 10 18 8c0-3.5-2.5-6-6-6z"/></svg>
+          <img id="shopLogoImg" src="" alt="Logo" style="display:none;" />
+        </div>
+        <h1 class="shop-name-title" id="shopNameTitle">POULTRY SHOP</h1>
+      </div>
+
+      <div class="btn-icon" style="border:none; background:none;"></div>
+    </div>
+  </header>
+
+  <main class="app-container">
+
+    <!-- Profile Hero Card -->
+    <section class="profile-hero-card">
+      <div class="user-avatar-circle" id="userAvatarText">C</div>
+      <div class="profile-meta">
+        <h2 id="profFullName">Customer Name</h2>
+        <p id="profUsername">@username</p>
+        <div>
+          <span class="badge-tier tier-retail" id="profTierBadge">Normal Customer</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Orders Live Stats Ribbon -->
+    <div class="order-stats-ribbon">
+      <div class="stat-ribbon-card">
+        <div class="stat-ribbon-val" id="stTotalOrders">0</div>
+        <div class="stat-ribbon-lbl">Total Orders</div>
+      </div>
+      <div class="stat-ribbon-card">
+        <div class="stat-ribbon-val" style="color:var(--gold-accent);" id="stPendingOrders">0</div>
+        <div class="stat-ribbon-lbl">Pending</div>
+      </div>
+      <div class="stat-ribbon-card">
+        <div class="stat-ribbon-val" style="color:var(--primary-green);" id="stDeliveredOrders">0</div>
+        <div class="stat-ribbon-lbl">Delivered</div>
+      </div>
+      <div class="stat-ribbon-card">
+        <div class="stat-ribbon-val" id="stTotalSpent">৳ 0</div>
+        <div class="stat-ribbon-lbl">Total Spent</div>
+      </div>
+    </div>
+
+    <!-- 1. Personal & Contact Information Card -->
+    <section class="action-menu-card">
+      <div class="card-heading-row">
+        <h3>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <span>Personal Information</span>
+        </h3>
+        <button type="button" class="btn-edit-action" id="btnOpenEditProfile">Edit</button>
+      </div>
+
+      <div class="info-data-row"><span>WhatsApp Number:</span><strong id="infoPhone">...</strong></div>
+      <div class="info-data-row"><span>Customer UID:</span><strong id="infoUid" style="font-size:0.74rem;">...</strong></div>
+      <div class="info-data-row"><span>Joined Date:</span><strong id="infoJoined">...</strong></div>
+      <div class="info-data-row"><span>Account Status:</span><strong id="infoStatus" style="color:var(--primary-dark);">Active</strong></div>
+    </section>
+
+    <!-- 2. Business Category Tier & Approval Card -->
+    <section class="action-menu-card">
+      <div class="card-heading-row">
+        <h3>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+          <span>Pricing Category & Tier</span>
+        </h3>
+        <button type="button" class="btn-edit-action" id="btnOpenUpgradeModal">Request Change</button>
+      </div>
+
+      <div class="info-data-row"><span>Current Tier:</span><strong id="infoCategoryName">Normal Customer</strong></div>
+      <div id="bizNameRow" class="info-data-row" style="display:none;"><span>Business Name:</span><strong id="infoBizName">—</strong></div>
+      <div id="bizApprovalRow" class="info-data-row" style="display:none;"><span>Approval Status:</span><strong id="infoApprovalStatus" style="color:var(--gold-accent);">Pending Review</strong></div>
+      <small id="bizPendingMsg" style="color:var(--gold-accent); font-size:0.75rem; display:none; line-height:1.4;">* Your wholesale tier request is awaiting Admin review. You will receive normal pricing until verified.</small>
+    </section>
+
+    <!-- 3. Saved Delivery Address Card -->
+    <section class="action-menu-card">
+      <div class="card-heading-row">
+        <h3>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <span>Saved Delivery Location</span>
+        </h3>
+        <button type="button" class="btn-edit-action" id="btnOpenEditAddress">Update</button>
+      </div>
+
+      <p id="infoAddressText" style="font-size:0.84rem; color:var(--text-main); line-height:1.45; font-weight:600; margin-bottom:6px;">No saved address yet.</p>
+      <div id="gpsCoordsNotice" style="font-size:0.72rem; color:var(--text-muted);">GPS Coordinates: Not set</div>
+      <small style="color:var(--primary-dark); font-size:0.74rem; display:block; margin-top:4px;">* Initial delivery coverage is within 30 km of Barisal city hub.</small>
+    </section>
+
+    <!-- 4. Notifications Card -->
+    <section class="action-menu-card">
+      <div class="card-heading-row">
+        <h3>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <span>In-App Notifications</span>
+        </h3>
+        <span id="unreadNotifCount" style="font-size:0.72rem; font-weight:700; color:var(--danger); display:none;">0 New</span>
+      </div>
+
+      <div id="notifListContainer" style="max-height:160px; overflow-y:auto;">
+        <p style="text-align:center; color:var(--text-muted); font-size:0.8rem; padding:12px;">No notifications yet.</p>
+      </div>
+    </section>
+
+    <!-- 5. Support & Security Shortcuts Card -->
+    <section class="action-menu-card">
+      <div class="card-heading-row">
+        <h3>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          <span>Support & Security</span>
+        </h3>
+      </div>
+
+      <button type="button" class="btn-primary-action" id="btnOpenSupportTicket" style="background:var(--bg-main); border:1px solid var(--border-subtle); color:var(--text-main);">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <span>Submit Support Request</span>
+      </button>
+
+      <button type="button" class="btn-primary-action" id="btnOpenChangePass" style="background:var(--bg-main); border:1px solid var(--border-subtle); color:var(--text-main);">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        <span>Change Password</span>
+      </button>
+
+      <a id="btnWhatsAppDirect" href="#" target="_blank" class="btn-primary-action" style="background:#25D366; color:#fff;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/></svg>
+        <span>Chat on WhatsApp Support</span>
+      </a>
+    </section>
+
+    <!-- Logout Action Button -->
+    <button type="button" class="btn-logout-danger" id="btnLogoutCustomer">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      <span>Sign Out of Account</span>
+    </button>
+
+  </main>
+
+  <!-- ==========================================================
+       MODAL 1: EDIT PROFILE (NAME, PHONE)
+       ========================================================== -->
+  <div class="modal-backdrop" id="editProfileModal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 style="font-size:1.05rem; font-weight:700; color:var(--primary-deep);">Edit Profile Information</h3>
+        <button type="button" class="btn-icon" id="btnCloseEditProf" style="border:none; background:none;">&times;</button>
+      </div>
+      <form id="formEditProfile" autocomplete="off">
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label">Full Name *</label>
+            <input type="text" id="inpEditFullName" class="form-input" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label">WhatsApp Number *</label>
+            <input type="tel" id="inpEditPhone" class="form-input" required />
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-icon" id="btnCancelEditProf" style="width:auto; padding:0 14px; border-radius:10px;">Cancel</button>
+          <button type="submit" class="btn-primary-action" style="width:auto; padding:0 18px; margin:0;">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==========================================================
+       MODAL 2: EDIT DELIVERY ADDRESS & GPS
+       ========================================================== -->
+  <div class="modal-backdrop" id="editAddressModal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 style="font-size:1.05rem; font-weight:700; color:var(--primary-deep);">Update Delivery Address</h3>
+        <button type="button" class="btn-icon" id="btnCloseEditAddr" style="border:none; background:none;">&times;</button>
+      </div>
+      <form id="formEditAddress" autocomplete="off">
+        <div class="modal-body">
+          <button type="button" class="btn-primary-action" id="btnDetectCurrentGps" style="background:var(--green-light); border:1px solid var(--green-border); color:var(--primary-dark); margin-bottom:12px;">
+            📍 <span id="txtGpsBtn">Detect My Current GPS Location</span>
+          </button>
+          <input type="hidden" id="inpLat" />
+          <input type="hidden" id="inpLng" />
+          <p id="gpsDetectStatus" style="font-size:0.75rem; color:var(--text-muted); margin-bottom:10px;"></p>
+
+          <div class="form-group">
+            <label class="form-label">Detailed Street Address (Barisal) *</label>
+            <textarea id="inpDetailedAddress" class="form-textarea" rows="3" placeholder="House/Holding no, Road, Area, Landmark..." required></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-icon" id="btnCancelEditAddr" style="width:auto; padding:0 14px; border-radius:10px;">Cancel</button>
+          <button type="submit" class="btn-primary-action" style="width:auto; padding:0 18px; margin:0;">Save Address</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==========================================================
+       MODAL 3: REQUEST CATEGORY TIER CHANGE
+       ========================================================== -->
+  <div class="modal-backdrop" id="upgradeTierModal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 style="font-size:1.05rem; font-weight:700; color:var(--primary-deep);">Request Tier / Wholesale Rate</h3>
+        <button type="button" class="btn-icon" id="btnCloseUpgradeModal" style="border:none; background:none;">&times;</button>
+      </div>
+      <form id="formUpgradeTier" autocomplete="off">
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label">Select Requested Category *</label>
+            <select id="selectReqTier" class="form-select">
+              <option value="restaurant">Restaurant (রেস্তোরাঁ / বিরিয়ানি হাউজ)</option>
+              <option value="hotel">Hotel (আবাসিক / ডাইনিং হোটেল)</option>
+              <option value="club">Club (ক্লাব / ক্যাটারিং সমিতি)</option>
+              <option value="bakery">Bakery (বেকারি / ফাস্টফুড শপ)</option>
+              <option value="cafe">Cafe (ক্যাফেটেরিয়া)</option>
+              <option value="catering">Catering Service (ক্যাটারিং সার্ভিস)</option>
+              <option value="otherBusiness">Other Business (অন্যান্য বাণিজ্যিক প্রতিষ্ঠান)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Business / Entity Name *</label>
+            <input type="text" id="inpReqBizName" class="form-input" placeholder="e.g. Barisal Food Court" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Trade License / Verification Note</label>
+            <textarea id="inpReqNote" class="form-textarea" rows="2" placeholder="Provide trade license number or business address for quick verification..."></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-icon" id="btnCancelUpgrade" style="width:auto; padding:0 14px; border-radius:10px;">Cancel</button>
+          <button type="submit" class="btn-primary-action" style="width:auto; padding:0 18px; margin:0;">Submit Request</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==========================================================
+       MODAL 4: SUBMIT SUPPORT TICKET
+       ========================================================== -->
+  <div class="modal-backdrop" id="supportTicketModal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 style="font-size:1.05rem; font-weight:700; color:var(--primary-deep);">Customer Support Ticket</h3>
+        <button type="button" class="btn-icon" id="btnCloseSupportTicket" style="border:none; background:none;">&times;</button>
+      </div>
+      <form id="formSupportTicket" autocomplete="off">
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label">Issue Category *</label>
+            <select id="selSupportCategory" class="form-select">
+              <option value="account_issue">Account & Profile Issue</option>
+              <option value="order_issue">General Order Question</option>
+              <option value="delivery_issue">Delivery Range / Address Help</option>
+              <option value="payment_issue">Payment & Billing Inquiry</option>
+              <option value="other">Other Inquiry</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Related Order ID (Optional)</label>
+            <input type="text" id="inpSupportOrderId" class="form-input" placeholder="e.g. ORD-12345" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Message Details *</label>
+            <textarea id="txtSupportMsg" class="form-textarea" rows="3" placeholder="Describe how our shop can help you..." required></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-icon" id="btnCancelSupportTicket" style="width:auto; padding:0 14px; border-radius:10px;">Cancel</button>
+          <button type="submit" class="btn-primary-action" style="width:auto; padding:0 18px; margin:0;">Send to Staff</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==========================================================
+       MODAL 5: CHANGE PASSWORD
+       ========================================================== -->
+  <div class="modal-backdrop" id="changePasswordModal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 style="font-size:1.05rem; font-weight:700; color:var(--primary-deep);">Change Account Password</h3>
+        <button type="button" class="btn-icon" id="btnCloseChangePass" style="border:none; background:none;">&times;</button>
+      </div>
+      <form id="formChangePassword" autocomplete="off">
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label">New Password (Min 6 chars) *</label>
+            <input type="password" id="inpNewPass" class="form-input" required minlength="6" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Confirm New Password *</label>
+            <input type="password" id="inpConfirmNewPass" class="form-input" required minlength="6" />
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-icon" id="btnCancelChangePass" style="width:auto; padding:0 14px; border-radius:10px;">Cancel</button>
+          <button type="submit" class="btn-primary-action" style="width:auto; padding:0 18px; margin:0;">Update Password</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Fixed Bottom Navigation -->
+  <nav class="bottom-nav">
+    <a href="customer-home.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      <span>Home</span>
+    </a>
+    <a href="customer-products.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="m7.5 4.27 9 5.15M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/></svg>
+      <span>Products</span>
+    </a>
+    <a href="customer-cart.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+      <span>Cart</span>
+    </a>
+    <a href="customer-orders.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      <span>Orders</span>
+    </a>
+    <a href="customer-account.html" class="nav-item active">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span>Account</span>
+    </a>
+  </nav>
+
+  <!-- ==========================================================
+       MODULAR FIREBASE SDK (v10) & SCRIPT
+       ========================================================== -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { 
+      getAuth, 
+      onAuthStateChanged, 
+      signOut, 
+      updatePassword 
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { 
+      getDatabase, 
+      ref, 
+      onValue, 
+      update, 
+      get, 
+      push, 
+      set, 
+      serverTimestamp 
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+    // 1. Firebase Configuration (Matches Project Credentials)
+    const firebaseConfig = {
+      apiKey: "AIzaSyDYPsjlOmRwH2F5P8fFoiirP1FLjgh3c8A",
+      authDomain: "murgi-dfd67.firebaseapp.com",
+      databaseURL: "https://murgi-dfd67-default-rtdb.firebaseio.com",
+      projectId: "murgi-dfd67",
+      storageBucket: "murgi-dfd67.firebasestorage.app",
+      messagingSenderId: "209696889864",
+      appId: "1:209696889864:web:3eaa16034f00cca45505bd"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
+
+    // App State
+    let currentUser = null;
+    let customerData = null;
+
+    // DOM Elements
+    const shopLogoImg = document.getElementById('shopLogoImg');
+    const fallbackLogoIcon = document.getElementById('fallbackLogoIcon');
+    const shopNameTitle = document.getElementById('shopNameTitle');
+
+    const userAvatarText = document.getElementById('userAvatarText');
+    const profFullName = document.getElementById('profFullName');
+    const profUsername = document.getElementById('profUsername');
+    const profTierBadge = document.getElementById('profTierBadge');
+
+    const stTotalOrders = document.getElementById('stTotalOrders');
+    const stPendingOrders = document.getElementById('stPendingOrders');
+    const stDeliveredOrders = document.getElementById('stDeliveredOrders');
+    const stTotalSpent = document.getElementById('stTotalSpent');
+
+    const infoPhone = document.getElementById('infoPhone');
+    const infoUid = document.getElementById('infoUid');
+    const infoJoined = document.getElementById('infoJoined');
+    const infoStatus = document.getElementById('infoStatus');
+
+    const infoCategoryName = document.getElementById('infoCategoryName');
+    const bizNameRow = document.getElementById('bizNameRow');
+    const infoBizName = document.getElementById('infoBizName');
+    const bizApprovalRow = document.getElementById('bizApprovalRow');
+    const infoApprovalStatus = document.getElementById('infoApprovalStatus');
+    const bizPendingMsg = document.getElementById('bizPendingMsg');
+
+    const infoAddressText = document.getElementById('infoAddressText');
+    const gpsCoordsNotice = document.getElementById('gpsCoordsNotice');
+
+    const unreadNotifCount = document.getElementById('unreadNotifCount');
+    const notifListContainer = document.getElementById('notifListContainer');
+
+    const btnWhatsAppDirect = document.getElementById('btnWhatsAppDirect');
+    const btnLogoutCustomer = document.getElementById('btnLogoutCustomer');
+
+    // Modals
+    const editProfileModal = document.getElementById('editProfileModal');
+    const btnOpenEditProfile = document.getElementById('btnOpenEditProfile');
+    const btnCloseEditProf = document.getElementById('btnCloseEditProf');
+    const btnCancelEditProf = document.getElementById('btnCancelEditProf');
+    const formEditProfile = document.getElementById('formEditProfile');
+    const inpEditFullName = document.getElementById('inpEditFullName');
+    const inpEditPhone = document.getElementById('inpEditPhone');
+
+    const editAddressModal = document.getElementById('editAddressModal');
+    const btnOpenEditAddress = document.getElementById('btnOpenEditAddress');
+    const btnCloseEditAddr = document.getElementById('btnCloseEditAddr');
+    const btnCancelEditAddr = document.getElementById('btnCancelEditAddr');
+    const formEditAddress = document.getElementById('formEditAddress');
+    const btnDetectCurrentGps = document.getElementById('btnDetectCurrentGps');
+    const txtGpsBtn = document.getElementById('txtGpsBtn');
+    const gpsDetectStatus = document.getElementById('gpsDetectStatus');
+    const inpLat = document.getElementById('inpLat');
+    const inpLng = document.getElementById('inpLng');
+    const inpDetailedAddress = document.getElementById('inpDetailedAddress');
+
+    const upgradeTierModal = document.getElementById('upgradeTierModal');
+    const btnOpenUpgradeModal = document.getElementById('btnOpenUpgradeModal');
+    const btnCloseUpgradeModal = document.getElementById('btnCloseUpgradeModal');
+    const btnCancelUpgrade = document.getElementById('btnCancelUpgrade');
+    const formUpgradeTier = document.getElementById('formUpgradeTier');
+    const selectReqTier = document.getElementById('selectReqTier');
+    const inpReqBizName = document.getElementById('inpReqBizName');
+    const inpReqNote = document.getElementById('inpReqNote');
+
+    const supportTicketModal = document.getElementById('supportTicketModal');
+    const btnOpenSupportTicket = document.getElementById('btnOpenSupportTicket');
+    const btnCloseSupportTicket = document.getElementById('btnCloseSupportTicket');
+    const btnCancelSupportTicket = document.getElementById('btnCancelSupportTicket');
+    const formSupportTicket = document.getElementById('formSupportTicket');
+    const selSupportCategory = document.getElementById('selSupportCategory');
+    const inpSupportOrderId = document.getElementById('inpSupportOrderId');
+    const txtSupportMsg = document.getElementById('txtSupportMsg');
+
+    const changePasswordModal = document.getElementById('changePasswordModal');
+    const btnOpenChangePass = document.getElementById('btnOpenChangePass');
+    const btnCloseChangePass = document.getElementById('btnCloseChangePass');
+    const btnCancelChangePass = document.getElementById('btnCancelChangePass');
+    const formChangePassword = document.getElementById('formChangePassword');
+    const inpNewPass = document.getElementById('inpNewPass');
+    const inpConfirmNewPass = document.getElementById('inpConfirmNewPass');
+
+    // ==========================================================
+    // AUTHENTICATION GUARD
+    // ==========================================================
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        window.location.replace('customer-login.html');
+        return;
+      }
+
+      currentUser = user;
+
+      listenToBranding();
+      listenToCustomerProfile(user.uid);
+      listenToCustomerOrdersStats(user.uid);
+      listenToNotifications(user.uid);
+    });
+
+    // ==========================================================
+    // BRANDING LISTENER
+    // ==========================================================
+    function listenToBranding() {
+      onValue(ref(db, 'settings/shopProfile'), (snap) => {
+        const p = snap.val() || {};
+        if (p.shopName) shopNameTitle.textContent = p.shopName;
+        if (p.logoUrl) {
+          shopLogoImg.src = p.logoUrl;
+          shopLogoImg.onload = () => { shopLogoImg.style.display = 'block'; fallbackLogoIcon.style.display = 'none'; };
+        }
+
+        if (p.whatsapp || p.phone) {
+          const raw = (p.whatsapp || p.phone).replace(/[^0-9]/g, '');
+          btnWhatsAppDirect.href = `https://wa.me/${raw}?text=${encodeURIComponent("Hello Poultry Shop Support,")}`;
+        }
+      });
+    }
+
+    // ==========================================================
+    // CUSTOMER PROFILE REALTIME LISTENER
+    // ==========================================================
+    function listenToCustomerProfile(uid) {
+      onValue(ref(db, `customers/${uid}`), (snap) => {
+        if (!snap.exists()) return;
+        customerData = snap.val();
+
+        // Check if suspended
+        if (customerData.status === 'suspended' || customerData.accountStatus === 'disabled') {
+          alert("Your account has been suspended by administration.");
+          signOut(auth).then(() => window.location.replace('customer-login.html'));
+          return;
+        }
+
+        const name = customerData.fullName || currentUser.displayName || 'Customer';
+        profFullName.textContent = name;
+        userAvatarText.textContent = name.charAt(0).toUpperCase();
+        profUsername.textContent = customerData.username ? `@${customerData.username}` : currentUser.email;
+
+        infoPhone.textContent = customerData.phone || customerData.whatsapp || 'N/A';
+        infoUid.textContent = uid;
+        infoStatus.textContent = (customerData.status || 'Active').toUpperCase();
+
+        if (customerData.createdAt) {
+          infoJoined.textContent = new Date(customerData.createdAt).toLocaleDateString('bn-BD', { day: 'numeric', month: 'short', year: 'numeric' });
+        } else {
+          infoJoined.textContent = 'Active Client';
+        }
+
+        // Tier & Approval Rendering
+        const cat = customerData.category || 'normal';
+        const isBiz = (cat !== 'normal') || (customerData.requestedCategory && customerData.requestedCategory !== 'normal');
+
+        if (isBiz) {
+          profTierBadge.className = 'badge-tier tier-commercial';
+          profTierBadge.textContent = `${cat.toUpperCase()} TIER`;
+          infoCategoryName.textContent = cat.replace('_', ' ').toUpperCase();
+
+          bizNameRow.style.display = 'flex';
+          infoBizName.textContent = customerData.businessName || '—';
+
+          bizApprovalRow.style.display = 'flex';
+          const appStatus = customerData.businessApprovalStatus || (customerData.businessApproved ? 'approved' : 'pending');
+          infoApprovalStatus.textContent = appStatus.toUpperCase();
+
+          if (appStatus === 'approved') {
+            infoApprovalStatus.style.color = 'var(--primary-dark)';
+            bizPendingMsg.style.display = 'none';
+          } else {
+            infoApprovalStatus.style.color = 'var(--gold-accent)';
+            bizPendingMsg.style.display = 'block';
+          }
+        } else {
+          profTierBadge.className = 'badge-tier tier-retail';
+          profTierBadge.textContent = 'Normal Customer (Retail)';
+          infoCategoryName.textContent = 'Normal Customer (Retail)';
+          bizNameRow.style.display = 'none';
+          bizApprovalRow.style.display = 'none';
+          bizPendingMsg.style.display = 'none';
+        }
+
+        // Delivery Address
+        if (customerData.deliveryAddress) {
+          infoAddressText.textContent = customerData.deliveryAddress;
+        } else {
+          infoAddressText.textContent = 'No delivery address saved. Click Update to add.';
+        }
+
+        if (customerData.latitude && customerData.longitude) {
+          gpsCoordsNotice.textContent = `GPS: Lat ${Number(customerData.latitude).toFixed(4)}, Lng ${Number(customerData.longitude).toFixed(4)}`;
+        } else {
+          gpsCoordsNotice.textContent = 'GPS Coordinates: Not set';
+        }
+      });
+    }
+
+    // ==========================================================
+    // ORDERS LIVE STATS FOR THIS CUSTOMER ONLY
+    // ==========================================================
+    function listenToCustomerOrdersStats(uid) {
+      onValue(ref(db, 'orders'), (snap) => {
+        let total = 0;
+        let pending = 0;
+        let delivered = 0;
+        let spending = 0;
+
+        snap.forEach(child => {
+          const ord = child.val();
+          if (ord.customerId === uid || ord.customerUid === uid || ord.customer?.uid === uid) {
+            total++;
+            const st = (ord.status || 'pending').toLowerCase();
+            const amt = Number(ord.totalAmount || ord.pricing?.totalAmount || 0);
+
+            if (st === 'pending') pending++;
+            if (st === 'delivered' || st === 'completed') {
+              delivered++;
+              spending += amt; // Count ONLY delivered/completed as confirmed spending
+            }
+          }
+        });
+
+        stTotalOrders.textContent = total;
+        stPendingOrders.textContent = pending;
+        stDeliveredOrders.textContent = delivered;
+        stTotalSpent.textContent = `৳ ${spending.toLocaleString('en-IN')}`;
+      });
+    }
+
+    // ==========================================================
+    // NOTIFICATIONS LISTENER & MARK READ
+    // ==========================================================
+    function listenToNotifications(uid) {
+      onValue(ref(db, `notifications/${uid}`), (snap) => {
+        const notifList = [];
+        let unread = 0;
+
+        snap.forEach(child => {
+          const n = child.val();
+          n.key = child.key;
+          if (n.read !== true) unread++;
+          notifList.push(n);
+        });
+
+        if (unread > 0) {
+          unreadNotifCount.textContent = `${unread} New`;
+          unreadNotifCount.style.display = 'inline';
+        } else {
+          unreadNotifCount.style.display = 'none';
+        }
+
+        if (notifList.length === 0) {
+          notifListContainer.innerHTML = `<p style="text-align:center; color:var(--text-muted); font-size:0.8rem; padding:12px;">No notifications yet.</p>`;
+          return;
+        }
+
+        notifList.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+
+        notifListContainer.innerHTML = notifList.slice(0, 5).map(item => `
+          <div style="padding:8px 0; border-bottom:1px solid var(--border-subtle); display:flex; justify-content:space-between; align-items:flex-start;">
+            <div>
+              <div style="font-size:0.84rem; font-weight:700; color:var(--text-main);">${escapeHTML(item.title || 'Notification')}</div>
+              <p style="font-size:0.78rem; color:var(--text-muted); line-height:1.35; margin-top:2px;">${escapeHTML(item.message || item.body || '')}</p>
+            </div>
+            ${item.read !== true ? `<button type="button" onclick="markAsRead('${item.key}')" style="background:var(--green-light); border:1px solid var(--green-border); color:var(--primary-dark); font-size:0.65rem; font-weight:700; border-radius:4px; padding:2px 6px; cursor:pointer;">Mark Read</button>` : ''}
+          </div>
+        `).join('');
+      });
+    }
+
+    window.markAsRead = async function(notifKey) {
+      if (!currentUser) return;
+      await update(ref(db, `notifications/${currentUser.uid}/${notifKey}`), { read: true });
+    };
+
+    // ==========================================================
+    // 1. EDIT PROFILE MODAL (NAME, PHONE)
+    // ==========================================================
+    btnOpenEditProfile.addEventListener('click', () => {
+      if (!customerData) return;
+      inpEditFullName.value = customerData.fullName || '';
+      inpEditPhone.value = customerData.phone || customerData.whatsapp || '';
+      editProfileModal.style.display = 'flex';
+    });
+
+    [btnCloseEditProf, btnCancelEditProf].forEach(b => b.addEventListener('click', () => editProfileModal.style.display = 'none'));
+
+    formEditProfile.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const newName = inpEditFullName.value.trim();
+      const newPhone = inpEditPhone.value.trim();
+
+      if (!newName || !newPhone) return;
+
+      try {
+        await update(ref(db, `customers/${currentUser.uid}`), {
+          fullName: newName,
+          phone: newPhone,
+          whatsapp: newPhone,
+          updatedAt: serverTimestamp()
+        });
+
+        alert("Profile updated successfully!");
+        editProfileModal.style.display = 'none';
+      } catch (err) {
+        alert("Error saving profile: " + err.message);
+      }
+    });
+
+    // ==========================================================
+    // 2. EDIT ADDRESS & GPS GEOLOCATION MODAL
+    // ==========================================================
+    btnOpenEditAddress.addEventListener('click', () => {
+      if (!customerData) return;
+      inpDetailedAddress.value = customerData.deliveryAddress || '';
+      inpLat.value = customerData.latitude || '';
+      inpLng.value = customerData.longitude || '';
+      gpsDetectStatus.textContent = '';
+      editAddressModal.style.display = 'flex';
+    });
+
+    [btnCloseEditAddr, btnCancelEditAddr].forEach(b => b.addEventListener('click', () => editAddressModal.style.display = 'none'));
+
+    btnDetectCurrentGps.addEventListener('click', () => {
+      if (!navigator.geolocation) {
+        gpsDetectStatus.textContent = "Geolocation is not supported by your browser.";
+        return;
+      }
+
+      txtGpsBtn.textContent = "Detecting GPS...";
+      gpsDetectStatus.textContent = "Fetching satellite coordinates (Allow permissions if asked)...";
+
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const lat = position.coords.latitude;
+          const lng = position.coords.longitude;
+
+          inpLat.value = lat;
+          inpLng.value = lng;
+
+          txtGpsBtn.textContent = "GPS Acquired ✓";
+          gpsDetectStatus.textContent = `Coordinates detected: Lat ${lat.toFixed(4)}, Lng ${lng.toFixed(4)}`;
+
+          // Free OSM Reverse Geocode
+          try {
+            const resp = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
+            if (resp.ok) {
+              const res = await resp.json();
+              if (res && res.display_name) inpDetailedAddress.value = res.display_name;
+            }
+          } catch (e) { console.log(e); }
+        },
+        (err) => {
+          txtGpsBtn.textContent = "Detect GPS Location";
+          gpsDetectStatus.textContent = "Could not fetch GPS: " + err.message;
+        },
+        { enableHighAccuracy: true, timeout: 8000 }
+      );
+    });
+
+    formEditAddress.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const addr = inpDetailedAddress.value.trim();
+      const lat = parseFloat(inpLat.value) || null;
+      const lng = parseFloat(inpLng.value) || null;
+
+      if (!addr) return;
+
+      try {
+        await update(ref(db, `customers/${currentUser.uid}`), {
+          deliveryAddress: addr,
+          latitude: lat,
+          longitude: lng,
+          updatedAt: serverTimestamp()
+        });
+
+        alert("Delivery address updated successfully!");
+        editAddressModal.style.display = 'none';
+      } catch (err) {
+        alert("Error saving address: " + err.message);
+      }
+    });
+
+    // ==========================================================
+    // 3. REQUEST CATEGORY TIER CHANGE (BUSINESS TIER)
+    // ==========================================================
+    btnOpenUpgradeModal.addEventListener('click', () => {
+      formUpgradeTier.reset();
+      upgradeTierModal.style.display = 'flex';
+    });
+
+    [btnCloseUpgradeModal, btnCancelUpgrade].forEach(b => b.addEventListener('click', () => upgradeTierModal.style.display = 'none'));
+
+    formUpgradeTier.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const targetTier = selectReqTier.value;
+      const bizName = inpReqBizName.value.trim();
+      const note = inpReqNote.value.trim();
+
+      try {
+        // Create request in `customerRequests` for admin review
+        const reqRef = push(ref(db, 'customerRequests'));
+        await set(reqRef, {
+          requestId: reqRef.key,
+          customerUid: currentUser.uid,
+          customerName: customerData?.fullName || currentUser.displayName || 'Customer',
+          customerPhone: customerData?.phone || '',
+          requestType: 'business_approval',
+          requestedCategory: targetTier,
+          businessName: bizName,
+          subject: `Request Wholesale Tier: ${targetTier.toUpperCase()} (${bizName})`,
+          message: note || `Client requesting upgrade to ${targetTier}.`,
+          status: 'new',
+          createdAt: serverTimestamp()
+        });
+
+        // Mark pending on customer profile
+        await update(ref(db, `customers/${currentUser.uid}`), {
+          requestedCategory: targetTier,
+          businessName: bizName,
+          businessApprovalStatus: 'pending'
+        });
+
+        alert("Tier upgrade request submitted! Our shop administrator will review your application.");
+        upgradeTierModal.style.display = 'none';
+      } catch (err) {
+        alert("Error submitting request: " + err.message);
+      }
+    });
+
+    // ==========================================================
+    // 4. SUBMIT SUPPORT TICKET
+    // ==========================================================
+    btnOpenSupportTicket.addEventListener('click', () => {
+      formSupportTicket.reset();
+      supportTicketModal.style.display = 'flex';
+    });
+
+    [btnCloseSupportTicket, btnCancelSupportTicket].forEach(b => b.addEventListener('click', () => supportTicketModal.style.display = 'none'));
+
+    formSupportTicket.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const cat = selSupportCategory.value;
+      const ordId = inpSupportOrderId.value.trim();
+      const msg = txtSupportMsg.value.trim();
+
+      if (!msg) return;
+
+      try {
+        const reqRef = push(ref(db, 'customerRequests'));
+        await set(reqRef, {
+          requestId: reqRef.key,
+          customerUid: currentUser.uid,
+          customerName: customerData?.fullName || currentUser.displayName || 'Customer',
+          customerPhone: customerData?.phone || '',
+          orderId: ordId || null,
+          requestType: cat,
+          subject: `Support: ${cat.replace('_', ' ')}`,
+          message: msg,
+          status: 'new',
+          createdAt: serverTimestamp()
+        });
+
+        alert("Support request submitted to shop staff. We will assist you shortly.");
+        supportTicketModal.style.display = 'none';
+      } catch (err) {
+        alert("Error sending support request: " + err.message);
+      }
+    });
+
+    // ==========================================================
+    // 5. CHANGE PASSWORD
+    // ==========================================================
+    btnOpenChangePass.addEventListener('click', () => {
+      formChangePassword.reset();
+      changePasswordModal.style.display = 'flex';
+    });
+
+    [btnCloseChangePass, btnCancelChangePass].forEach(b => b.addEventListener('click', () => changePasswordModal.style.display = 'none'));
+
+    formChangePassword.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const p1 = inpNewPass.value;
+      const p2 = inpConfirmNewPass.value;
+
+      if (p1 !== p2) {
+        alert("Passwords do not match!");
+        return;
+      }
+
+      try {
+        await updatePassword(currentUser, p1);
+        alert("Password updated successfully!");
+        changePasswordModal.style.display = 'none';
+      } catch (err) {
+        if (err.code === 'auth/requires-recent-login') {
+          alert("For security, please sign out and log in again before changing your password.");
+        } else {
+          alert("Password update failed: " + err.message);
+        }
+      }
+    });
+
+    // ==========================================================
+    // 6. LOGOUT WITH CONFIRMATION
+    // ==========================================================
+    btnLogoutCustomer.addEventListener('click', async () => {
+      if (!confirm("Are you sure you want to sign out of your account?")) return;
+
+      try {
+        await signOut(auth);
+        window.location.replace('customer-login.html');
+      } catch (err) {
+        alert("Logout failed: " + err.message);
+      }
+    });
+
+    function escapeHTML(str) {
+      if (!str) return '';
+      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+    }
+  </script>
+</body>
+</html>
