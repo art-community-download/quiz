@@ -1,0 +1,1142 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Fresh Products | Poultry Shop</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    /* ==========================================================
+       CSS RESET & FRESH GREEN THEME
+       ========================================================== */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    :root {
+      --bg-main: #f8fafc;
+      --bg-card: #ffffff;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --text-light: #94a3b8;
+      
+      --primary-green: #10b981;
+      --primary-dark: #047857;
+      --primary-deep: #064e3b;
+      --green-light: #ecfdf5;
+      --green-border: rgba(16, 185, 129, 0.2);
+      
+      --gold-accent: #d97706;
+      --gold-light: #fef3c7;
+      --danger: #ef4444;
+      --danger-light: #fef2f2;
+      
+      --border-subtle: #e2e8f0;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+      --shadow-md: 0 4px 14px rgba(0,0,0,0.08);
+      
+      --bottom-nav-height: 64px;
+    }
+
+    body {
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      font-family: 'Outfit', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding-bottom: calc(var(--bottom-nav-height) + 26px);
+      overflow-x: hidden;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 520px;
+      margin: 0 auto;
+      padding: 0 16px;
+    }
+
+    /* Top Sticky Header */
+    .top-header {
+      background: #ffffff;
+      border-bottom: 1px solid var(--border-subtle);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      box-shadow: var(--shadow-sm);
+      padding: 10px 16px;
+    }
+
+    .header-content {
+      max-width: 520px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand-center {
+      text-align: center;
+      flex: 1;
+    }
+
+    .shop-logo-frame {
+      width: 42px;
+      height: 42px;
+      margin: 0 auto 2px auto;
+      border-radius: 12px;
+      background: var(--green-light);
+      border: 1.5px solid var(--primary-green);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .shop-logo-frame img { width: 100%; height: 100%; object-fit: cover; }
+    .shop-logo-frame svg { width: 22px; height: 22px; stroke: var(--primary-green); }
+
+    .shop-name-title {
+      font-family: 'Cinzel', serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--primary-deep);
+      line-height: 1.2;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: var(--bg-main);
+      border: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-main);
+      cursor: pointer;
+      position: relative;
+      text-decoration: none;
+    }
+
+    .badge-count {
+      position: absolute;
+      top: -2px;
+      right: -2px;
+      background: var(--danger);
+      color: #fff;
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 10px;
+      border: 2px solid #fff;
+    }
+
+    /* Pending Approval Notice Banner */
+    .pending-approval-banner {
+      display: none;
+      background: var(--gold-light);
+      border: 1px solid rgba(217, 119, 6, 0.3);
+      border-radius: 12px;
+      padding: 10px 14px;
+      font-size: 0.78rem;
+      color: var(--gold-accent);
+      margin: 14px 0 6px 0;
+      line-height: 1.35;
+    }
+
+    /* Search Bar */
+    .search-box-wrap {
+      position: relative;
+      margin: 14px 0 12px 0;
+    }
+
+    .search-input {
+      width: 100%;
+      height: 46px;
+      background: #ffffff;
+      border: 1.5px solid var(--border-subtle);
+      border-radius: 14px;
+      padding: 0 42px 0 42px;
+      font-family: inherit;
+      font-size: 0.9rem;
+      color: var(--text-main);
+      outline: none;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .search-input:focus {
+      border-color: var(--primary-green);
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-light);
+      pointer-events: none;
+    }
+
+    .btn-clear-search {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: var(--text-light);
+      cursor: pointer;
+      display: none;
+      font-size: 1.1rem;
+    }
+
+    /* Horizontal Category Scroller */
+    .categories-scroller {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+      margin-bottom: 12px;
+      scrollbar-width: none;
+    }
+    .categories-scroller::-webkit-scrollbar { display: none; }
+
+    .cat-pill {
+      background: #ffffff;
+      border: 1px solid var(--border-subtle);
+      border-radius: 20px;
+      padding: 7px 14px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-main);
+      white-space: nowrap;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-decoration: none;
+    }
+
+    .cat-pill.active {
+      background: var(--primary-green);
+      color: #ffffff;
+      border-color: var(--primary-green);
+    }
+
+    /* Filter & Sort Bar */
+    .filter-sort-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .select-control {
+      background: #ffffff;
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 6px 10px;
+      font-family: inherit;
+      font-size: 0.78rem;
+      color: var(--text-main);
+      outline: none;
+      cursor: pointer;
+    }
+
+    /* Delivery Coverage Notice */
+    .delivery-notice-box {
+      background: var(--green-light);
+      border: 1px dashed var(--green-border);
+      border-radius: 12px;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.76rem;
+      color: var(--primary-deep);
+      margin-bottom: 16px;
+    }
+
+    .delivery-notice-box a {
+      color: var(--primary-dark);
+      font-weight: 700;
+      text-decoration: underline;
+    }
+
+    /* Product Cards Grid */
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .product-card {
+      background: #ffffff;
+      border: 1px solid var(--border-subtle);
+      border-radius: 18px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow-sm);
+      position: relative;
+    }
+
+    .thumb-wrap {
+      width: 100%;
+      height: 130px;
+      background: #f1f5f9;
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .thumb-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+
+    .product-card:hover .thumb-wrap img {
+      transform: scale(1.05);
+    }
+
+    .stock-tag {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 12px;
+      text-transform: uppercase;
+      background: rgba(255, 255, 255, 0.95);
+    }
+
+    .stock-tag.in-stock { color: var(--primary-dark); }
+    .stock-tag.low-stock { color: var(--gold-accent); background: var(--gold-light); }
+    .stock-tag.out-stock { color: var(--danger); background: var(--danger-light); }
+
+    .card-body {
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+
+    .prod-cat-sub {
+      font-size: 0.68rem;
+      font-weight: 600;
+      color: var(--primary-dark);
+      text-transform: uppercase;
+      margin-bottom: 2px;
+    }
+
+    .prod-title {
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: var(--text-main);
+      line-height: 1.3;
+      height: 38px;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      margin-bottom: 6px;
+      cursor: pointer;
+    }
+
+    .price-wrap {
+      margin-top: auto;
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .price-value {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--primary-deep);
+    }
+
+    .price-unit {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    /* Quantity Selector Controls */
+    .qty-control-box {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--bg-main);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 4px;
+      margin-bottom: 8px;
+    }
+
+    .btn-qty {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      background: #ffffff;
+      border: 1px solid var(--border-subtle);
+      color: var(--text-main);
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .qty-display {
+      font-size: 0.84rem;
+      font-weight: 700;
+      color: var(--primary-deep);
+    }
+
+    .btn-add-cart {
+      width: 100%;
+      height: 36px;
+      background: var(--green-light);
+      border: 1px solid var(--green-border);
+      border-radius: 10px;
+      color: var(--primary-dark);
+      font-family: inherit;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-add-cart:hover:not(:disabled) {
+      background: var(--primary-green);
+      color: #ffffff;
+      border-color: var(--primary-green);
+    }
+
+    .btn-add-cart:disabled {
+      background: #f1f5f9;
+      color: var(--text-light);
+      border-color: var(--border-subtle);
+      cursor: not-allowed;
+    }
+
+    /* Bottom Fixed Nav */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: var(--bottom-nav-height);
+      background: #ffffff;
+      border-top: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      z-index: 100;
+      box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.05);
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.68rem;
+      font-weight: 600;
+      gap: 3px;
+      flex: 1;
+      height: 100%;
+      position: relative;
+    }
+
+    .nav-item svg { width: 20px; height: 20px; stroke: currentColor; }
+
+    .nav-item.active {
+      color: var(--primary-dark);
+    }
+
+    .nav-item.active svg { stroke: var(--primary-dark); }
+
+    /* Toast Notification */
+    .cart-toast {
+      position: fixed;
+      bottom: calc(var(--bottom-nav-height) + 14px);
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--primary-deep);
+      color: #ffffff;
+      padding: 10px 18px;
+      border-radius: 30px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 1000;
+    }
+
+    .cart-toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* Modal: Product Details */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(4px);
+      z-index: 1100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .modal-dialog {
+      background: #ffffff;
+      border-radius: 22px;
+      width: 100%;
+      max-width: 440px;
+      overflow: hidden;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+      animation: popUp 0.2s ease-out;
+    }
+
+    @keyframes popUp {
+      from { transform: scale(0.95); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .modal-img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      background: #f1f5f9;
+    }
+
+    .modal-body {
+      padding: 18px;
+    }
+
+    .modal-footer {
+      padding: 14px 18px;
+      background: var(--bg-main);
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      border-top: 1px solid var(--border-subtle);
+    }
+
+    .empty-state {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 50px 16px;
+      color: var(--text-muted);
+      font-size: 0.88rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Sticky Header -->
+  <header class="top-header">
+    <div class="header-content">
+      <a href="customer-home.html" class="btn-icon" title="Home">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      </a>
+
+      <div class="brand-center">
+        <div class="shop-logo-frame" id="shopLogoFrame">
+          <svg id="fallbackLogoIcon" viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M12 2C8.5 2 6 4.5 6 8c0 2 .8 3.8 2.2 5.1L5 22h14l-3.2-8.9C17.2 11.8 18 10 18 8c0-3.5-2.5-6-6-6z"/></svg>
+          <img id="shopLogoImg" src="" alt="Logo" style="display:none;" />
+        </div>
+        <h1 class="shop-name-title" id="shopNameTitle">POULTRY SHOP</h1>
+      </div>
+
+      <div class="header-actions">
+        <a href="customer-cart.html" class="btn-icon" title="View Cart">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+          <span class="badge-count" id="headerCartBadge" style="display:none;">0</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main class="app-container">
+
+    <!-- Pending Wholesale Approval Notice (Shown only if category is business and pending) -->
+    <div id="pendingApprovalBanner" class="pending-approval-banner">
+      ℹ️ <strong>বিজনেস টায়ার অপেক্ষমাণ:</strong> আপনার বাণিজ্যিক অ্যাকাউন্ট অনুমোদনের অপেক্ষায় রয়েছে। অনুমোদন না হওয়া পর্যন্ত সাধারণ খুচরা মূল্য প্রদর্শিত হবে।
+    </div>
+
+    <!-- Search Input -->
+    <div class="search-box-wrap">
+      <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" id="searchInput" class="search-input" placeholder="Search chicken, sonali, cuts..." />
+      <button type="button" id="btnClearSearch" class="btn-clear-search">&times;</button>
+    </div>
+
+    <!-- Category Filter Scroller -->
+    <div class="categories-scroller" id="categoryScroller">
+      <button class="cat-pill active" data-cat="all">All Products</button>
+      <button class="cat-pill" data-cat="Broiler Chicken">Broiler Chicken</button>
+      <button class="cat-pill" data-cat="Sonali Chicken">Sonali Chicken</button>
+      <button class="cat-pill" data-cat="Deshi Chicken">Deshi Chicken</button>
+      <button class="cat-pill" data-cat="Layer Chicken">Layer Chicken</button>
+      <button class="cat-pill" data-cat="Whole Chicken">Whole Chicken</button>
+      <button class="cat-pill" data-cat="Chicken Leg Pieces">Chicken Leg</button>
+      <button class="cat-pill" data-cat="Chicken Wings">Chicken Wings (পাখা)</button>
+      <button class="cat-pill" data-cat="Boneless Chicken">Boneless Chicken</button>
+      <button class="cat-pill" data-cat="Mixed Chicken Cuts">Mixed Cuts</button>
+      <button class="cat-pill" data-cat="Duck">Duck (হাঁস)</button>
+      <button class="cat-pill" data-cat="Other Poultry Products">Other Products</button>
+    </div>
+
+    <!-- Sort & Availability Filters -->
+    <div class="filter-sort-bar">
+      <div style="display: flex; gap: 6px;">
+        <select id="sortFilter" class="select-control">
+          <option value="default">Default Sorting</option>
+          <option value="price_asc">Price: Low to High</option>
+          <option value="price_desc">Price: High to Low</option>
+          <option value="name_asc">Name: A to Z</option>
+        </select>
+
+        <select id="availFilter" class="select-control">
+          <option value="all">All Stock</option>
+          <option value="instock">In Stock Only</option>
+          <option value="kg">KG Only</option>
+          <option value="piece">Piece Only</option>
+        </select>
+      </div>
+
+      <button id="btnResetFilters" style="background:none; border:none; color:var(--text-muted); font-size:0.75rem; font-weight:600; cursor:pointer;">Reset</button>
+    </div>
+
+    <!-- Delivery Notice -->
+    <div class="delivery-notice-box">
+      <span>🚚 বরিশাল সিটির মধ্যে ৩০ কিমি পর্যন্ত হোম ডেলিভারি সক্রিয়।</span>
+      <a href="customer-account.html">ঠিকানা</a>
+    </div>
+
+    <!-- Products Grid -->
+    <section class="products-grid" id="productsGrid">
+      <div class="empty-state">Loading fresh poultry items from store...</div>
+    </section>
+
+  </main>
+
+  <!-- Cart Added Floating Toast -->
+  <div id="cartToast" class="cart-toast">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+    <span id="toastMsg">Cart updated!</span>
+  </div>
+
+  <!-- Modal: Product Details -->
+  <div class="modal-backdrop" id="productModal">
+    <div class="modal-dialog">
+      <img id="modalImg" src="" class="modal-img" alt="Product" />
+      <div class="modal-body">
+        <span style="font-size:0.72rem; color:var(--primary-dark); font-weight:700; text-transform:uppercase;" id="modalCategory">Category</span>
+        <h3 style="font-size:1.15rem; color:var(--text-main); margin:4px 0 8px 0;" id="modalTitle">Product Title</h3>
+        <p style="font-size:0.84rem; color:var(--text-muted); line-height:1.45; margin-bottom:12px;" id="modalDesc">Detailed product description...</p>
+        <div style="display:flex; justify-content:space-between; align-items:baseline;">
+          <span style="font-size:1.3rem; font-weight:800; color:var(--primary-deep);" id="modalPrice">৳ 0</span>
+          <span style="font-size:0.78rem; color:var(--text-muted);" id="modalStock">Stock: 0 KG</span>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-qty" style="width:auto; padding:0 14px; background:#e2e8f0;" id="btnCloseModal">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Fixed Bottom Navigation -->
+  <nav class="bottom-nav">
+    <a href="customer-home.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      <span>Home</span>
+    </a>
+    <a href="customer-products.html" class="nav-item active">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="m7.5 4.27 9 5.15M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/></svg>
+      <span>Products</span>
+    </a>
+    <a href="customer-cart.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+      <span class="badge-count" id="bottomCartBadge" style="display:none; top:4px; right:14px;">0</span>
+      <span>Cart</span>
+    </a>
+    <a href="customer-orders.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      <span>Orders</span>
+    </a>
+    <a href="customer-account.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span>Account</span>
+    </a>
+  </nav>
+
+  <!-- ==========================================================
+       MODULAR FIREBASE SDK (v10) & PRODUCTS SCRIPT
+       ========================================================== -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { 
+      getDatabase, 
+      ref, 
+      onValue, 
+      update, 
+      get, 
+      serverTimestamp 
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+    // 1. Firebase Configuration (Matches Project Credentials)
+    const firebaseConfig = {
+      apiKey: "AIzaSyDYPsjlOmRwH2F5P8fFoiirP1FLjgh3c8A",
+      authDomain: "murgi-dfd67.firebaseapp.com",
+      databaseURL: "https://murgi-dfd67-default-rtdb.firebaseio.com",
+      projectId: "murgi-dfd67",
+      storageBucket: "murgi-dfd67.firebasestorage.app",
+      messagingSenderId: "209696889864",
+      appId: "1:209696889864:web:3eaa16034f00cca45505bd"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
+
+    // App State
+    let currentUser = null;
+    let customerCategory = 'normal';
+    let allProducts = [];
+    let selectedQuantities = {}; // { productId: qty }
+    let activeCategory = 'all';
+
+    // DOM Elements
+    const shopLogoImg = document.getElementById('shopLogoImg');
+    const fallbackLogoIcon = document.getElementById('fallbackLogoIcon');
+    const shopNameTitle = document.getElementById('shopNameTitle');
+    const headerCartBadge = document.getElementById('headerCartBadge');
+    const bottomCartBadge = document.getElementById('bottomCartBadge');
+    const pendingApprovalBanner = document.getElementById('pendingApprovalBanner');
+    const searchInput = document.getElementById('searchInput');
+    const btnClearSearch = document.getElementById('btnClearSearch');
+    const sortFilter = document.getElementById('sortFilter');
+    const availFilter = document.getElementById('availFilter');
+    const btnResetFilters = document.getElementById('btnResetFilters');
+    const productsGrid = document.getElementById('productsGrid');
+    const cartToast = document.getElementById('cartToast');
+    const toastMsg = document.getElementById('toastMsg');
+
+    // Modal DOM
+    const productModal = document.getElementById('productModal');
+    const modalImg = document.getElementById('modalImg');
+    const modalCategory = document.getElementById('modalCategory');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalDesc = document.getElementById('modalDesc');
+    const modalPrice = document.getElementById('modalPrice');
+    const modalStock = document.getElementById('modalStock');
+    const btnCloseModal = document.getElementById('btnCloseModal');
+
+    // ==========================================================
+    // AUTHENTICATION GUARD & CUSTOMER TIER
+    // ==========================================================
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        window.location.replace('customer-login.html');
+        return;
+      }
+
+      currentUser = user;
+
+      try {
+        const custSnap = await get(ref(db, `customers/${user.uid}`));
+        if (custSnap.exists()) {
+          const cust = custSnap.val();
+
+          // Account suspension guard
+          if (cust.status === 'suspended' || cust.accountStatus === 'disabled') {
+            window.location.replace('customer-login.html');
+            return;
+          }
+
+          // Category Validation (Wholesale vs Retail)
+          if (cust.businessApproved === true && cust.category) {
+            customerCategory = cust.category;
+            pendingApprovalBanner.style.display = 'none';
+          } else {
+            customerCategory = 'normal';
+            // Show warning if user requested business tier but is still pending
+            if (cust.requestedCategory && cust.requestedCategory !== 'normal') {
+              pendingApprovalBanner.style.display = 'block';
+            }
+          }
+        }
+
+        // Initialize Listeners
+        listenToBranding();
+        listenToProducts();
+        listenToCart(user.uid);
+        parseUrlQueryParams();
+
+      } catch (err) {
+        console.error("Auth Guard Error:", err);
+      }
+    });
+
+    // ==========================================================
+    // BRANDING REALTIME LISTENER
+    // ==========================================================
+    function listenToBranding() {
+      onValue(ref(db, 'settings/shopProfile'), (snap) => {
+        const p = snap.val() || {};
+        if (p.shopName) shopNameTitle.textContent = p.shopName;
+        if (p.logoUrl) {
+          shopLogoImg.src = p.logoUrl;
+          shopLogoImg.onload = () => { shopLogoImg.style.display = 'block'; fallbackLogoIcon.style.display = 'none'; };
+          shopLogoImg.onerror = () => { shopLogoImg.style.display = 'none'; fallbackLogoIcon.style.display = 'block'; };
+        }
+      });
+    }
+
+    // ==========================================================
+    // PARSE URL QUERY PARAMETERS (?category=broiler)
+    // ==========================================================
+    function parseUrlQueryParams() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const catParam = urlParams.get('category');
+      if (catParam) {
+        const lower = catParam.toLowerCase();
+        let targetCat = 'all';
+
+        if (lower.includes('broiler')) targetCat = 'Broiler Chicken';
+        else if (lower.includes('sonali')) targetCat = 'Sonali Chicken';
+        else if (lower.includes('deshi')) targetCat = 'Deshi Chicken';
+        else if (lower.includes('layer')) targetCat = 'Layer Chicken';
+        else if (lower.includes('whole')) targetCat = 'Whole Chicken';
+        else if (lower.includes('leg')) targetCat = 'Chicken Leg Pieces';
+        else if (lower.includes('wing')) targetCat = 'Chicken Wings';
+        else if (lower.includes('boneless')) targetCat = 'Boneless Chicken';
+        else if (lower.includes('cut') || lower.includes('mixed')) targetCat = 'Mixed Chicken Cuts';
+        else if (lower.includes('duck')) targetCat = 'Duck';
+
+        setActiveCategory(targetCat);
+      }
+    }
+
+    function setActiveCategory(cat) {
+      activeCategory = cat;
+      document.querySelectorAll('.cat-pill').forEach(btn => {
+        const btnCat = btn.getAttribute('data-cat');
+        btn.classList.toggle('active', btnCat === cat);
+      });
+      renderProducts();
+    }
+
+    document.querySelectorAll('.cat-pill').forEach(btn => {
+      btn.addEventListener('click', () => {
+        setActiveCategory(btn.getAttribute('data-cat'));
+      });
+    });
+
+    // ==========================================================
+    // PRODUCTS REALTIME LISTENER & TIERED PRICING
+    // ==========================================================
+    function listenToProducts() {
+      onValue(ref(db, 'products'), (snap) => {
+        allProducts = [];
+        snap.forEach(child => {
+          const item = child.val();
+          item.productId = child.key;
+
+          // Never show hidden products in customer app
+          if ((item.status || 'available').toLowerCase() !== 'hidden') {
+            allProducts.push(item);
+
+            // Initialize default order quantity (minimum order qty or 1)
+            if (!selectedQuantities[item.productId]) {
+              selectedQuantities[item.productId] = Number(item.minOrderQuantity || 1);
+            }
+          }
+        });
+
+        renderProducts();
+      });
+    }
+
+    function renderProducts() {
+      const q = searchInput.value.toLowerCase().trim();
+      const sort = sortFilter.value;
+      const avail = availFilter.value;
+
+      let filtered = allProducts.filter(p => {
+        // Search
+        const name = (p.productName || '').toLowerCase();
+        const cat = (p.category || '').toLowerCase();
+        const desc = (p.description || '').toLowerCase();
+        const matchSearch = !q || name.includes(q) || cat.includes(q) || desc.includes(q);
+
+        // Category filter
+        const matchCat = (activeCategory === 'all') || (p.category === activeCategory);
+
+        // Availability filter
+        const stock = Number(p.stockQuantity ?? 0);
+        const unit = (p.unit || 'KG').toLowerCase();
+        let matchAvail = true;
+        if (avail === 'instock') matchAvail = stock > 0 && (p.status || '').toLowerCase() === 'available';
+        else if (avail === 'kg') matchAvail = unit === 'kg';
+        else if (avail === 'piece') matchAvail = unit === 'piece';
+
+        return matchSearch && matchCat && matchAvail;
+      });
+
+      // Sorting
+      filtered.sort((a, b) => {
+        const priceA = getCustomerPrice(a);
+        const priceB = getCustomerPrice(b);
+        if (sort === 'price_asc') return (priceA ?? 999999) - (priceB ?? 999999);
+        if (sort === 'price_desc') return (priceB ?? 0) - (priceA ?? 0);
+        if (sort === 'name_asc') return (a.productName || '').localeCompare(b.productName || '');
+        return 0;
+      });
+
+      if (filtered.length === 0) {
+        productsGrid.innerHTML = `<div class="empty-state">No poultry items found matching your filters.</div>`;
+        return;
+      }
+
+      productsGrid.innerHTML = filtered.map(p => {
+        const stock = Number(p.stockQuantity ?? 0);
+        const isOut = stock <= 0 || (p.status || '').toLowerCase() === 'out_of_stock';
+        const isLow = stock > 0 && stock <= Number(p.minStockAlert ?? 5);
+        const unit = p.unit || 'KG';
+        const price = getCustomerPrice(p);
+        const priceText = price !== null ? `৳ ${price.toLocaleString('en-IN')}` : 'Price Not Set';
+        const imgUrl = p.imageUrl || 'https://via.placeholder.com/200?text=Fresh+Chicken';
+        const currentQty = selectedQuantities[p.productId] || Number(p.minOrderQuantity || 1);
+
+        let stockBadge = `<span class="stock-tag in-stock">In Stock</span>`;
+        if (isOut) stockBadge = `<span class="stock-tag out-stock">Out of Stock</span>`;
+        else if (isLow) stockBadge = `<span class="stock-tag low-stock">Low Stock</span>`;
+
+        return `
+          <div class="product-card" id="card_${p.productId}">
+            <div class="thumb-wrap" onclick="openProductModal('${p.productId}')">
+              <img src="${escapeHTML(imgUrl)}" alt="${escapeHTML(p.productName)}" onerror="this.src='https://via.placeholder.com/200?text=No+Image';" />
+              ${stockBadge}
+            </div>
+
+            <div class="card-body">
+              <span class="prod-cat-sub">${escapeHTML(p.category || 'Poultry')}</span>
+              <h4 class="prod-title" onclick="openProductModal('${p.productId}')">${escapeHTML(p.productName)}</h4>
+
+              <div class="price-wrap">
+                <span class="price-value">${priceText}</span>
+                <span class="price-unit">/ ${escapeHTML(unit)}</span>
+              </div>
+
+              <!-- Plus / Minus Quantity Selector -->
+              <div class="qty-control-box">
+                <button type="button" class="btn-qty" onclick="changeQty('${p.productId}', -1)" ${isOut ? 'disabled' : ''}>-</button>
+                <span class="qty-display" id="qty_${p.productId}">${currentQty} ${escapeHTML(unit)}</span>
+                <button type="button" class="btn-qty" onclick="changeQty('${p.productId}', 1)" ${isOut ? 'disabled' : ''}>+</button>
+              </div>
+
+              <button 
+                class="btn-add-cart" 
+                onclick="submitAddToCart('${p.productId}')"
+                ${(isOut || price === null) ? 'disabled' : ''}
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                <span>${isOut ? 'Out of Stock' : 'Add to Cart'}</span>
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Helper: Determine accurate permitted customer price
+    function getCustomerPrice(p) {
+      if (p.prices && p.prices[customerCategory] !== undefined && p.prices[customerCategory] !== null) {
+        return Number(p.prices[customerCategory]);
+      } else if (p.basePrice !== undefined && p.basePrice !== null) {
+        return Number(p.basePrice);
+      }
+      return null;
+    }
+
+    // Quantity Increment / Decrement
+    window.changeQty = function(productId, delta) {
+      const p = allProducts.find(item => item.productId === productId);
+      if (!p) return;
+
+      const min = Number(p.minOrderQuantity || 1);
+      const max = Math.min(Number(p.maxOrderQuantity || 100), Number(p.stockQuantity || 0));
+      let current = selectedQuantities[productId] || min;
+
+      let next = current + delta;
+      if (next < min) next = min;
+      if (next > max) {
+        next = max;
+        showToast(`Maximum limit reached (${max} ${p.unit || 'KG'})`);
+      }
+
+      selectedQuantities[productId] = next;
+      const qtyLabel = document.getElementById(`qty_${productId}`);
+      if (qtyLabel) qtyLabel.textContent = `${next} ${p.unit || 'KG'}`;
+    };
+
+    // ==========================================================
+    // ADD TO CART (STORED IN FIREBASE `carts/{uid}/{productId}`)
+    // ==========================================================
+    window.submitAddToCart = async function(productId) {
+      if (!currentUser) return;
+      const p = allProducts.find(item => item.productId === productId);
+      if (!p) return;
+
+      const price = getCustomerPrice(p);
+      if (price === null) {
+        showToast("Cannot add item: price not set by store.");
+        return;
+      }
+
+      const qty = selectedQuantities[productId] || Number(p.minOrderQuantity || 1);
+      const availableStock = Number(p.stockQuantity || 0);
+
+      if (qty > availableStock) {
+        showToast(`Cannot order more than available stock (${availableStock} ${p.unit})`);
+        return;
+      }
+
+      try {
+        const cartItemRef = ref(db, `carts/${currentUser.uid}/${productId}`);
+        
+        // Save to Firebase Realtime Database
+        await update(cartItemRef, {
+          productId: p.productId,
+          productName: p.productName,
+          unit: p.unit || 'KG',
+          quantity: qty,
+          imageUrl: p.imageUrl || '',
+          updatedAt: serverTimestamp()
+        });
+
+        showToast(`${p.productName} added to cart! (${qty} ${p.unit})`);
+      } catch (err) {
+        console.error(err);
+        showToast("Error adding to cart: " + err.message);
+      }
+    };
+
+    // Cart Count Listener
+    function listenToCart(uid) {
+      const userCartRef = ref(db, `carts/${uid}`);
+      onValue(userCartRef, (snap) => {
+        let count = 0;
+        snap.forEach(child => {
+          count += Number(child.val().quantity || 1);
+        });
+
+        if (count > 0) {
+          headerCartBadge.textContent = count;
+          headerCartBadge.style.display = 'block';
+          bottomCartBadge.textContent = count;
+          bottomCartBadge.style.display = 'block';
+        } else {
+          headerCartBadge.style.display = 'none';
+          bottomCartBadge.style.display = 'none';
+        }
+      });
+    }
+
+    function showToast(msg) {
+      toastMsg.textContent = msg;
+      cartToast.classList.add('show');
+      setTimeout(() => cartToast.classList.remove('show'), 2600);
+    }
+
+    // ==========================================================
+    // MODAL DETAILS VIEW
+    // ==========================================================
+    window.openProductModal = function(productId) {
+      const p = allProducts.find(item => item.productId === productId);
+      if (!p) return;
+
+      modalImg.src = p.imageUrl || 'https://via.placeholder.com/300?text=Poultry';
+      modalCategory.textContent = p.category || 'Poultry';
+      modalTitle.textContent = p.productName;
+      modalDesc.textContent = p.description || 'Fresh Halal farm-raised poultry. Cleaned and prepared with utmost care.';
+      
+      const price = getCustomerPrice(p);
+      modalPrice.textContent = price !== null ? `৳ ${price.toLocaleString('en-IN')}` : 'Price Not Set';
+      modalStock.textContent = `Stock: ${Number(p.stockQuantity ?? 0)} ${p.unit || 'KG'}`;
+
+      productModal.style.display = 'flex';
+    };
+
+    btnCloseModal.onclick = () => productModal.style.display = 'none';
+    productModal.onclick = (e) => { if (e.target === productModal) productModal.style.display = 'none'; };
+
+    // Search and Filters Listeners
+    searchInput.addEventListener('input', () => {
+      btnClearSearch.style.display = searchInput.value ? 'block' : 'none';
+      renderProducts();
+    });
+
+    btnClearSearch.addEventListener('click', () => {
+      searchInput.value = '';
+      btnClearSearch.style.display = 'none';
+      renderProducts();
+    });
+
+    sortFilter.addEventListener('change', renderProducts);
+    availFilter.addEventListener('change', renderProducts);
+
+    btnResetFilters.addEventListener('click', () => {
+      searchInput.value = '';
+      btnClearSearch.style.display = 'none';
+      sortFilter.value = 'default';
+      availFilter.value = 'all';
+      setActiveCategory('all');
+    });
+
+    function escapeHTML(str) {
+      if (!str) return '';
+      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+    }
+  </script>
+</body>
+</html>
