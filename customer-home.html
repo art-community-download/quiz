@@ -1,0 +1,1259 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Home | Fresh Poultry Store</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    /* ==========================================================
+       CSS RESET & FRESH GREEN THEME TOKENS
+       ========================================================== */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    :root {
+      --bg-main: #f8fafc;
+      --bg-card: #ffffff;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --text-light: #94a3b8;
+      
+      --primary-green: #10b981;
+      --primary-dark: #047857;
+      --primary-deep: #064e3b;
+      --green-light: #ecfdf5;
+      --green-border: rgba(16, 185, 129, 0.2);
+      
+      --gold-accent: #d97706;
+      --gold-light: #fef3c7;
+      
+      --danger: #ef4444;
+      --danger-light: #fef2f2;
+      
+      --border-subtle: #e2e8f0;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+      --shadow-md: 0 4px 14px rgba(0,0,0,0.07);
+      --shadow-lg: 0 10px 25px -3px rgba(0,0,0,0.08);
+      
+      --bottom-nav-height: 64px;
+    }
+
+    body {
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      font-family: 'Outfit', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding-bottom: calc(var(--bottom-nav-height) + 24px);
+      overflow-x: hidden;
+    }
+
+    /* Container for Mobile-First (Responsive Desktop centering) */
+    .app-container {
+      width: 100%;
+      max-width: 520px;
+      margin: 0 auto;
+      padding: 0 16px;
+    }
+
+    /* ==========================================================
+       TOP APP HEADER & BRANDING
+       ========================================================== */
+    .top-header {
+      background: #ffffff;
+      border-bottom: 1px solid var(--border-subtle);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      box-shadow: var(--shadow-sm);
+      padding: 12px 16px;
+    }
+
+    .header-content {
+      max-width: 520px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: relative;
+    }
+
+    .brand-center {
+      text-align: center;
+      flex: 1;
+    }
+
+    .shop-logo-frame {
+      width: 48px;
+      height: 48px;
+      margin: 0 auto 4px auto;
+      border-radius: 14px;
+      background: var(--green-light);
+      border: 1.5px solid var(--primary-green);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(16, 185, 129, 0.15);
+      transition: all 0.3s ease;
+    }
+
+    .shop-logo-frame img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .shop-logo-frame svg {
+      width: 26px;
+      height: 26px;
+      stroke: var(--primary-green);
+    }
+
+    .shop-name-title {
+      font-family: 'Cinzel', serif;
+      font-size: 1.12rem;
+      font-weight: 700;
+      color: var(--primary-deep);
+      letter-spacing: 0.8px;
+      line-height: 1.2;
+      transition: all 0.3s ease;
+    }
+
+    /* Configurable Branding Animations */
+    .anim-soft_fade { animation: animFade 3s ease-in-out infinite alternate; }
+    .anim-gentle_shine { animation: animShine 4s linear infinite; }
+    .anim-subtle_glow { animation: animGlow 2.5s ease-in-out infinite alternate; }
+
+    @keyframes animFade { 0% { opacity: 0.85; } 100% { opacity: 1; } }
+    @keyframes animShine { 0% { filter: brightness(0.95); } 50% { filter: brightness(1.2); } 100% { filter: brightness(0.95); } }
+    @keyframes animGlow { 0% { text-shadow: 0 0 4px rgba(16, 185, 129, 0.2); } 100% { text-shadow: 0 0 14px rgba(16, 185, 129, 0.5); } }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: var(--bg-main);
+      border: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-main);
+      cursor: pointer;
+      position: relative;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+
+    .btn-icon:active { transform: scale(0.92); }
+
+    .badge-count {
+      position: absolute;
+      top: -2px;
+      right: -2px;
+      background: var(--danger);
+      color: #fff;
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 10px;
+      border: 2px solid #fff;
+    }
+
+    /* ==========================================================
+       CUSTOMER GREETING & DELIVERY LOCATION BAR
+       ========================================================== */
+    .greeting-card {
+      background: #ffffff;
+      border: 1px solid var(--border-subtle);
+      border-radius: 18px;
+      padding: 14px 18px;
+      margin: 16px 0 12px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .greeting-left h2 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .delivery-location-row {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .delivery-location-row svg {
+      width: 14px;
+      height: 14px;
+      stroke: var(--primary-green);
+      flex-shrink: 0;
+    }
+
+    .btn-edit-location {
+      color: var(--primary-dark);
+      background: var(--green-light);
+      border: 1px solid var(--green-border);
+      padding: 6px 10px;
+      border-radius: 10px;
+      font-size: 0.76rem;
+      font-weight: 600;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+
+    /* ==========================================================
+       SHOP STATUS BANNER
+       ========================================================== */
+    .status-banner {
+      border-radius: 14px;
+      padding: 10px 14px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 14px;
+      line-height: 1.35;
+    }
+
+    .status-open {
+      background: var(--green-light);
+      border: 1px solid var(--green-border);
+      color: var(--primary-dark);
+    }
+
+    .status-closed {
+      background: var(--danger-light);
+      border: 1px solid rgba(239, 68, 68, 0.25);
+      color: var(--danger);
+    }
+
+    /* ==========================================================
+       SEARCH INPUT
+       ========================================================== */
+    .search-box-wrap {
+      position: relative;
+      margin-bottom: 16px;
+    }
+
+    .search-input {
+      width: 100%;
+      height: 48px;
+      background: #ffffff;
+      border: 1.5px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 0 42px 0 44px;
+      font-family: inherit;
+      font-size: 0.92rem;
+      color: var(--text-main);
+      outline: none;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.2s ease;
+    }
+
+    .search-input:focus {
+      border-color: var(--primary-green);
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-light);
+      pointer-events: none;
+    }
+
+    .btn-clear-search {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: var(--text-light);
+      cursor: pointer;
+      display: none;
+      padding: 4px;
+    }
+
+    /* ==========================================================
+       PROMOTIONAL BANNERS & ANNOUNCEMENTS
+       ========================================================== */
+    .promo-section {
+      margin-bottom: 16px;
+      display: none; /* Hidden unless active banners exist */
+    }
+
+    .announcement-box {
+      background: var(--gold-light);
+      border: 1px solid rgba(217, 119, 6, 0.25);
+      border-radius: 14px;
+      padding: 10px 14px;
+      color: var(--gold-accent);
+      font-size: 0.82rem;
+      margin-bottom: 16px;
+      display: none; /* Hidden by default */
+    }
+
+    /* ==========================================================
+       ORDER SHORTCUTS BAR
+       ========================================================== */
+    .shortcuts-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .shortcut-btn {
+      background: #ffffff;
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 12px 6px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      color: var(--text-main);
+      box-shadow: var(--shadow-sm);
+      transition: all 0.2s ease;
+    }
+
+    .shortcut-btn:active { transform: translateY(2px); }
+
+    .shortcut-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 12px;
+      background: var(--green-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--primary-dark);
+    }
+
+    .shortcut-btn span {
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-align: center;
+    }
+
+    /* ==========================================================
+       CATEGORY CHIPS SCROLLER
+       ========================================================== */
+    .section-title-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .section-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .see-all-link {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--primary-dark);
+      text-decoration: none;
+    }
+
+    .categories-scroll {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding-bottom: 10px;
+      margin-bottom: 18px;
+      scrollbar-width: none;
+    }
+    .categories-scroll::-webkit-scrollbar { display: none; }
+
+    .cat-pill {
+      background: #ffffff;
+      border: 1px solid var(--border-subtle);
+      border-radius: 20px;
+      padding: 8px 14px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-main);
+      white-space: nowrap;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.2s ease;
+    }
+
+    .cat-pill.active, .cat-pill:hover {
+      background: var(--primary-green);
+      color: #ffffff;
+      border-color: var(--primary-green);
+    }
+
+    /* ==========================================================
+       FEATURED & POPULAR PRODUCTS GRID
+       ========================================================== */
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .product-card {
+      background: #ffffff;
+      border: 1px solid var(--border-subtle);
+      border-radius: 18px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.25s ease;
+      position: relative;
+    }
+
+    .product-card:active { transform: scale(0.98); }
+
+    .card-thumb-wrap {
+      width: 100%;
+      height: 130px;
+      background: #f1f5f9;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card-thumb {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .stock-badge {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 12px;
+      text-transform: uppercase;
+      background: rgba(255, 255, 255, 0.9);
+    }
+
+    .badge-in-stock { color: var(--primary-dark); }
+    .badge-out-stock { color: var(--danger); background: var(--danger-light); }
+
+    .card-body {
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+
+    .product-cat-tag {
+      font-size: 0.68rem;
+      font-weight: 600;
+      color: var(--primary-dark);
+      text-transform: uppercase;
+      margin-bottom: 3px;
+    }
+
+    .product-name {
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: var(--text-main);
+      line-height: 1.3;
+      height: 38px;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      margin-bottom: 8px;
+    }
+
+    .price-row {
+      margin-top: auto;
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .price-val {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--primary-deep);
+    }
+
+    .price-unit {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    .btn-add-cart {
+      width: 100%;
+      height: 36px;
+      background: var(--green-light);
+      border: 1px solid var(--green-border);
+      border-radius: 10px;
+      color: var(--primary-dark);
+      font-family: inherit;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-add-cart:hover:not(:disabled) {
+      background: var(--primary-green);
+      color: #ffffff;
+      border-color: var(--primary-green);
+    }
+
+    .btn-add-cart:disabled {
+      background: #f1f5f9;
+      color: var(--text-light);
+      border-color: var(--border-subtle);
+      cursor: not-allowed;
+    }
+
+    /* ==========================================================
+       RECENT CUSTOMER ORDER CARD
+       ========================================================== */
+    .recent-order-box {
+      background: #ffffff;
+      border: 1px solid var(--border-subtle);
+      border-radius: 18px;
+      padding: 14px 18px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow-sm);
+      display: none; /* Shown dynamically if orders exist */
+    }
+
+    .order-status-badge {
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 6px;
+      text-transform: uppercase;
+    }
+
+    /* ==========================================================
+       FIXED BOTTOM MOBILE NAVIGATION
+       ========================================================== */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: var(--bottom-nav-height);
+      background: #ffffff;
+      border-top: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      z-index: 100;
+      box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.05);
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.68rem;
+      font-weight: 600;
+      gap: 3px;
+      flex: 1;
+      height: 100%;
+      position: relative;
+      transition: color 0.2s ease;
+    }
+
+    .nav-item svg { width: 20px; height: 20px; stroke: currentColor; }
+
+    .nav-item.active {
+      color: var(--primary-dark);
+    }
+
+    .nav-item.active svg {
+      stroke: var(--primary-dark);
+    }
+
+    /* Floating Toast Feedback */
+    .cart-toast {
+      position: fixed;
+      bottom: calc(var(--bottom-nav-height) + 14px);
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--primary-deep);
+      color: #ffffff;
+      padding: 10px 18px;
+      border-radius: 30px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 1000;
+    }
+
+    .cart-toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .empty-state {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 40px 16px;
+      color: var(--text-muted);
+      font-size: 0.88rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Fixed Header -->
+  <header class="top-header">
+    <div class="header-content">
+      
+      <!-- Profile Link (Left) -->
+      <a href="customer-account.html" class="btn-icon" title="My Account">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      </a>
+
+      <!-- Dynamic Logo & Shop Branding (Center) -->
+      <div class="brand-center">
+        <div class="shop-logo-frame" id="shopLogoFrame">
+          <svg id="fallbackLogoIcon" viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M12 2C8.5 2 6 4.5 6 8c0 2 .8 3.8 2.2 5.1L5 22h14l-3.2-8.9C17.2 11.8 18 10 18 8c0-3.5-2.5-6-6-6z"/></svg>
+          <img id="shopLogoImg" src="" alt="Shop Logo" style="display:none;" />
+        </div>
+        <h1 class="shop-name-title" id="shopNameTitle">POULTRY SHOP</h1>
+      </div>
+
+      <!-- Notifications & Cart (Right) -->
+      <div class="header-actions">
+        <a href="customer-account.html" class="btn-icon" title="Notifications">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <span class="badge-count" id="notifBadge" style="display:none;">0</span>
+        </a>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- Main App Body -->
+  <main class="app-container">
+
+    <!-- Customer Greeting Card -->
+    <section class="greeting-card">
+      <div class="greeting-left">
+        <h2>
+          <span>Hello,</span>
+          <span id="custNameText" style="color: var(--primary-dark);">Customer</span> 👋
+        </h2>
+        <div class="delivery-location-row">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <span id="custAddressText" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 210px;">Loading address...</span>
+        </div>
+      </div>
+      <a href="customer-account.html" class="btn-edit-location">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+        <span>Change</span>
+      </a>
+    </section>
+
+    <!-- Shop Operational Status -->
+    <div id="shopStatusBanner" class="status-banner status-open">
+      <span style="width: 8px; height: 8px; border-radius: 50%; background: currentColor;"></span>
+      <span id="shopStatusMsg">Open Now for Instant Delivery</span>
+    </div>
+
+    <!-- Live Search Input -->
+    <div class="search-box-wrap">
+      <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" id="searchInput" class="search-input" placeholder="Search broiler, sonali, cuts..." />
+      <button type="button" id="btnClearSearch" class="btn-clear-search">&times;</button>
+    </div>
+
+    <!-- Active Announcement Box (If available in Firebase) -->
+    <div id="announcementBox" class="announcement-box"></div>
+
+    <!-- Promotional Banners Section (Hidden if none in DB) -->
+    <section id="promoSection" class="promo-section"></section>
+
+    <!-- Navigation Shortcuts -->
+    <section class="shortcuts-grid">
+      <a href="customer-products.html" class="shortcut-btn">
+        <div class="shortcut-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m7.5 4.27 9 5.15M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/></svg></div>
+        <span>Products</span>
+      </a>
+      <a href="customer-cart.html" class="shortcut-btn">
+        <div class="shortcut-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg></div>
+        <span>My Cart</span>
+      </a>
+      <a href="customer-orders.html" class="shortcut-btn">
+        <div class="shortcut-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+        <span>Orders</span>
+      </a>
+      <a href="customer-orders.html" class="shortcut-btn">
+        <div class="shortcut-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+        <span>Track</span>
+      </a>
+    </section>
+
+    <!-- Recent Order Snapshot (Shown only if customer has orders) -->
+    <section id="recentOrderBox" class="recent-order-box">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 6px;">
+        <span style="font-size:0.75rem; color:var(--text-muted); font-weight:600;">LATEST ORDER</span>
+        <span id="recentOrderStatus" class="order-status-badge">Processing</span>
+      </div>
+      <div style="display:flex; justify-content:space-between; align-items:baseline;">
+        <div>
+          <strong id="recentOrderId" style="font-size:0.92rem; color:var(--text-main);">#ORD-XXXX</strong>
+          <span id="recentOrderAmount" style="color:var(--primary-dark); font-weight:700; margin-left:8px;">৳ 0</span>
+        </div>
+        <a id="recentOrderLink" href="customer-orders.html" style="font-size:0.78rem; color:var(--primary-green); text-decoration:none; font-weight:700;">View →</a>
+      </div>
+    </section>
+
+    <!-- Categories Horizontal Scroller -->
+    <section>
+      <div class="section-title-row">
+        <h3 class="section-title">Poultry Categories</h3>
+        <a href="customer-products.html" class="see-all-link">See All</a>
+      </div>
+
+      <div class="categories-scroll" id="categoryScroller">
+        <a href="javascript:void(0)" class="cat-pill active" onclick="filterByCategory('all')">All Poultry</a>
+        <a href="javascript:void(0)" class="cat-pill" onclick="filterByCategory('Broiler Chicken')">Broiler Chicken</a>
+        <a href="javascript:void(0)" class="cat-pill" onclick="filterByCategory('Sonali Chicken')">Sonali Chicken</a>
+        <a href="javascript:void(0)" class="cat-pill" onclick="filterByCategory('Deshi Chicken')">Deshi Chicken</a>
+        <a href="javascript:void(0)" class="cat-pill" onclick="filterByCategory('Layer Chicken')">Layer Chicken</a>
+        <a href="javascript:void(0)" class="cat-pill" onclick="filterByCategory('Whole Chicken')">Whole Chicken</a>
+        <a href="javascript:void(0)" class="cat-pill" onclick="filterByCategory('Chicken Leg Pieces')">Chicken Leg</a>
+        <a href="javascript:void(0)" class="cat-pill" onclick="filterByCategory('Chicken Wings')">Chicken Wings</a>
+        <a href="javascript:void(0)" class="cat-pill" onclick="filterByCategory('Boneless Chicken')">Boneless Chicken</a>
+        <a href="javascript:void(0)" class="cat-pill" onclick="filterByCategory('Mixed Chicken Cuts')">Mixed Cuts</a>
+        <a href="javascript:void(0)" class="cat-pill" onclick="filterByCategory('Duck')">Duck</a>
+      </div>
+    </section>
+
+    <!-- Featured Products Section -->
+    <section>
+      <div class="section-title-row">
+        <h3 class="section-title" id="productSectionTitle">Fresh Products</h3>
+        <span id="itemCountLabel" style="font-size:0.75rem; color:var(--text-muted);">0 items</span>
+      </div>
+
+      <div class="products-grid" id="productsGrid">
+        <div class="empty-state">Loading fresh poultry products...</div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Cart Added Notification Toast -->
+  <div id="cartToast" class="cart-toast">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+    <span id="toastMsg">Added to your cart!</span>
+  </div>
+
+  <!-- Fixed Bottom Mobile Navigation Bar -->
+  <nav class="bottom-nav">
+    <a href="customer-home.html" class="nav-item active">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      <span>Home</span>
+    </a>
+    <a href="customer-products.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="m7.5 4.27 9 5.15M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/></svg>
+      <span>Products</span>
+    </a>
+    <a href="customer-cart.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+      <span class="badge-count" id="cartBadge" style="display:none; top:4px; right:14px;">0</span>
+      <span>Cart</span>
+    </a>
+    <a href="customer-orders.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      <span>Orders</span>
+    </a>
+    <a href="customer-account.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span>Account</span>
+    </a>
+  </nav>
+
+  <!-- ==========================================================
+       MODULAR FIREBASE SDK (v10) & HOMEPAGE LOGIC
+       ========================================================== -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { 
+      getAuth, 
+      onAuthStateChanged 
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { 
+      getDatabase, 
+      ref, 
+      onValue, 
+      get, 
+      query, 
+      orderByChild, 
+      equalTo 
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+    // 1. Firebase Configuration (Matches Project Credentials)
+    const firebaseConfig = {
+      apiKey: "AIzaSyDYPsjlOmRwH2F5P8fFoiirP1FLjgh3c8A",
+      authDomain: "murgi-dfd67.firebaseapp.com",
+      databaseURL: "https://murgi-dfd67-default-rtdb.firebaseio.com",
+      projectId: "murgi-dfd67",
+      storageBucket: "murgi-dfd67.firebasestorage.app",
+      messagingSenderId: "209696889864",
+      appId: "1:209696889864:web:3eaa16034f00cca45505bd"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
+
+    // App State
+    let currentCustomer = null;
+    let customerCategory = 'normal'; // default category
+    let allProducts = [];
+    let isStoreOpen = true;
+    let activeCategoryFilter = 'all';
+
+    // DOM Elements
+    const shopLogoImg = document.getElementById('shopLogoImg');
+    const fallbackLogoIcon = document.getElementById('fallbackLogoIcon');
+    const shopNameTitle = document.getElementById('shopNameTitle');
+    const custNameText = document.getElementById('custNameText');
+    const custAddressText = document.getElementById('custAddressText');
+    const shopStatusBanner = document.getElementById('shopStatusBanner');
+    const shopStatusMsg = document.getElementById('shopStatusMsg');
+    const productsGrid = document.getElementById('productsGrid');
+    const searchInput = document.getElementById('searchInput');
+    const btnClearSearch = document.getElementById('btnClearSearch');
+    const notifBadge = document.getElementById('notifBadge');
+    const cartBadge = document.getElementById('cartBadge');
+    const cartToast = document.getElementById('cartToast');
+    const toastMsg = document.getElementById('toastMsg');
+    const recentOrderBox = document.getElementById('recentOrderBox');
+    const recentOrderId = document.getElementById('recentOrderId');
+    const recentOrderAmount = document.getElementById('recentOrderAmount');
+    const recentOrderStatus = document.getElementById('recentOrderStatus');
+    const recentOrderLink = document.getElementById('recentOrderLink');
+    const announcementBox = document.getElementById('announcementBox');
+
+    // ==========================================================
+    // AUTHENTICATION GUARD
+    // ==========================================================
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        // If not logged in, redirect to login page
+        window.location.replace('customer-login.html');
+        return;
+      }
+
+      currentCustomer = user;
+
+      // Read Customer Profile from Realtime Database
+      try {
+        const custSnap = await get(ref(db, `customers/${user.uid}`));
+        if (custSnap.exists()) {
+          const custData = custSnap.val();
+
+          // Account suspension check
+          if (custData.status === 'suspended' || custData.accountStatus === 'disabled') {
+            window.location.replace('customer-login.html');
+            return;
+          }
+
+          // Approved category (Enforces Wholesale vs Retail security)
+          if (custData.businessApproved === true && custData.category) {
+            customerCategory = custData.category;
+          } else {
+            customerCategory = 'normal';
+          }
+
+          // Greeting & Address
+          custNameText.textContent = custData.fullName || user.displayName || 'Customer';
+          custAddressText.textContent = custData.deliveryAddress || 'No saved address';
+        } else {
+          custNameText.textContent = user.displayName || 'Customer';
+          custAddressText.textContent = 'Set your delivery location';
+        }
+
+        // Initialize Realtime Listeners
+        listenToBranding();
+        listenToShopStatus();
+        listenToProducts();
+        listenToRecentOrders(user.uid);
+        listenToNotifications(user.uid);
+        listenToAnnouncements();
+        updateCartBadge();
+
+      } catch (err) {
+        console.error("Auth Guard Error:", err);
+      }
+    });
+
+    // ==========================================================
+    // DYNAMIC SHOP BRANDING REALTIME LISTENER
+    // ==========================================================
+    function listenToBranding() {
+      // Profile Name & Logo
+      onValue(ref(db, 'settings/shopProfile'), (snap) => {
+        const p = snap.val() || {};
+        if (p.shopName) shopNameTitle.textContent = p.shopName;
+        
+        if (p.logoUrl) {
+          shopLogoImg.src = p.logoUrl;
+          shopLogoImg.onload = () => {
+            shopLogoImg.style.display = 'block';
+            fallbackLogoIcon.style.display = 'none';
+          };
+          shopLogoImg.onerror = () => {
+            shopLogoImg.style.display = 'none';
+            fallbackLogoIcon.style.display = 'block';
+          };
+        } else {
+          shopLogoImg.style.display = 'none';
+          fallbackLogoIcon.style.display = 'block';
+        }
+      });
+
+      // Header Animation & Glow
+      onValue(ref(db, 'settings/branding'), (snap) => {
+        const b = snap.val() || {};
+        const anim = b.animation || 'gentle_shine';
+        const glow = b.glow || 'on';
+
+        shopNameTitle.className = `shop-name-title anim-${anim}`;
+        if (glow === 'on') {
+          shopNameTitle.style.textShadow = '0 0 16px rgba(16, 185, 129, 0.4)';
+        } else {
+          shopNameTitle.style.textShadow = 'none';
+        }
+      });
+    }
+
+    // ==========================================================
+    // SHOP STATUS REALTIME LISTENER
+    // ==========================================================
+    function listenToShopStatus() {
+      onValue(ref(db, 'settings/shopStatus'), (snap) => {
+        const s = snap.val() || {};
+        isStoreOpen = (s.isOpen !== false);
+
+        if (isStoreOpen) {
+          shopStatusBanner.className = 'status-banner status-open';
+          shopStatusMsg.textContent = 'Open Now for Instant Delivery in Barisal';
+        } else {
+          shopStatusBanner.className = 'status-banner status-closed';
+          shopStatusMsg.textContent = s.closureReason 
+            ? `Store Closed: ${s.closureReason}` 
+            : 'Store is temporarily closed. Orders will resume shortly.';
+        }
+
+        renderProducts(); // re-render buttons based on store status
+      });
+    }
+
+    // ==========================================================
+    // PRODUCTS REALTIME LISTENER & TIERED PRICING
+    // ==========================================================
+    function listenToProducts() {
+      onValue(ref(db, 'products'), (snap) => {
+        allProducts = [];
+        snap.forEach(child => {
+          const item = child.val();
+          item.productId = child.key;
+
+          // Never show hidden products to customer app
+          if ((item.status || 'available').toLowerCase() !== 'hidden') {
+            allProducts.push(item);
+          }
+        });
+
+        renderProducts();
+      });
+    }
+
+    function renderProducts() {
+      const q = searchInput.value.toLowerCase().trim();
+      let filtered = allProducts;
+
+      // Search Filter
+      if (q) {
+        filtered = filtered.filter(p => 
+          (p.productName || '').toLowerCase().includes(q) ||
+          (p.category || '').toLowerCase().includes(q) ||
+          (p.description || '').toLowerCase().includes(q)
+        );
+      }
+
+      // Category Pill Filter
+      if (activeCategoryFilter !== 'all') {
+        filtered = filtered.filter(p => p.category === activeCategoryFilter);
+      }
+
+      document.getElementById('itemCountLabel').textContent = `${filtered.length} items`;
+
+      if (filtered.length === 0) {
+        productsGrid.innerHTML = `
+          <div class="empty-state">
+            <p>No products found matching your search.</p>
+          </div>
+        `;
+        return;
+      }
+
+      productsGrid.innerHTML = filtered.map(p => {
+        const stock = Number(p.stockQuantity ?? 0);
+        const isOutOfStock = stock <= 0 || (p.status || '').toLowerCase() === 'out_of_stock';
+        const unit = p.unit || 'KG';
+
+        // PRICING RULE: Read customer's approved category price
+        let displayPrice = null;
+        if (p.prices && p.prices[customerCategory] !== undefined && p.prices[customerCategory] !== null) {
+          displayPrice = p.prices[customerCategory];
+        } else if (p.basePrice !== undefined) {
+          // Fallback to base price if category price isn't explicitly set
+          displayPrice = p.basePrice;
+        }
+
+        const priceText = (displayPrice !== null) ? `৳ ${Number(displayPrice).toLocaleString('en-IN')}` : 'Price Not Set';
+        const imgUrl = p.imageUrl || 'https://via.placeholder.com/200?text=Poultry+Item';
+
+        return `
+          <div class="product-card">
+            <div class="card-thumb-wrap">
+              <img src="${escapeHTML(imgUrl)}" class="card-thumb" alt="${escapeHTML(p.productName)}" onerror="this.src='https://via.placeholder.com/200?text=No+Image';" />
+              <span class="stock-badge ${isOutOfStock ? 'badge-out-stock' : 'badge-in-stock'}">
+                ${isOutOfStock ? 'Sold Out' : 'Available'}
+              </span>
+            </div>
+
+            <div class="card-body">
+              <span class="product-cat-tag">${escapeHTML(p.category || 'Poultry')}</span>
+              <h4 class="product-name" title="${escapeHTML(p.productName)}">${escapeHTML(p.productName)}</h4>
+
+              <div class="price-row">
+                <span class="price-val">${priceText}</span>
+                <span class="price-unit">/ ${escapeHTML(unit)}</span>
+              </div>
+
+              <button 
+                class="btn-add-cart" 
+                onclick="addToCart('${p.productId}', '${escapeHTML(p.productName)}', ${displayPrice || 0}, '${escapeHTML(unit)}', '${escapeHTML(imgUrl)}', ${stock})"
+                ${(isOutOfStock || !isStoreOpen || displayPrice === null) ? 'disabled' : ''}
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                <span>${!isStoreOpen ? 'Shop Closed' : (isOutOfStock ? 'Out of Stock' : 'Add to Cart')}</span>
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // ==========================================================
+    // CART HANDLING (LOCALSTORAGE COMPATIBLE)
+    // ==========================================================
+    window.addToCart = function(productId, name, price, unit, image, availableStock) {
+      if (price <= 0 || !isStoreOpen) return;
+
+      const cart = JSON.parse(localStorage.getItem('poultry_customer_cart') || '[]');
+      const existing = cart.find(i => i.productId === productId);
+
+      if (existing) {
+        if (existing.quantity + 1 > availableStock) {
+          showToast(`Cannot add more than available stock (${availableStock} ${unit})`);
+          return;
+        }
+        existing.quantity += 1;
+      } else {
+        cart.push({
+          productId,
+          name,
+          price,
+          unit,
+          image,
+          quantity: 1
+        });
+      }
+
+      localStorage.setItem('poultry_customer_cart', JSON.stringify(cart));
+      updateCartBadge();
+      showToast(`${name} added to cart!`);
+    };
+
+    function updateCartBadge() {
+      const cart = JSON.parse(localStorage.getItem('poultry_customer_cart') || '[]');
+      const count = cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
+      if (count > 0) {
+        cartBadge.textContent = count;
+        cartBadge.style.display = 'block';
+      } else {
+        cartBadge.style.display = 'none';
+      }
+    }
+
+    function showToast(msg) {
+      toastMsg.textContent = msg;
+      cartToast.classList.add('show');
+      setTimeout(() => cartToast.classList.remove('show'), 2800);
+    }
+
+    // ==========================================================
+    // SEARCH & CATEGORY FILTERING
+    // ==========================================================
+    searchInput.addEventListener('input', () => {
+      btnClearSearch.style.display = searchInput.value ? 'block' : 'none';
+      renderProducts();
+    });
+
+    btnClearSearch.addEventListener('click', () => {
+      searchInput.value = '';
+      btnClearSearch.style.display = 'none';
+      renderProducts();
+    });
+
+    window.filterByCategory = function(cat) {
+      activeCategoryFilter = cat;
+      document.querySelectorAll('.cat-pill').forEach(pill => {
+        pill.classList.toggle('active', pill.textContent.trim() === (cat === 'all' ? 'All Poultry' : cat));
+      });
+      document.getElementById('productSectionTitle').textContent = cat === 'all' ? 'Fresh Products' : cat;
+      renderProducts();
+    };
+
+    // ==========================================================
+    // RECENT ORDER LISTENER
+    // ==========================================================
+    function listenToRecentOrders(uid) {
+      const ordersRef = ref(db, 'orders');
+      onValue(ordersRef, (snap) => {
+        const myOrders = [];
+        snap.forEach(child => {
+          const ord = child.val();
+          ord.key = child.key;
+          if (ord.customerId === uid || ord.customer?.uid === uid) {
+            myOrders.push(ord);
+          }
+        });
+
+        if (myOrders.length > 0) {
+          myOrders.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+          const latest = myOrders[0];
+
+          recentOrderId.textContent = `#${(latest.orderId || latest.key).substring(0, 8).toUpperCase()}`;
+          recentOrderAmount.textContent = `৳ ${Number(latest.totalAmount || latest.pricing?.totalAmount || 0).toLocaleString('en-IN')}`;
+          
+          const st = (latest.status || 'pending').toLowerCase();
+          recentOrderStatus.textContent = st;
+          recentOrderStatus.style.background = st === 'completed' || st === 'delivered' ? 'var(--green-light)' : 'var(--gold-light)';
+          recentOrderStatus.style.color = st === 'completed' || st === 'delivered' ? 'var(--primary-dark)' : 'var(--gold-accent)';
+
+          recentOrderLink.href = `customer-order-details.html?orderId=${latest.key}`;
+          recentOrderBox.style.display = 'block';
+        } else {
+          recentOrderBox.style.display = 'none';
+        }
+      });
+    }
+
+    // ==========================================================
+    // NOTIFICATIONS & ANNOUNCEMENTS
+    // ==========================================================
+    function listenToNotifications(uid) {
+      onValue(ref(db, `notifications/${uid}`), (snap) => {
+        let unread = 0;
+        snap.forEach(child => {
+          if (child.val().read !== true) unread++;
+        });
+        if (unread > 0) {
+          notifBadge.textContent = unread;
+          notifBadge.style.display = 'block';
+        } else {
+          notifBadge.style.display = 'none';
+        }
+      });
+    }
+
+    function listenToAnnouncements() {
+      onValue(ref(db, 'announcements'), (snap) => {
+        const list = [];
+        snap.forEach(child => {
+          const item = child.val();
+          if (item.active !== false) list.push(item);
+        });
+
+        if (list.length > 0) {
+          announcementBox.textContent = `📢 ${list[0].title || 'Notice'}: ${list[0].message || ''}`;
+          announcementBox.style.display = 'block';
+        } else {
+          announcementBox.style.display = 'none';
+        }
+      });
+    }
+
+    function escapeHTML(str) {
+      if (!str) return '';
+      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+    }
+  </script>
+</body>
+</html>
