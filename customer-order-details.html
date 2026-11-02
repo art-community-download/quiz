@@ -1,0 +1,1237 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Order Details | Poultry Shop</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    /* ==========================================================
+       CSS RESET & FRESH GREEN THEME
+       ========================================================== */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    :root {
+      --bg-main: #f8fafc;
+      --bg-card: #ffffff;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --text-light: #94a3b8;
+      
+      --primary-green: #10b981;
+      --primary-dark: #047857;
+      --primary-deep: #064e3b;
+      --green-light: #ecfdf5;
+      --green-border: rgba(16, 185, 129, 0.2);
+      
+      --gold-accent: #d97706;
+      --gold-light: #fef3c7;
+      --danger: #ef4444;
+      --danger-light: #fef2f2;
+      
+      /* Status Colors */
+      --st-pending: #f59e0b;
+      --st-accepted: #3b82f6;
+      --st-preparing: #8b5cf6;
+      --st-ontheway: #06b6d4;
+      --st-delivered: #10b981;
+      --st-rejected: #ef4444;
+      --st-cancelled: #64748b;
+      
+      --border-subtle: #e2e8f0;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+      --shadow-md: 0 4px 14px rgba(0,0,0,0.08);
+      
+      --bottom-nav-height: 64px;
+    }
+
+    body {
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      font-family: 'Outfit', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding-bottom: calc(var(--bottom-nav-height) + 26px);
+      overflow-x: hidden;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 520px;
+      margin: 0 auto;
+      padding: 0 16px;
+    }
+
+    /* Top Sticky Header */
+    .top-header {
+      background: #ffffff;
+      border-bottom: 1px solid var(--border-subtle);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      box-shadow: var(--shadow-sm);
+      padding: 10px 16px;
+    }
+
+    .header-content {
+      max-width: 520px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand-center {
+      text-align: center;
+      flex: 1;
+    }
+
+    .shop-logo-frame {
+      width: 40px;
+      height: 40px;
+      margin: 0 auto 2px auto;
+      border-radius: 12px;
+      background: var(--green-light);
+      border: 1.5px solid var(--primary-green);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .shop-logo-frame img { width: 100%; height: 100%; object-fit: cover; }
+    .shop-logo-frame svg { width: 22px; height: 22px; stroke: var(--primary-green); }
+
+    .shop-name-title {
+      font-family: 'Cinzel', serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--primary-deep);
+      line-height: 1.2;
+    }
+
+    .btn-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: var(--bg-main);
+      border: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-main);
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    /* Details Cards */
+    .details-card {
+      background: #ffffff;
+      border: 1px solid var(--border-subtle);
+      border-radius: 18px;
+      padding: 16px;
+      margin-bottom: 14px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .card-title-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .card-title-row h3 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    /* Status Badges */
+    .status-badge {
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 20px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    .badge-pending { background: rgba(245, 158, 11, 0.15); color: #b45309; border: 1px solid rgba(245, 158, 11, 0.3); }
+    .badge-accepted { background: rgba(59, 130, 246, 0.15); color: #1d4ed8; border: 1px solid rgba(59, 130, 246, 0.3); }
+    .badge-preparing { background: rgba(139, 92, 246, 0.15); color: #6d28d9; border: 1px solid rgba(139, 92, 246, 0.3); }
+    .badge-ontheway { background: rgba(6, 182, 212, 0.15); color: #0e7490; border: 1px solid rgba(6, 182, 212, 0.3); }
+    .badge-delivered, .badge-completed { background: var(--green-light); color: var(--primary-dark); border: 1px solid var(--green-border); }
+    .badge-rejected, .badge-cancelled { background: var(--danger-light); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.25); }
+
+    /* Live Countdown Box */
+    .delivery-countdown-box {
+      background: var(--gold-light);
+      border: 1px dashed rgba(217, 119, 6, 0.3);
+      border-radius: 12px;
+      padding: 10px 14px;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      color: var(--gold-accent);
+    }
+
+    .countdown-timer-val {
+      font-family: monospace;
+      font-weight: 800;
+      font-size: 0.95rem;
+    }
+
+    /* Visual Order Progress Stepper */
+    .timeline-stepper {
+      display: flex;
+      justify-content: space-between;
+      position: relative;
+      margin: 16px 8px 12px 8px;
+    }
+
+    .timeline-stepper::before {
+      content: '';
+      position: absolute;
+      top: 15px;
+      left: 20px;
+      right: 20px;
+      height: 3px;
+      background: var(--border-subtle);
+      z-index: 1;
+    }
+
+    .timeline-progress-line {
+      position: absolute;
+      top: 15px;
+      left: 20px;
+      height: 3px;
+      background: var(--primary-green);
+      z-index: 2;
+      transition: width 0.4s ease;
+      width: 0%;
+    }
+
+    .step-node {
+      position: relative;
+      z-index: 3;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .step-circle {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #ffffff;
+      border: 2px solid var(--border-subtle);
+      color: var(--text-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.76rem;
+      font-weight: 700;
+      transition: all 0.3s ease;
+    }
+
+    .step-node.active .step-circle {
+      border-color: var(--primary-green);
+      background: var(--primary-green);
+      color: #ffffff;
+      box-shadow: 0 0 10px rgba(16, 185, 129, 0.35);
+    }
+
+    .step-node.completed .step-circle {
+      border-color: var(--primary-green);
+      background: var(--primary-green);
+      color: #ffffff;
+    }
+
+    .step-label {
+      font-size: 0.68rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    .step-node.active .step-label {
+      color: var(--primary-dark);
+      font-weight: 700;
+    }
+
+    /* Product Item Line */
+    .product-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .product-row:last-child { border-bottom: none; }
+
+    .product-thumb {
+      width: 52px;
+      height: 52px;
+      border-radius: 10px;
+      object-fit: cover;
+      background: #f1f5f9;
+      border: 1px solid var(--border-subtle);
+      flex-shrink: 0;
+    }
+
+    .product-meta-wrap {
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .product-name-txt {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--text-main);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .product-qty-tag {
+      font-size: 0.74rem;
+      color: var(--text-muted);
+    }
+
+    .product-subtotal-txt {
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: var(--primary-deep);
+    }
+
+    /* Price Breakdown Rows */
+    .price-calc-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.84rem;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .price-calc-row.grand-total {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--primary-deep);
+      border-top: 1px dashed var(--border-subtle);
+      padding-top: 8px;
+      margin-top: 8px;
+    }
+
+    /* Buttons */
+    .btn-action-primary {
+      width: 100%;
+      height: 44px;
+      background: var(--primary-green);
+      color: #ffffff;
+      border: none;
+      border-radius: 12px;
+      font-family: inherit;
+      font-size: 0.88rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      text-decoration: none;
+      margin-top: 8px;
+    }
+
+    .btn-action-primary:hover { background: var(--primary-dark); }
+
+    .btn-cancel-req {
+      width: 100%;
+      height: 40px;
+      background: var(--danger-light);
+      border: 1px solid rgba(239, 68, 68, 0.25);
+      color: var(--danger);
+      border-radius: 12px;
+      font-family: inherit;
+      font-size: 0.84rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 10px;
+    }
+
+    .btn-cancel-req:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* Support / Rating Modals */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(4px);
+      z-index: 1100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .modal-dialog {
+      background: #ffffff;
+      border-radius: 24px;
+      width: 100%;
+      max-width: 440px;
+      overflow: hidden;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.25);
+      animation: popModal 0.25s ease-out;
+    }
+
+    @keyframes popModal {
+      from { transform: scale(0.95); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .modal-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .modal-body {
+      padding: 20px;
+      max-height: 75vh;
+      overflow-y: auto;
+    }
+
+    .modal-footer {
+      padding: 14px 20px;
+      background: var(--bg-main);
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      border-top: 1px solid var(--border-subtle);
+    }
+
+    /* Fixed Bottom Navigation */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: var(--bottom-nav-height);
+      background: #ffffff;
+      border-top: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      z-index: 100;
+      box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.05);
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.68rem;
+      font-weight: 600;
+      gap: 3px;
+      flex: 1;
+      height: 100%;
+      position: relative;
+    }
+
+    .nav-item svg { width: 20px; height: 20px; stroke: currentColor; }
+    .nav-item.active { color: var(--primary-dark); }
+    .nav-item.active svg { stroke: var(--primary-dark); }
+  </style>
+</head>
+<body>
+
+  <!-- Top Sticky Header -->
+  <header class="top-header">
+    <div class="header-content">
+      <a href="customer-orders.html" class="btn-icon" title="Back to Orders">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      </a>
+
+      <div class="brand-center">
+        <div class="shop-logo-frame" id="shopLogoFrame">
+          <svg id="fallbackLogoIcon" viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M12 2C8.5 2 6 4.5 6 8c0 2 .8 3.8 2.2 5.1L5 22h14l-3.2-8.9C17.2 11.8 18 10 18 8c0-3.5-2.5-6-6-6z"/></svg>
+          <img id="shopLogoImg" src="" alt="Logo" style="display:none;" />
+        </div>
+        <h1 class="shop-name-title" id="shopNameTitle">POULTRY SHOP</h1>
+      </div>
+
+      <a href="customer-home.html" class="btn-icon" title="Home">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+      </a>
+    </div>
+  </header>
+
+  <main class="app-container" style="padding-top: 14px;">
+
+    <!-- Access Denied or Missing Order View -->
+    <div id="accessDeniedView" style="display:none; text-align:center; padding:50px 20px; background:#fff; border-radius:20px; border:1px solid var(--border-subtle); margin-top:20px;">
+      <h3 style="color:var(--danger); font-size:1.15rem; margin-bottom:8px;">Access Denied / Order Not Found</h3>
+      <p style="color:var(--text-muted); font-size:0.84rem; margin-bottom:16px;">This order is either invalid or does not belong to your account.</p>
+      <a href="customer-orders.html" class="btn-action-primary" style="display:inline-flex; width:auto; padding:0 24px;">Return to My Orders</a>
+    </div>
+
+    <!-- Active Valid Order Content -->
+    <div id="orderContentArea" style="display:none;">
+
+      <!-- 1. Order Status & Header Card -->
+      <section class="details-card">
+        <div class="card-title-row">
+          <div>
+            <div style="font-size:0.7rem; color:var(--text-muted); font-weight:700;">CONFIRMED ORDER</div>
+            <h2 id="orderIdText" style="font-family:'Cinzel',serif; font-size:1.1rem; color:var(--primary-deep);">#ORD-XXXX</h2>
+          </div>
+          <span id="orderStatusBadge" class="status-badge badge-pending">Pending</span>
+        </div>
+
+        <div style="display:flex; justify-content:space-between; font-size:0.78rem; color:var(--text-muted);">
+          <span>Placed: <strong id="orderPlacedDate" style="color:var(--text-main);">...</strong></span>
+          <span>Payment: <strong style="color:var(--primary-dark);">Cash on Delivery</strong></span>
+        </div>
+
+        <!-- Cancellation Notice (If Cancelled/Rejected) -->
+        <div id="closureNoticeBox" style="display:none; margin-top:12px; background:var(--danger-light); border:1px solid rgba(239,68,68,0.25); border-radius:10px; padding:10px; font-size:0.8rem; color:var(--danger);">
+          <strong>Status Note:</strong> <span id="closureReasonText">Order cancelled.</span>
+        </div>
+      </section>
+
+      <!-- 2. Live Delivery Countdown Timer -->
+      <div id="liveCountdownBox" class="delivery-countdown-box" style="display:none;">
+        <span>⏱️ Estimated Target (Non-guarantee):</span>
+        <span class="countdown-timer-val" id="countdownTimerText">Calculating...</span>
+      </div>
+
+      <!-- 3. Visual Progress Timeline -->
+      <section class="details-card" id="timelineCard">
+        <h4 style="font-size:0.82rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; margin-bottom:12px;">Live Delivery Progress</h4>
+        
+        <div class="timeline-stepper">
+          <div class="timeline-progress-line" id="timelineProgressLine"></div>
+          
+          <div class="step-node" id="step1">
+            <div class="step-circle">1</div>
+            <span class="step-label">Placed</span>
+          </div>
+          <div class="step-node" id="step2">
+            <div class="step-circle">2</div>
+            <span class="step-label">Accepted</span>
+          </div>
+          <div class="step-node" id="step3">
+            <div class="step-circle">3</div>
+            <span class="step-label">Preparing</span>
+          </div>
+          <div class="step-node" id="step4">
+            <div class="step-circle">4</div>
+            <span class="step-label">On Way</span>
+          </div>
+          <div class="step-node" id="step5">
+            <div class="step-circle">5</div>
+            <span class="step-label">Delivered</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- 4. Ordered Items Breakdown -->
+      <section class="details-card">
+        <div class="card-title-row">
+          <h3>Ordered Products</h3>
+          <span id="itemsTotalCountTag" style="font-size:0.75rem; color:var(--text-muted);">0 items</span>
+        </div>
+
+        <div id="orderedProductsList">
+          <!-- Populated from order snapshot -->
+        </div>
+      </section>
+
+      <!-- 5. Price Breakdown (Confirmed Snapshot) -->
+      <section class="details-card">
+        <div class="card-title-row">
+          <h3>Price Summary</h3>
+          <span style="font-size:0.74rem; color:var(--text-muted);">Confirmed at checkout</span>
+        </div>
+
+        <div class="price-calc-row">
+          <span>Items Subtotal</span>
+          <span id="sumSubtotal">৳ 0</span>
+        </div>
+        <div class="price-calc-row">
+          <span>Delivery Charge</span>
+          <span id="sumDelivery">৳ 0</span>
+        </div>
+        <div class="price-calc-row" id="discountRow" style="display:none; color:var(--primary-green);">
+          <span>Discount Applied</span>
+          <span id="sumDiscount">- ৳ 0</span>
+        </div>
+        <div class="price-calc-row grand-total">
+          <span>Grand Total</span>
+          <span id="sumGrandTotal">৳ 0</span>
+        </div>
+      </section>
+
+      <!-- 6. Delivery Destination Info -->
+      <section class="details-card">
+        <div class="card-title-row">
+          <h3>Delivery Information</h3>
+        </div>
+
+        <div style="font-size:0.82rem; color:var(--text-muted); line-height:1.5;">
+          <p>Recipient: <strong id="destCustomerName" style="color:var(--text-main);">...</strong></p>
+          <p>Contact Phone: <strong id="destCustomerPhone" style="color:var(--text-main);">...</strong></p>
+          <p>Address: <strong id="destDeliveryAddress" style="color:var(--text-main);">...</strong></p>
+          <div id="orderNotesBox" style="margin-top:6px; font-style:italic; color:var(--primary-dark); display:none;">
+            Note: "<span id="destOrderNotes"></span>"
+          </div>
+        </div>
+      </section>
+
+      <!-- 7. Rating Section (Visible ONLY if Delivered/Completed) -->
+      <section class="details-card" id="ratingCard" style="display:none; background:var(--green-light); border-color:var(--green-border);">
+        <div class="card-title-row" style="border-color:var(--green-border);">
+          <h3 style="color:var(--primary-deep);">Rate Your Experience (0 - 10)</h3>
+          <span id="ratingGivenBadge" style="font-size:0.76rem; font-weight:700; color:var(--primary-dark); display:none;">Submitted ✓</span>
+        </div>
+
+        <div id="ratingInputArea">
+          <p style="font-size:0.8rem; color:var(--primary-dark); margin-bottom:10px;">How fresh was the poultry and delivery? Please give a score from 0 to 10.</p>
+          <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
+            <select id="selectRatingScore" style="height:38px; border-radius:10px; border:1px solid var(--primary-green); padding:0 12px; font-weight:700; font-family:inherit; color:var(--primary-deep);">
+              <option value="10" selected>★ 10 / 10 - Outstanding</option>
+              <option value="9">★ 9 / 10 - Excellent</option>
+              <option value="8">★ 8 / 10 - Very Good</option>
+              <option value="7">★ 7 / 10 - Good</option>
+              <option value="6">★ 6 / 10 - Average</option>
+              <option value="5">★ 5 / 10 - Fair</option>
+              <option value="4">★ 4 / 10 - Below Expectation</option>
+              <option value="3">★ 3 / 10 - Poor</option>
+              <option value="2">★ 2 / 10 - Very Bad</option>
+              <option value="1">★ 1 / 10 - Terrible</option>
+            </select>
+            <input type="text" id="txtReviewFeedback" style="flex:1; height:38px; border-radius:10px; border:1px solid var(--border-subtle); padding:0 12px; font-size:0.82rem; font-family:inherit;" placeholder="Add comments (optional)..." />
+          </div>
+          <button type="button" class="btn-action-primary" id="btnSubmitRating" style="height:38px; font-size:0.82rem;">Submit Customer Review</button>
+        </div>
+
+        <div id="ratingDisplayArea" style="display:none; font-size:0.84rem; color:var(--primary-deep);">
+          <strong id="displayRatingScore" style="font-size:1.1rem; color:var(--primary-dark);">★ 10/10</strong>
+          <p id="displayRatingFeedback" style="margin-top:4px; font-style:italic;"></p>
+        </div>
+      </section>
+
+      <!-- 8. Actions & Support Section -->
+      <section class="details-card">
+        <a id="btnWhatsAppShop" href="#" target="_blank" class="btn-action-primary" style="background:#25D366; color:#fff;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/></svg>
+          <span>Contact Shop on WhatsApp</span>
+        </a>
+
+        <button type="button" class="btn-action-primary" id="btnOpenSupportModal" style="background:var(--bg-main); border:1px solid var(--border-subtle); color:var(--text-main);">
+          <span>Need Help with this Order?</span>
+        </button>
+
+        <!-- Cancellation Button (Within 20 Minutes) -->
+        <div id="cancellationArea" style="margin-top:6px;">
+          <button type="button" class="btn-cancel-req" id="btnRequestCancellation">Request Order Cancellation</button>
+          <small id="cancelPolicyNote" style="color:var(--text-muted); font-size:0.72rem; display:block; text-align:center; margin-top:4px;">* Cancellation allowed within 20 minutes of placing order</small>
+        </div>
+      </section>
+
+    </div>
+
+  </main>
+
+  <!-- ==========================================================
+       MODAL: SUBMIT SUPPORT TICKET
+       ========================================================== -->
+  <div class="modal-backdrop" id="supportModal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 style="font-size:1.05rem; font-weight:700; color:var(--primary-deep);">Order Support Ticket</h3>
+        <button type="button" id="btnCloseSupportModal" style="background:none; border:none; font-size:1.3rem; color:var(--text-muted); cursor:pointer;">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div style="margin-bottom:12px;">
+          <label style="font-size:0.8rem; font-weight:600; color:var(--text-main); display:block; margin-bottom:4px;">Select Issue Type *</label>
+          <select id="selectSupportCategory" style="width:100%; height:40px; border-radius:10px; border:1px solid var(--border-subtle); padding:0 10px; font-family:inherit; font-size:0.85rem;">
+            <option value="order_complaint">Order Mistake / Item Issue</option>
+            <option value="delivery_complaint">Delivery Delay / Rider Issue</option>
+            <option value="product_complaint">Product Freshness Concern</option>
+            <option value="refund_request">Refund or Price Adjustment Request</option>
+            <option value="other">Other Inquiry</option>
+          </select>
+        </div>
+
+        <div style="margin-bottom:12px;">
+          <label style="font-size:0.8rem; font-weight:600; color:var(--text-main); display:block; margin-bottom:4px;">Detailed Message *</label>
+          <textarea id="txtSupportMessage" rows="3" style="width:100%; border:1px solid var(--border-subtle); border-radius:10px; padding:10px; font-family:inherit; font-size:0.85rem;" placeholder="Describe what went wrong..."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-icon" id="btnCancelSupport" style="width:auto; padding:0 14px; border-radius:10px;">Cancel</button>
+        <button type="button" class="btn-action-primary" id="btnSubmitSupportTicket" style="width:auto; padding:0 18px; margin:0;">Submit Ticket</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Fixed Bottom Navigation -->
+  <nav class="bottom-nav">
+    <a href="customer-home.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      <span>Home</span>
+    </a>
+    <a href="customer-products.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="m7.5 4.27 9 5.15M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/></svg>
+      <span>Products</span>
+    </a>
+    <a href="customer-cart.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+      <span>Cart</span>
+    </a>
+    <a href="customer-orders.html" class="nav-item active">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      <span>Orders</span>
+    </a>
+    <a href="customer-account.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span>Account</span>
+    </a>
+  </nav>
+
+  <!-- ==========================================================
+       MODULAR FIREBASE SDK (v10) & SCRIPT
+       ========================================================== -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { 
+      getDatabase, 
+      ref, 
+      onValue, 
+      update, 
+      get, 
+      set, 
+      push, 
+      serverTimestamp 
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+    // 1. Firebase Configuration (Matches Project Credentials)
+    const firebaseConfig = {
+      apiKey: "AIzaSyDYPsjlOmRwH2F5P8fFoiirP1FLjgh3c8A",
+      authDomain: "murgi-dfd67.firebaseapp.com",
+      databaseURL: "https://murgi-dfd67-default-rtdb.firebaseio.com",
+      projectId: "murgi-dfd67",
+      storageBucket: "murgi-dfd67.firebasestorage.app",
+      messagingSenderId: "209696889864",
+      appId: "1:209696889864:web:3eaa16034f00cca45505bd"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
+
+    // App State
+    let currentUser = null;
+    let targetOrderId = null;
+    let currentOrderData = null;
+    let cancelWindowMinutes = 20;
+    let countdownTimerInterval = null;
+
+    // DOM Elements
+    const shopLogoImg = document.getElementById('shopLogoImg');
+    const fallbackLogoIcon = document.getElementById('fallbackLogoIcon');
+    const shopNameTitle = document.getElementById('shopNameTitle');
+
+    const accessDeniedView = document.getElementById('accessDeniedView');
+    const orderContentArea = document.getElementById('orderContentArea');
+
+    const orderIdText = document.getElementById('orderIdText');
+    const orderStatusBadge = document.getElementById('orderStatusBadge');
+    const orderPlacedDate = document.getElementById('orderPlacedDate');
+    const closureNoticeBox = document.getElementById('closureNoticeBox');
+    const closureReasonText = document.getElementById('closureReasonText');
+
+    const liveCountdownBox = document.getElementById('liveCountdownBox');
+    const countdownTimerText = document.getElementById('countdownTimerText');
+    const timelineCard = document.getElementById('timelineCard');
+    const timelineProgressLine = document.getElementById('timelineProgressLine');
+
+    const orderedProductsList = document.getElementById('orderedProductsList');
+    const itemsTotalCountTag = document.getElementById('itemsTotalCountTag');
+    const sumSubtotal = document.getElementById('sumSubtotal');
+    const sumDelivery = document.getElementById('sumDelivery');
+    const discountRow = document.getElementById('discountRow');
+    const sumDiscount = document.getElementById('sumDiscount');
+    const sumGrandTotal = document.getElementById('sumGrandTotal');
+
+    const destCustomerName = document.getElementById('destCustomerName');
+    const destCustomerPhone = document.getElementById('destCustomerPhone');
+    const destDeliveryAddress = document.getElementById('destDeliveryAddress');
+    const orderNotesBox = document.getElementById('orderNotesBox');
+    const destOrderNotes = document.getElementById('destOrderNotes');
+
+    const ratingCard = document.getElementById('ratingCard');
+    const ratingInputArea = document.getElementById('ratingInputArea');
+    const ratingDisplayArea = document.getElementById('ratingDisplayArea');
+    const ratingGivenBadge = document.getElementById('ratingGivenBadge');
+    const selectRatingScore = document.getElementById('selectRatingScore');
+    const txtReviewFeedback = document.getElementById('txtReviewFeedback');
+    const btnSubmitRating = document.getElementById('btnSubmitRating');
+    const displayRatingScore = document.getElementById('displayRatingScore');
+    const displayRatingFeedback = document.getElementById('displayRatingFeedback');
+
+    const btnWhatsAppShop = document.getElementById('btnWhatsAppShop');
+    const cancellationArea = document.getElementById('cancellationArea');
+    const btnRequestCancellation = document.getElementById('btnRequestCancellation');
+    const cancelPolicyNote = document.getElementById('cancelPolicyNote');
+
+    // Support Modal
+    const supportModal = document.getElementById('supportModal');
+    const btnOpenSupportModal = document.getElementById('btnOpenSupportModal');
+    const btnCloseSupportModal = document.getElementById('btnCloseSupportModal');
+    const btnCancelSupport = document.getElementById('btnCancelSupport');
+    const selectSupportCategory = document.getElementById('selectSupportCategory');
+    const txtSupportMessage = document.getElementById('txtSupportMessage');
+    const btnSubmitSupportTicket = document.getElementById('btnSubmitSupportTicket');
+
+    // ==========================================================
+    // AUTHENTICATION GUARD
+    // ==========================================================
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        window.location.replace('customer-login.html');
+        return;
+      }
+
+      currentUser = user;
+
+      // Extract and Validate URL Parameter ?orderId=
+      const urlParams = new URLSearchParams(window.location.search);
+      targetOrderId = urlParams.get('orderId');
+
+      if (!targetOrderId) {
+        accessDeniedView.style.display = 'block';
+        return;
+      }
+
+      listenToBranding();
+      listenToSettings();
+      listenToOrder(targetOrderId, user.uid);
+    });
+
+    // ==========================================================
+    // BRANDING & SETTINGS LISTENERS
+    // ==========================================================
+    function listenToBranding() {
+      onValue(ref(db, 'settings/shopProfile'), (snap) => {
+        const p = snap.val() || {};
+        if (p.shopName) shopNameTitle.textContent = p.shopName;
+        if (p.logoUrl) {
+          shopLogoImg.src = p.logoUrl;
+          shopLogoImg.onload = () => { shopLogoImg.style.display = 'block'; fallbackLogoIcon.style.display = 'none'; };
+        }
+
+        // WhatsApp direct link setup
+        if (p.whatsapp || p.phone) {
+          const rawPhone = (p.whatsapp || p.phone).replace(/[^0-9]/g, '');
+          const msg = encodeURIComponent(`Hello, regarding my Poultry Order #${targetOrderId}:`);
+          btnWhatsAppShop.href = `https://wa.me/${rawPhone}?text=${msg}`;
+        }
+      });
+    }
+
+    function listenToSettings() {
+      onValue(ref(db, 'settings/orderSettings'), (snap) => {
+        const s = snap.val() || {};
+        if (s.cancelWindowMins) cancelWindowMinutes = parseInt(s.cancelWindowMins, 10);
+      });
+    }
+
+    // ==========================================================
+    // ORDER VERIFICATION & REALTIME LISTENER
+    // ==========================================================
+    function listenToOrder(orderId, currentUid) {
+      const orderRef = ref(db, `orders/${orderId}`);
+
+      onValue(orderRef, (snap) => {
+        if (!snap.exists()) {
+          accessDeniedView.style.display = 'block';
+          orderContentArea.style.display = 'none';
+          return;
+        }
+
+        const ord = snap.val();
+        ord.key = snap.key;
+
+        // STRICT OWNERSHIP SECURITY CHECK
+        const ownerUid = ord.customerId || ord.customerUid || ord.customer?.uid;
+        if (ownerUid !== currentUid) {
+          accessDeniedView.style.display = 'block';
+          orderContentArea.style.display = 'none';
+          return;
+        }
+
+        currentOrderData = ord;
+        accessDeniedView.style.display = 'none';
+        orderContentArea.style.display = 'block';
+
+        renderOrderDetails();
+        listenToExistingReview(orderId);
+      });
+    }
+
+    // ==========================================================
+    // RENDER ORDER DETAILS & SNAPSHOTS
+    // ==========================================================
+    function renderOrderDetails() {
+      const o = currentOrderData;
+      const now = Date.now();
+      const id = (o.orderId || o.key).toUpperCase();
+
+      orderIdText.textContent = `#${id}`;
+
+      // Status Badge Styling
+      const st = (o.status || 'pending').toLowerCase();
+      let badgeClass = 'badge-pending';
+      let badgeLabel = 'Pending';
+
+      if (st === 'accepted') { badgeClass = 'badge-accepted'; badgeLabel = 'Accepted'; }
+      else if (st === 'preparing') { badgeClass = 'badge-preparing'; badgeLabel = 'Preparing'; }
+      else if (st === 'on_the_way') { badgeClass = 'badge-ontheway'; badgeLabel = 'On The Way'; }
+      else if (st === 'delivered' || st === 'completed') { badgeClass = 'badge-delivered'; badgeLabel = 'Delivered'; }
+      else if (st === 'rejected') { badgeClass = 'badge-rejected'; badgeLabel = 'Rejected'; }
+      else if (st === 'cancelled') { badgeClass = 'badge-cancelled'; badgeLabel = 'Cancelled'; }
+
+      orderStatusBadge.className = `status-badge ${badgeClass}`;
+      orderStatusBadge.textContent = badgeLabel;
+
+      // Creation Date
+      orderPlacedDate.textContent = o.createdAt 
+        ? new Date(o.createdAt).toLocaleDateString('bn-BD', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+        : 'Recently';
+
+      // Rejection or Cancellation Message Box
+      if (st === 'rejected' || st === 'cancelled') {
+        closureNoticeBox.style.display = 'block';
+        closureReasonText.textContent = o.rejectionReason || o.cancellationReason || (st === 'rejected' ? 'Order could not be fulfilled by store.' : 'Order was cancelled.');
+      } else {
+        closureNoticeBox.style.display = 'none';
+      }
+
+      // Visual Progress Stepper
+      updateTimelineStepper(st);
+
+      // Live Delivery Countdown
+      updateDeliveryCountdown(o, st, now);
+
+      // Products Snapshot Display (NEVER rewritten with current prices)
+      const items = o.items ? (Array.isArray(o.items) ? o.items : Object.values(o.items)) : [];
+      itemsTotalCountTag.textContent = `${items.length} items`;
+
+      orderedProductsList.innerHTML = items.map(it => {
+        const img = it.imageUrl || 'https://via.placeholder.com/80?text=Chicken';
+        const name = it.productName || it.name || 'Item';
+        const unit = it.unit || 'KG';
+        const qty = it.quantity || 1;
+        const price = Number(it.unitPrice || 0);
+        const sub = Number(it.subtotal || (qty * price));
+
+        return `
+          <div class="product-row">
+            <img src="${escapeHTML(img)}" class="product-thumb" alt="${escapeHTML(name)}" onerror="this.src='https://via.placeholder.com/80?text=Item';" />
+            <div class="product-meta-wrap">
+              <div class="product-name-txt">${escapeHTML(name)}</div>
+              <div class="product-qty-tag">${qty} ${escapeHTML(unit)} × ৳ ${price.toLocaleString('en-IN')}</div>
+            </div>
+            <div class="product-subtotal-txt">৳ ${sub.toLocaleString('en-IN')}</div>
+          </div>
+        `;
+      }).join('');
+
+      // Confirmed Totals
+      const sub = Number(o.subtotal || o.pricing?.subtotal || 0);
+      const del = Number(o.deliveryCharge || o.pricing?.deliveryCharge || 0);
+      const disc = Number(o.discount || o.pricing?.discount || 0);
+      const grand = Number(o.totalAmount || o.pricing?.totalAmount || (sub + del - disc));
+
+      sumSubtotal.textContent = `৳ ${sub.toLocaleString('en-IN')}`;
+      sumDelivery.textContent = del === 0 ? "FREE" : `৳ ${del.toLocaleString('en-IN')}`;
+      if (disc > 0) {
+        discountRow.style.display = 'flex';
+        sumDiscount.textContent = `- ৳ ${disc.toLocaleString('en-IN')}`;
+      } else {
+        discountRow.style.display = 'none';
+      }
+      sumGrandTotal.textContent = `৳ ${grand.toLocaleString('en-IN')}`;
+
+      // Destination Info
+      destCustomerName.textContent = o.customerName || currentUser.displayName || 'Customer';
+      destCustomerPhone.textContent = o.customerPhone || o.whatsappNumber || 'N/A';
+      destDeliveryAddress.textContent = o.deliveryAddress || 'No address specified';
+
+      if (o.orderNotes) {
+        orderNotesBox.style.display = 'block';
+        destOrderNotes.textContent = o.orderNotes;
+      } else {
+        orderNotesBox.style.display = 'none';
+      }
+
+      // Customer Cancellation Capability (20-Minute Policy)
+      const createdTs = o.createdAt ? new Date(o.createdAt).getTime() : now;
+      const isWithinWindow = (now - createdTs) <= (cancelWindowMinutes * 60 * 1000);
+
+      if (st === 'pending' && isWithinWindow) {
+        cancellationArea.style.display = 'block';
+        btnRequestCancellation.disabled = false;
+        cancelPolicyNote.textContent = `* Cancellation available for ${Math.max(0, Math.round(((cancelWindowMinutes * 60 * 1000) - (now - createdTs)) / 60000))} more minutes`;
+      } else if (st === 'pending') {
+        cancellationArea.style.display = 'block';
+        btnRequestCancellation.disabled = true;
+        cancelPolicyNote.textContent = `* Cancellation window expired (over ${cancelWindowMinutes} minutes)`;
+      } else {
+        cancellationArea.style.display = 'none';
+      }
+
+      // Rating Section (Enabled ONLY when order is delivered or completed)
+      if (st === 'delivered' || st === 'completed') {
+        ratingCard.style.display = 'block';
+      } else {
+        ratingCard.style.display = 'none';
+      }
+    }
+
+    // ==========================================================
+    // VISUAL TIMELINE STEPPER
+    // ==========================================================
+    function updateTimelineStepper(st) {
+      if (st === 'rejected' || st === 'cancelled') {
+        timelineCard.style.display = 'none';
+        return;
+      }
+
+      timelineCard.style.display = 'block';
+      const steps = ['step1', 'step2', 'step3', 'step4', 'step5'];
+      steps.forEach(id => {
+        const el = document.getElementById(id);
+        el.className = 'step-node';
+      });
+
+      let activeStepIndex = 1;
+      if (st === 'pending') activeStepIndex = 1;
+      else if (st === 'accepted') activeStepIndex = 2;
+      else if (st === 'preparing') activeStepIndex = 3;
+      else if (st === 'on_the_way') activeStepIndex = 4;
+      else if (st === 'delivered' || st === 'completed') activeStepIndex = 5;
+
+      for (let i = 1; i <= activeStepIndex; i++) {
+        const node = document.getElementById(`step${i}`);
+        if (i === activeStepIndex) node.classList.add('active');
+        else node.classList.add('completed');
+      }
+
+      const progressPercent = ((activeStepIndex - 1) / (steps.length - 1)) * 100;
+      timelineProgressLine.style.width = `${progressPercent}%`;
+    }
+
+    // ==========================================================
+    // DELIVERY COUNTDOWN LOGIC
+    // ==========================================================
+    function updateDeliveryCountdown(o, st, now) {
+      if (countdownTimerInterval) clearInterval(countdownTimerInterval);
+
+      if (o.deliveryDeadline && (st === 'accepted' || st === 'preparing' || st === 'on_the_way')) {
+        liveCountdownBox.style.display = 'flex';
+
+        const tick = () => {
+          const currentNow = Date.now();
+          const remainingMins = Math.round((o.deliveryDeadline - currentNow) / 60000);
+
+          if (remainingMins <= 0) {
+            countdownTimerText.innerHTML = `<span style="color:var(--danger); font-weight:800;">Estimated time exceeded</span>`;
+          } else if (remainingMins > 60) {
+            const hrs = Math.floor(remainingMins / 60);
+            const mins = remainingMins % 60;
+            countdownTimerText.textContent = `${hrs} Hr ${mins} Mins Remaining`;
+          } else {
+            countdownTimerText.textContent = `${remainingMins} Mins Remaining`;
+          }
+        };
+
+        tick();
+        countdownTimerInterval = setInterval(tick, 30000);
+      } else {
+        liveCountdownBox.style.display = 'none';
+      }
+    }
+
+    // ==========================================================
+    // CUSTOMER CANCELLATION HANDLER
+    // ==========================================================
+    btnRequestCancellation.addEventListener('click', async () => {
+      if (!currentOrderData) return;
+
+      if (!confirm("Are you sure you want to cancel this order? This cannot be undone.")) return;
+
+      const reason = prompt("Reason for cancellation:") || "Customer requested within window";
+
+      try {
+        const orderRef = ref(db, `orders/${targetOrderId}`);
+        await update(orderRef, {
+          status: 'cancelled',
+          cancelledAt: serverTimestamp(),
+          cancellationReason: reason,
+          updatedAt: serverTimestamp()
+        });
+
+        await push(ref(db, `orderHistory/${targetOrderId}`), {
+          fromStatus: currentOrderData.status,
+          toStatus: 'cancelled',
+          updatedByUid: currentUser.uid,
+          updatedByEmail: currentUser.email || 'Customer',
+          note: `Customer cancellation: ${reason}`,
+          timestamp: serverTimestamp()
+        });
+
+        alert("Order cancelled successfully.");
+      } catch (err) {
+        alert("Failed to cancel: " + err.message);
+      }
+    });
+
+    // ==========================================================
+    // RATING SUBMISSION (0-10 SCALE)
+    // ==========================================================
+    function listenToExistingReview(orderId) {
+      onValue(ref(db, `reviews/${orderId}`), (snap) => {
+        if (snap.exists()) {
+          const rev = snap.val();
+          ratingInputArea.style.display = 'none';
+          ratingDisplayArea.style.display = 'block';
+          ratingGivenBadge.style.display = 'inline';
+
+          displayRatingScore.textContent = `★ ${rev.rating} / 10`;
+          displayRatingFeedback.textContent = rev.reviewText ? `"${rev.reviewText}"` : 'No written comments.';
+        } else {
+          ratingInputArea.style.display = 'block';
+          ratingDisplayArea.style.display = 'none';
+          ratingGivenBadge.style.display = 'none';
+        }
+      });
+    }
+
+    btnSubmitRating.addEventListener('click', async () => {
+      if (!currentOrderData) return;
+
+      const ratingVal = parseFloat(selectRatingScore.value);
+      const reviewText = txtReviewFeedback.value.trim();
+
+      btnSubmitRating.disabled = true;
+      btnSubmitRating.textContent = "Submitting Review...";
+
+      try {
+        const reviewRef = ref(db, `reviews/${targetOrderId}`);
+        await set(reviewRef, {
+          orderId: targetOrderId,
+          customerUid: currentUser.uid,
+          customerName: currentOrderData.customerName || currentUser.displayName || 'Customer',
+          customerCategory: currentOrderData.customerCategory || 'Normal Customer',
+          rating: ratingVal,
+          reviewText: reviewText,
+          status: 'published',
+          complaintStatus: ratingVal < 5 ? 'under_review' : 'none',
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp()
+        });
+
+        alert("Thank you for your rating!");
+      } catch (err) {
+        alert("Error saving review: " + err.message);
+      } finally {
+        btnSubmitRating.disabled = false;
+        btnSubmitRating.textContent = "Submit Customer Review";
+      }
+    });
+
+    // ==========================================================
+    // ORDER SUPPORT TICKET SUBMISSION
+    // ==========================================================
+    btnOpenSupportModal.addEventListener('click', () => {
+      txtSupportMessage.value = '';
+      supportModal.style.display = 'flex';
+    });
+
+    btnCloseSupportModal.onclick = () => supportModal.style.display = 'none';
+    btnCancelSupport.onclick = () => supportModal.style.display = 'none';
+
+    btnSubmitSupportTicket.addEventListener('click', async () => {
+      const msg = txtSupportMessage.value.trim();
+      const cat = selectSupportCategory.value;
+
+      if (!msg) {
+        alert("Please write your support message.");
+        return;
+      }
+
+      btnSubmitSupportTicket.disabled = true;
+
+      try {
+        const reqRef = push(ref(db, 'customerRequests'));
+        await set(reqRef, {
+          requestId: reqRef.key,
+          orderId: targetOrderId,
+          customerUid: currentUser.uid,
+          customerName: currentOrderData.customerName || currentUser.displayName || 'Customer',
+          customerPhone: currentOrderData.customerPhone || currentOrderData.whatsappNumber || '',
+          requestType: cat,
+          subject: `Support ticket regarding Order #${targetOrderId}`,
+          message: msg,
+          status: 'new',
+          createdAt: serverTimestamp()
+        });
+
+        alert("Your support request has been submitted to shop staff.");
+        supportModal.style.display = 'none';
+      } catch (err) {
+        alert("Failed to submit ticket: " + err.message);
+      } finally {
+        btnSubmitSupportTicket.disabled = false;
+      }
+    });
+
+    function escapeHTML(str) {
+      if (!str) return '';
+      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+    }
+  </script>
+</body>
+</html>
