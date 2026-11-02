@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>My Orders | Poultry Shop</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    /* ==========================================================
+       CSS RESET & FRESH GREEN THEME
+       ========================================================== */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    :root {
+      --bg-main: #f8fafc;
+      --bg-card: #ffffff;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --text-light: #94a3b8;
+      
+      --primary-green: #10b981;
+      --primary-dark: #047857;
+      --primary-deep: #064e3b;
+      --green-light: #ecfdf5;
+      --green-border: rgba(16, 185, 129, 0.2);
+      
+      --gold-accent: #d97706;
+      --gold-light: #fef3c7;
+      --danger: #ef4444;
+      --danger-light: #fef2f2;
+      
+      /* Status Colors */
+      --st-pending: #f59e0b;
+      --st-accepted: #3b82f6;
+      --st-preparing: #8b5cf6;
+      --st-ontheway: #06b6d4;
+      --st-delivered: #10b981;
+      --st-rejected: #ef4444;
+      --st-cancelled: #64748b;
+      
+      --border-subtle: #e2e8f0;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+      --shadow-md: 0 4px 14px rgba(0,0,0,0.08);
+      
+      --bottom-nav-height: 64px;
+    }
+
+    body {
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      font-family: 'Outfit', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding-bottom: calc(var(--bottom-nav-height) + 26px);
+      overflow-x: hidden;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 520px;
+      margin: 0 auto;
+      padding: 0 16px;
+    }
+
+    /* Top Sticky Header */
+    .top-header {
+      background: #ffffff;
+      border-bottom: 1px solid var(--border-subtle);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      box-shadow: var(--shadow-sm);
+      padding: 10px 16px;
+    }
+
+    .header-content {
+      max-width: 520px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand-center {
+      text-align: center;
+      flex: 1;
+    }
+
+    .shop-logo-frame {
+      width: 40px;
+      height: 40px;
+      margin: 0 auto 2px auto;
+      border-radius: 12px;
+      background: var(--green-light);
+      border: 1.5px solid var(--primary-green);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .shop-logo-frame img { width: 100%; height: 100%; object-fit: cover; }
+    .shop-logo-frame svg { width: 22px; height: 22px; stroke: var(--primary-green); }
+
+    .shop-name-title {
+      font-family: 'Cinzel', serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--primary-deep);
+      line-height: 1.2;
+    }
+
+    .btn-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: var(--bg-main);
+      border: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-main);
+      cursor: pointer;
+      position: relative;
+      text-decoration: none;
+    }
+
+    .badge-count {
+      position: absolute;
+      top: -2px;
+      right: -2px;
+      background: var(--danger);
+      color: #fff;
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 10px;
+      border: 2px solid #fff;
+    }
+
+    /* Page Title Bar */
+    .page-title-row {
+      margin: 16px 0 12px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .page-title-row h2 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    /* Order Status Filter Tabs */
+    .filter-tabs-scroller {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 6px;
+      margin-bottom: 16px;
+      scrollbar-width: none;
+    }
+    .filter-tabs-scroller::-webkit-scrollbar { display: none; }
+
+    .tab-pill {
+      background: #ffffff;
+      border: 1px solid var(--border-subtle);
+      border-radius: 20px;
+      padding: 7px 16px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      white-space: nowrap;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .tab-pill.active {
+      background: var(--primary-green);
+      color: #ffffff;
+      border-color: var(--primary-green);
+      box-shadow: 0 2px 8px rgba(16, 185, 129, 0.25);
+    }
+
+    /* Order Cards List */
+    .orders-list-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .order-card {
+      background: #ffffff;
+      border: 1px solid var(--border-subtle);
+      border-radius: 18px;
+      padding: 16px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      transition: transform 0.2s ease;
+    }
+
+    .order-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border-subtle);
+      padding-bottom: 10px;
+      margin-bottom: 12px;
+    }
+
+    .order-id-label {
+      font-family: 'Cinzel', serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--primary-deep);
+    }
+
+    /* Status Badges */
+    .status-badge {
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 20px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    .badge-pending { background: rgba(245, 158, 11, 0.15); color: #b45309; border: 1px solid rgba(245, 158, 11, 0.3); }
+    .badge-accepted { background: rgba(59, 130, 246, 0.15); color: #1d4ed8; border: 1px solid rgba(59, 130, 246, 0.3); }
+    .badge-preparing { background: rgba(139, 92, 246, 0.15); color: #6d28d9; border: 1px solid rgba(139, 92, 246, 0.3); }
+    .badge-ontheway { background: rgba(6, 182, 212, 0.15); color: #0e7490; border: 1px solid rgba(6, 182, 212, 0.3); }
+    .badge-delivered, .badge-completed { background: var(--green-light); color: var(--primary-dark); border: 1px solid var(--green-border); }
+    .badge-rejected, .badge-cancelled { background: var(--danger-light); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.25); }
+
+    /* Live Countdown Box */
+    .delivery-countdown-box {
+      background: var(--gold-light);
+      border: 1px dashed rgba(217, 119, 6, 0.3);
+      border-radius: 10px;
+      padding: 8px 12px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.76rem;
+      color: var(--gold-accent);
+    }
+
+    .countdown-timer-val {
+      font-family: monospace;
+      font-weight: 800;
+      font-size: 0.88rem;
+    }
+
+    /* Item Summary & Meta */
+    .order-meta-info {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin-bottom: 10px;
+    }
+
+    .order-meta-info p {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 3px;
+    }
+
+    .order-meta-info svg {
+      width: 14px;
+      height: 14px;
+      stroke: var(--primary-green);
+      flex-shrink: 0;
+    }
+
+    .order-pricing-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      border-top: 1px dashed var(--border-subtle);
+      padding-top: 10px;
+      margin-top: 6px;
+      margin-bottom: 12px;
+    }
+
+    .total-amount-display {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--primary-deep);
+    }
+
+    /* Actions Bar */
+    .order-card-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-view-details {
+      flex: 1;
+      height: 38px;
+      background: var(--primary-green);
+      color: #ffffff;
+      border-radius: 10px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: background 0.2s ease;
+    }
+
+    .btn-view-details:hover { background: var(--primary-dark); }
+
+    .btn-cancel-order {
+      padding: 0 12px;
+      height: 38px;
+      background: var(--danger-light);
+      border: 1px solid rgba(239, 68, 68, 0.25);
+      color: var(--danger);
+      border-radius: 10px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+
+    .btn-cancel-order:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* Empty States */
+    .empty-orders-wrap {
+      text-align: center;
+      padding: 60px 16px;
+      background: #ffffff;
+      border: 1px dashed var(--border-subtle);
+      border-radius: 24px;
+      margin: 20px 0;
+      display: none;
+    }
+
+    .empty-orders-icon {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: var(--green-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 14px auto;
+      color: var(--primary-green);
+    }
+
+    .empty-orders-icon svg { width: 36px; height: 36px; }
+
+    .btn-browse-shop {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--primary-green);
+      color: #ffffff;
+      text-decoration: none;
+      padding: 10px 20px;
+      border-radius: 12px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      margin-top: 14px;
+    }
+
+    /* Fixed Bottom Navigation */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: var(--bottom-nav-height);
+      background: #ffffff;
+      border-top: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      z-index: 100;
+      box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.05);
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.68rem;
+      font-weight: 600;
+      gap: 3px;
+      flex: 1;
+      height: 100%;
+      position: relative;
+    }
+
+    .nav-item svg { width: 20px; height: 20px; stroke: currentColor; }
+    .nav-item.active { color: var(--primary-dark); }
+    .nav-item.active svg { stroke: var(--primary-dark); }
+  </style>
+</head>
+<body>
+
+  <!-- Top Sticky Header -->
+  <header class="top-header">
+    <div class="header-content">
+      <a href="customer-home.html" class="btn-icon" title="Home">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      </a>
+
+      <div class="brand-center">
+        <div class="shop-logo-frame" id="shopLogoFrame">
+          <svg id="fallbackLogoIcon" viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M12 2C8.5 2 6 4.5 6 8c0 2 .8 3.8 2.2 5.1L5 22h14l-3.2-8.9C17.2 11.8 18 10 18 8c0-3.5-2.5-6-6-6z"/></svg>
+          <img id="shopLogoImg" src="" alt="Logo" style="display:none;" />
+        </div>
+        <h1 class="shop-name-title" id="shopNameTitle">POULTRY SHOP</h1>
+      </div>
+
+      <a href="customer-account.html" class="btn-icon" title="Notifications">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <span class="badge-count" id="notifBadge" style="display:none;">0</span>
+      </a>
+    </div>
+  </header>
+
+  <main class="app-container">
+
+    <div class="page-title-row">
+      <h2>My Order History</h2>
+      <span id="orderCountBadge" style="font-size:0.78rem; font-weight:700; color:var(--primary-dark); background:var(--green-light); padding:3px 10px; border-radius:12px;">0 Orders</span>
+    </div>
+
+    <!-- Order Filter Tabs -->
+    <div class="filter-tabs-scroller">
+      <button class="tab-pill active" data-tab="all">All Orders</button>
+      <button class="tab-pill" data-tab="pending">Pending</button>
+      <button class="tab-pill" data-tab="active">Active (On the way)</button>
+      <button class="tab-pill" data-tab="completed">Completed</button>
+      <button class="tab-pill" data-tab="cancelled">Cancelled</button>
+    </div>
+
+    <!-- Orders Cards List -->
+    <div class="orders-list-wrap" id="ordersListWrap">
+      <p style="text-align:center; color:var(--text-muted); font-size:0.85rem; padding:40px 0;">Loading your order history...</p>
+    </div>
+
+    <!-- Empty State -->
+    <div class="empty-orders-wrap" id="emptyOrdersWrap">
+      <div class="empty-orders-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      </div>
+      <h3 style="font-size: 1.15rem; color: var(--text-main); font-weight: 700; margin-bottom: 4px;" id="emptyTitle">You haven't placed any orders yet</h3>
+      <p style="font-size: 0.82rem; color: var(--text-muted);" id="emptyDesc">Order fresh Halal poultry directly from our farm store.</p>
+      <a href="customer-products.html" class="btn-browse-shop">Browse Products →</a>
+    </div>
+
+  </main>
+
+  <!-- Fixed Bottom Mobile Navigation -->
+  <nav class="bottom-nav">
+    <a href="customer-home.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      <span>Home</span>
+    </a>
+    <a href="customer-products.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="m7.5 4.27 9 5.15M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/></svg>
+      <span>Products</span>
+    </a>
+    <a href="customer-cart.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+      <span>Cart</span>
+    </a>
+    <a href="customer-orders.html" class="nav-item active">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      <span>Orders</span>
+    </a>
+    <a href="customer-account.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span>Account</span>
+    </a>
+  </nav>
+
+  <!-- ==========================================================
+       MODULAR FIREBASE SDK (v10) & REALTIME SCRIPT
+       ========================================================== -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { 
+      getDatabase, 
+      ref, 
+      onValue, 
+      update, 
+      serverTimestamp, 
+      get, 
+      push 
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+    // 1. Firebase Configuration (Matches Project Credentials)
+    const firebaseConfig = {
+      apiKey: "AIzaSyDYPsjlOmRwH2F5P8fFoiirP1FLjgh3c8A",
+      authDomain: "murgi-dfd67.firebaseapp.com",
+      databaseURL: "https://murgi-dfd67-default-rtdb.firebaseio.com",
+      projectId: "murgi-dfd67",
+      storageBucket: "murgi-dfd67.firebasestorage.app",
+      messagingSenderId: "209696889864",
+      appId: "1:209696889864:web:3eaa16034f00cca45505bd"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
+
+    // App State
+    let currentUser = null;
+    let myOrdersList = [];
+    let activeFilter = 'all';
+    let cancelWindowMinutes = 20; // Default cancellation window
+    let countdownInterval = null;
+
+    // DOM Elements
+    const shopLogoImg = document.getElementById('shopLogoImg');
+    const fallbackLogoIcon = document.getElementById('fallbackLogoIcon');
+    const shopNameTitle = document.getElementById('shopNameTitle');
+    const notifBadge = document.getElementById('notifBadge');
+    const orderCountBadge = document.getElementById('orderCountBadge');
+    const ordersListWrap = document.getElementById('ordersListWrap');
+    const emptyOrdersWrap = document.getElementById('emptyOrdersWrap');
+    const emptyTitle = document.getElementById('emptyTitle');
+    const emptyDesc = document.getElementById('emptyDesc');
+
+    // =======================
